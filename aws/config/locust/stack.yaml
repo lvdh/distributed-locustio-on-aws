@@ -1,0 +1,9 @@
+template_path: locust/stack.yaml
+
+parameters:
+  ClusterInstanceCount: "3"
+  SSHKeyPairName: "kp-laurens"
+
+stack_tags:
+  ProjectCode: {{ project_code }}
+  Documentation: https://github.com/lvdh/distributed-locustio-on-aws/blob/master/README.md
