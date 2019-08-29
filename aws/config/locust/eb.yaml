@@ -1,0 +1,26 @@
+template_path: locust/eb.yaml
+
+parameters:
+  ClusterInstanceCount: "3"
+  SshKeyPairName: "kp-laurens"
+  VpcId: !stack_output locust/vpc.yaml::VPCId
+  VpcCidr: !stack_output locust/vpc.yaml::VpcCidr
+  PrivateSubnetA: !stack_output locust/vpc.yaml::PrivateSubnetA
+  PrivateSubnetB: !stack_output locust/vpc.yaml::PrivateSubnetB
+  PrivateSubnetC: !stack_output locust/vpc.yaml::PrivateSubnetC
+  PublicSubnetA: !stack_output locust/vpc.yaml::PublicSubnetA
+  PublicSubnetB: !stack_output locust/vpc.yaml::PublicSubnetB
+  PublicSubnetC: !stack_output locust/vpc.yaml::PublicSubnetC
+
+  # VpcId: !environment_variable SCEPTRE_VPCId
+  # VpcCidr: !environment_variable SCEPTRE_VpcCidr
+  # PrivateSubnetA: !environment_variable SCEPTRE_PrivateSubnetA
+  # PrivateSubnetB: !environment_variable SCEPTRE_PrivateSubnetB
+  # PrivateSubnetC: !environment_variable SCEPTRE_PrivateSubnetC
+  # PublicSubnetA: !environment_variable SCEPTRE_PublicSubnetA
+  # PublicSubnetB: !environment_variable SCEPTRE_PublicSubnetB
+  # PublicSubnetC: !environment_variable SCEPTRE_PublicSubnetC
+
+stack_tags:
+  ProjectCode: {{ project_code }}
+  Documentation: https://github.com/lvdh/distributed-locustio-on-aws/blob/master/README.md

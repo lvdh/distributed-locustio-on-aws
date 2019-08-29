@@ -2,9 +2,55 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
 Description: >
+  This template deploys an Elastic Beanstalk environment for an
   HTTP(S) load-testing stack based on Locust (https://locust.io/).
-  This template deploys an Elastic Beanstalk environment in a
-  custom two-tier, three-AZ VPC.
+
+Metadata:
+
+  AWS::CloudFormation::Interface:
+
+    ParameterGroups:
+
+      - Label:
+          default: Cluster Configuration
+        Parameters:
+          - ClusterInstanceCount
+          - SshKeyPairName
+
+      - Label:
+          default: Network Configuration
+        Parameters:
+          - VpcId
+          - VpcCidr
+          - PrivateSubnetA
+          - PrivateSubnetB
+          - PrivateSubnetC
+          - PublicSubnetA
+          - PublicSubnetB
+          - PublicSubnetC
+
+    ParameterLabels:
+
+      ClusterInstanceCount:
+        default: Number of EC2 instances in the cluster
+      SshKeyPairName:
+        default: Key Pair Name
+      VpcId:
+        default: VPC ID
+      VpcCidr:
+        default: VPC CIDR block
+      PrivateSubnetA:
+        default: Private Subnet in AZ A
+      PrivateSubnetB:
+        default: Private Subnet in AZ B
+      PrivateSubnetC:
+        default: Private Subnet in AZ C
+      PublicSubnetA:
+        default: Public Subnet in AZ A
+      PublicSubnetB:
+        default: Public Subnet in AZ B
+      PublicSubnetC:
+        default: Public Subnet in AZ C
 
 Parameters:
 
@@ -16,30 +62,55 @@ Parameters:
     Default: 3
     ConstraintDescription: Specify a number between 1 - 20
 
-  SSHKeyPairName:
+  SshKeyPairName:
     Description: Name of an existing EC2 Key Pair (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair)
     Type: AWS::EC2::KeyPair::KeyName
     MinLength: 1
     MaxLength: 255
-    ConstraintDescription: SSHKeyPairName must be specified
+    ConstraintDescription: SshKeyPairName must be specified
+
+  VpcId:
+    Description: ID of the existing VPC
+    Type: AWS::EC2::VPC::Id
+    ConstraintDescription: VpcId must be specified
+
+  VpcCidr:
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: CIDR block for the VPC
+    Type: String
+
+  PrivateSubnetA:
+    Description: ID of an existing Private Subnet in AZ A
+    Type: AWS::EC2::Subnet::Id
+    ConstraintDescription: PrivateSubnetA must be specified
+
+  PrivateSubnetB:
+    Description: ID of an existing Private Subnet in AZ B
+    Type: AWS::EC2::Subnet::Id
+    ConstraintDescription: PrivateSubnetB must be specified
+
+  PrivateSubnetC:
+    Description: ID of an existing Private Subnet in AZ A\C
+    Type: AWS::EC2::Subnet::Id
+    ConstraintDescription: PrivateSubnetC must be specified
+
+  PublicSubnetA:
+    Description: ID of an existing Public Subnet in AZ A
+    Type: AWS::EC2::Subnet::Id
+    ConstraintDescription: PublicSubnetA must be specified
+
+  PublicSubnetB:
+    Description: ID of an existing Public Subnet in AZ B
+    Type: AWS::EC2::Subnet::Id
+    ConstraintDescription: PublicSubnetB must be specified
+
+  PublicSubnetC:
+    Description: ID of an existing Public Subnet in AZ C
+    Type: AWS::EC2::Subnet::Id
+    ConstraintDescription: PublicSubnetC must be specified
 
 Mappings:
-
-  VPCMap:
-    VPC:
-      CIDR: 10.50.0.0/16
-    PublicSubnetA:
-      CIDR: 10.50.0.0/24
-    PublicSubnetB:
-      CIDR: 10.50.1.0/24
-    PublicSubnetC:
-      CIDR: 10.50.2.0/24
-    PrivateSubnetA:
-      CIDR: 10.50.64.0/19
-    PrivateSubnetB:
-      CIDR: 10.50.96.0/19
-    PrivateSubnetC:
-      CIDR: 10.50.128.0/19
 
   EBMap:
     SolutionStack:
@@ -50,176 +121,13 @@ Mappings:
 
 Resources:
 
-  # -- VPC
-
-  VPC:
-    Type: AWS::EC2::VPC
-    Properties:
-      CidrBlock: !FindInMap [ VPCMap, VPC, CIDR ]
-      EnableDnsSupport: true
-      EnableDnsHostnames: true
-      Tags:
-      - Key: Name
-        Value: !Sub "${AWS::StackName}-VPC"
-
-# -- Public Subnets
-
-  PublicSubnetA:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: !FindInMap [ VPCMap, PublicSubnetA, CIDR ]
-      AvailabilityZone: !Select
-        - 0
-        - !GetAZs
-          Ref: 'AWS::Region'
-      Tags:
-      - Key: Name
-        Value: !Sub "${AWS::StackName}-PublicSubnetA"
-
-  PublicSubnetB:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: !FindInMap [ VPCMap, PublicSubnetB, CIDR ]
-      AvailabilityZone: !Select
-        - 1
-        - !GetAZs
-          Ref: 'AWS::Region'
-      Tags:
-      - Key: Name
-        Value: !Sub "${AWS::StackName}-PublicSubnetB"
-
-  PublicSubnetC:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: !FindInMap [ VPCMap, PublicSubnetC, CIDR ]
-      AvailabilityZone: !Select
-        - 2
-        - !GetAZs
-          Ref: 'AWS::Region'
-      Tags:
-      - Key: Name
-        Value: !Sub "${AWS::StackName}-PublicSubnetC"
-
-# -- Private Subnets
-
-  PrivateSubnetA:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: !FindInMap [ VPCMap, PrivateSubnetA, CIDR ]
-      AvailabilityZone: !Select
-        - 0
-        - !GetAZs
-          Ref: 'AWS::Region'
-      Tags:
-      - Key: Name
-        Value: !Sub "${AWS::StackName}-PrivateSubnetA"
-
-  PrivateSubnetB:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: !FindInMap [ VPCMap, PrivateSubnetB, CIDR ]
-      AvailabilityZone: !Select
-        - 1
-        - !GetAZs
-          Ref: 'AWS::Region'
-      Tags:
-      - Key: Name
-        Value: !Sub "${AWS::StackName}-PrivateSubnetB"
-
-  PrivateSubnetC:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: !FindInMap [ VPCMap, PrivateSubnetC, CIDR ]
-      AvailabilityZone: !Select
-        - 2
-        - !GetAZs
-          Ref: 'AWS::Region'
-      Tags:
-      - Key: Name
-        Value: !Sub "${AWS::StackName}-PrivateSubnetC"
-
-# -- Internet Gateway
-
-  InternetGateway:
-    Type: AWS::EC2::InternetGateway
-    Properties:
-      Tags:
-        - Key: Name
-          Value: !Sub "${AWS::StackName}-InternetGateway"
-
-  VPCGatewayAttachment:
-    Type: AWS::EC2::VPCGatewayAttachment
-    Properties:
-      VpcId: !Ref VPC
-      InternetGatewayId: !Ref InternetGateway
-
-  PublicRouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref VPC
-      Tags:
-      - Key: Name
-        Value: !Sub "${AWS::StackName}-PublicRouteTable"
-
-  PublicRouteTableDefaultRoute:
-    Type: AWS::EC2::Route
-    DependsOn: VPCGatewayAttachment
-    Properties:
-      RouteTableId: !Ref PublicRouteTable
-      DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref InternetGateway
-
-# Enable traffic to Internet for Public Subnets
-
-  PublicSubnetRouteTableAssociationA:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PublicSubnetA
-      RouteTableId: !Ref PublicRouteTable
-
-  PublicSubnetRouteTableAssociationB:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PublicSubnetB
-      RouteTableId: !Ref PublicRouteTable
-
-  PublicSubnetRouteTableAssociationC:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PublicSubnetC
-      RouteTableId: !Ref PublicRouteTable
-
-  PublicSubnetNetworkAclAssociationA:
-    Type: AWS::EC2::SubnetNetworkAclAssociation
-    Properties:
-      SubnetId: !Ref PublicSubnetA
-      NetworkAclId: !GetAtt VPC.DefaultNetworkAcl
-
-  PublicSubnetNetworkAclAssociationB:
-    Type: AWS::EC2::SubnetNetworkAclAssociation
-    Properties:
-      SubnetId: !Ref PublicSubnetB
-      NetworkAclId: !GetAtt VPC.DefaultNetworkAcl
-
-  PublicSubnetNetworkAclAssociationC:
-    Type: AWS::EC2::SubnetNetworkAclAssociation
-    Properties:
-      SubnetId: !Ref PublicSubnetC
-      NetworkAclId: !GetAtt VPC.DefaultNetworkAcl
-
-# Allow traffic to Locust application
+# -- Security Groups
 
   ELBSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Enable HTTP ingress
-      VpcId: !Ref VPC
+      GroupDescription: Allow HTTP ingress from the Internet to the load balancer
+      VpcId: !Ref VpcId
       SecurityGroupIngress:
       - CidrIp: 0.0.0.0/0
         IpProtocol: tcp
@@ -241,8 +149,8 @@ Resources:
   EC2SecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Enable access from ELB to app
-      VpcId: !Ref VPC
+      GroupDescription: Allow HTTP ingress from the Load Balancer to the Application Server
+      VpcId: !Ref VpcId
       SecurityGroupIngress:
       - SourceSecurityGroupId: !Ref ELBSecurityGroup
         IpProtocol: tcp
@@ -260,115 +168,6 @@ Resources:
       FromPort: 80
       ToPort: 80
       SourceSecurityGroupId: !Ref ELBSecurityGroup
-
-# -- NAT Gateways
-
-  NatGatewayA:
-    DependsOn: VPCGatewayAttachment
-    Type: AWS::EC2::NatGateway
-    Properties:
-      AllocationId: !GetAtt NatEIPA.AllocationId
-      SubnetId: !Ref PublicSubnetA
-
-  NatGatewayB:
-    DependsOn: VPCGatewayAttachment
-    Type: AWS::EC2::NatGateway
-    Properties:
-      AllocationId: !GetAtt NatEIPB.AllocationId
-      SubnetId: !Ref PublicSubnetB
-
-  NatGatewayC:
-    DependsOn: VPCGatewayAttachment
-    Type: AWS::EC2::NatGateway
-    Properties:
-      AllocationId: !GetAtt NatEIPC.AllocationId
-      SubnetId: !Ref PublicSubnetC
-
-  NatEIPA:
-    DependsOn: VPCGatewayAttachment
-    Type: AWS::EC2::EIP
-    Properties:
-      Domain: vpc
-
-  NatEIPB:
-    DependsOn: VPCGatewayAttachment
-    Type: AWS::EC2::EIP
-    Properties:
-      Domain: vpc
-
-  NatEIPC:
-    DependsOn: VPCGatewayAttachment
-    Type: AWS::EC2::EIP
-    Properties:
-      Domain: vpc
-
-# Enable traffic to Internet for Private Subnets
-
-  PrivateRouteTableA:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref VPC
-      Tags:
-      - Key: Name
-        Value: !Sub "${AWS::StackName}-PrivateRouteTableA"
-
-  PrivateRouteTableB:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref VPC
-      Tags:
-      - Key: Name
-        Value: !Sub "${AWS::StackName}-PrivateRouteTableB"
-
-  PrivateRouteTableC:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref VPC
-      Tags:
-      - Key: Name
-        Value: !Sub "${AWS::StackName}-PrivateRouteTableC"
-
-  PrivateRouteTableNatRouteA:
-    Type: AWS::EC2::Route
-    DependsOn: VPCGatewayAttachment
-    Properties:
-      RouteTableId: !Ref PrivateRouteTableA
-      DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref NatGatewayA
-
-  PrivateRouteTableNatRouteB:
-    Type: AWS::EC2::Route
-    DependsOn: VPCGatewayAttachment
-    Properties:
-      RouteTableId: !Ref PrivateRouteTableB
-      DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref NatGatewayB
-
-  PrivateRouteTableNatRouteC:
-    Type: AWS::EC2::Route
-    DependsOn: VPCGatewayAttachment
-    Properties:
-      RouteTableId: !Ref PrivateRouteTableC
-      DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref NatGatewayC
-
-  PrivateSubnetRouteTableAssociationA:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PrivateSubnetA
-      RouteTableId: !Ref PrivateRouteTableA
-
-  PrivateSubnetRouteTableAssociationB:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PrivateSubnetB
-      RouteTableId: !Ref PrivateRouteTableB
-
-  PrivateSubnetRouteTableAssociationC:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PrivateSubnetC
-      RouteTableId: !Ref PrivateRouteTableC
 
   # -- Elastic Beanstalk
 
@@ -445,10 +244,9 @@ Resources:
         OptionName: IamInstanceProfile
         Value: !Ref EC2InstanceProfile
 
-      # Requires an EC2 Key Pair name
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: EC2KeyName
-        Value: !Ref SSHKeyPairName
+        Value: !Ref SshKeyPairName
 
       # Allow SSH access from within the VPC
       - Namespace: aws:autoscaling:launchconfiguration
@@ -456,7 +254,7 @@ Resources:
         Value:
           Fn::Sub:
             - tcp, 22, 22, ${SourceCIDR}
-            - { SourceCIDR: !FindInMap [ VPCMap, VPC, CIDR ] }
+            - { SourceCIDR: !Ref VpcCidr }
 
       - Namespace: aws:autoscaling:updatepolicy:rollingupdate
         OptionName: RollingUpdateEnabled
@@ -474,13 +272,15 @@ Resources:
         OptionName: Unit
         Value: Percent
 
+      # Prevent Auto-Scaling
       - Namespace: aws:autoscaling:trigger
         OptionName: UpperThreshold
-        Value: 80
+        Value: 100
 
+      # Prevent Auto-Scaling
       - Namespace: aws:autoscaling:trigger
         OptionName: LowerThreshold
-        Value: 40
+        Value: 0
 
       - Namespace: aws:autoscaling:trigger
         OptionName: BreachDuration
@@ -500,7 +300,9 @@ Resources:
         OptionName: SystemType
         Value: "enhanced"
 
-        # Note: '60' = enable metric ("every 60s"), 'null' = disable metric
+        # Note:
+        #  * '60': enable metric ("check every 60s")
+        #  * 'null': disable metric
       - Namespace: aws:elasticbeanstalk:healthreporting:system
         OptionName: ConfigDocument
         Value:  '{
@@ -570,8 +372,8 @@ Resources:
         # -- VPC
 
       - Namespace: aws:ec2:vpc
-        OptionName: VPCId
-        Value: !Ref VPC
+        OptionName: VpcId
+        Value: !Ref VpcId
 
       - Namespace: aws:ec2:vpc
         OptionName: Subnets
@@ -663,7 +465,11 @@ Resources:
 
 Outputs:
 
-  # -- Elastic Beanstalk
+  Name:
+    Description: Stack Name
+    Value: !Ref AWS::StackName
+    Export:
+      Name: !Sub ${AWS::StackName}-Name
 
   EnvironmentURL:
     Description: Environment URL
@@ -676,64 +482,6 @@ Outputs:
     Value: !FindInMap [ EBMap, SolutionStack, Name ]
     Export:
       Name: !Sub "${AWS::StackName}-SolutionStackName"
-
-  # -- CloudFormation Stack
-
-  Name:
-    Description: Stack Name
-    Value: !Ref AWS::StackName
-    Export:
-      Name: !Sub ${AWS::StackName}-Name
-
-  # -- VPC
-
-  VPCId:
-    Description: VPC ID
-    Value: !Ref VPC
-    Export:
-      Name: !Sub "${AWS::StackName}-VpcID"
-
-  VpcCidr:
-    Description: VPC CIDR Block
-    Value: !FindInMap [ VPCMap, VPC, CIDR ]
-    Export:
-      Name: !Sub "${AWS::StackName}-VpcCidr"
-
-  PublicSubnetA:
-    Description: Public Subnet A ID
-    Value: !Ref PublicSubnetA
-    Export:
-      Name: !Sub "${AWS::StackName}-PublicSubnetAID"
-
-  PublicSubnetB:
-    Description: Public Subnet B ID
-    Value: !Ref PublicSubnetB
-    Export:
-      Name: !Sub "${AWS::StackName}-PublicSubnetBID"
-
-  PublicSubnetC:
-    Description: Public Subnet C ID
-    Value: !Ref PublicSubnetC
-    Export:
-      Name: !Sub "${AWS::StackName}-PublicSubnetCID"
-
-  PrivateSubnetA:
-    Description: Private Subnet A ID
-    Value: !Ref PrivateSubnetA
-    Export:
-      Name: !Sub "${AWS::StackName}-PrivateSubnetAID"
-
-  PrivateSubnetB:
-    Description: Private Subnet B ID
-    Value: !Ref PrivateSubnetB
-    Export:
-      Name: !Sub "${AWS::StackName}-PrivateSubnetBID"
-
-  PrivateSubnetC:
-    Description: Private Subnet C ID
-    Value: !Ref PrivateSubnetC
-    Export:
-      Name: !Sub "${AWS::StackName}-PrivateSubnetCID"
 
   ELBSecurityGroup:
     Description: Security Group ID for Internet-facing ELB

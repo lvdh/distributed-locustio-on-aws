@@ -34,7 +34,7 @@ Resources:
       EnableDnsHostnames: true
       Tags:
       - Key: Name
-        Value: !Sub "${AWS::StackName}-VPC"
+        Value: !Sub "${AWS::StackName}::VPC"
 
   # Create Private Subnets
 
@@ -49,7 +49,7 @@ Resources:
           Ref: 'AWS::Region'
       Tags:
       - Key: Name
-        Value: !Sub "${AWS::StackName}-PublicSubnetA"
+        Value: !Sub "${AWS::StackName}::PublicSubnetA"
 
   PublicSubnetB:
     Type: AWS::EC2::Subnet
@@ -62,7 +62,7 @@ Resources:
           Ref: 'AWS::Region'
       Tags:
       - Key: Name
-        Value: !Sub "${AWS::StackName}-PublicSubnetB"
+        Value: !Sub "${AWS::StackName}::PublicSubnetB"
 
   PublicSubnetC:
     Type: AWS::EC2::Subnet
@@ -75,7 +75,7 @@ Resources:
           Ref: 'AWS::Region'
       Tags:
       - Key: Name
-        Value: !Sub "${AWS::StackName}-PublicSubnetC"
+        Value: !Sub "${AWS::StackName}::PublicSubnetC"
 
 # Create Private Subnets
 
@@ -90,7 +90,7 @@ Resources:
           Ref: 'AWS::Region'
       Tags:
       - Key: Name
-        Value: !Sub "${AWS::StackName}-PrivateSubnetA"
+        Value: !Sub "${AWS::StackName}::PrivateSubnetA"
 
   PrivateSubnetB:
     Type: AWS::EC2::Subnet
@@ -103,7 +103,7 @@ Resources:
           Ref: 'AWS::Region'
       Tags:
       - Key: Name
-        Value: !Sub "${AWS::StackName}-PrivateSubnetB"
+        Value: !Sub "${AWS::StackName}::PrivateSubnetB"
 
   PrivateSubnetC:
     Type: AWS::EC2::Subnet
@@ -116,7 +116,7 @@ Resources:
           Ref: 'AWS::Region'
       Tags:
       - Key: Name
-        Value: !Sub "${AWS::StackName}-PrivateSubnetC"
+        Value: !Sub "${AWS::StackName}::PrivateSubnetC"
 
 # Create an Internet Gateway and a public Route Table
 
@@ -125,7 +125,7 @@ Resources:
     Properties:
       Tags:
         - Key: Name
-          Value: !Sub "${AWS::StackName}-InternetGateway"
+          Value: !Sub "${AWS::StackName}::InternetGateway"
 
   VPCGatewayAttachment:
     Type: AWS::EC2::VPCGatewayAttachment
@@ -139,7 +139,7 @@ Resources:
       VpcId: !Ref VPC
       Tags:
       - Key: Name
-        Value: !Sub "${AWS::StackName}-PublicRouteTable"
+        Value: !Sub "${AWS::StackName}::PublicRouteTable"
 
   PublicRouteTableDefaultRoute:
     Type: AWS::EC2::Route
@@ -236,7 +236,7 @@ Resources:
       VpcId: !Ref VPC
       Tags:
       - Key: Name
-        Value: !Sub "${AWS::StackName}-PrivateRouteTableA"
+        Value: !Sub "${AWS::StackName}::PrivateRouteTableA"
 
   PrivateRouteTableB:
     Type: AWS::EC2::RouteTable
@@ -244,7 +244,7 @@ Resources:
       VpcId: !Ref VPC
       Tags:
       - Key: Name
-        Value: !Sub "${AWS::StackName}-PrivateRouteTableB"
+        Value: !Sub "${AWS::StackName}::PrivateRouteTableB"
 
   PrivateRouteTableC:
     Type: AWS::EC2::RouteTable
@@ -252,7 +252,7 @@ Resources:
       VpcId: !Ref VPC
       Tags:
       - Key: Name
-        Value: !Sub "${AWS::StackName}-PrivateRouteTableC"
+        Value: !Sub "${AWS::StackName}::PrivateRouteTableC"
 
   PrivateRouteTableNatRouteA:
     Type: AWS::EC2::Route
@@ -302,52 +302,52 @@ Outputs:
     Description: Stack Name
     Value: !Ref AWS::StackName
     Export:
-      Name: !Sub ${AWS::StackName}-Name
+      Name: !Sub "${AWS::StackName}:Name"
 
   VPCId:
     Description: VPC ID
     Value: !Ref VPC
     Export:
-      Name: !Sub "${AWS::StackName}-VpcID"
+      Name: !Sub "${AWS::StackName}:VpcID"
 
   VpcCidr:
     Description: VPC CIDR Block
     Value: !FindInMap [ VPCMap, VPC, CIDR ]
     Export:
-      Name: !Sub "${AWS::StackName}-VpcCidr"
+      Name: !Sub "${AWS::StackName}:VpcCidr"
 
   PublicSubnetA:
     Description: Public Subnet A ID
     Value: !Ref PublicSubnetA
     Export:
-      Name: !Sub "${AWS::StackName}-PublicSubnetAID"
+      Name: !Sub "${AWS::StackName}:PublicSubnetAID"
 
   PublicSubnetB:
     Description: Public Subnet B ID
     Value: !Ref PublicSubnetB
     Export:
-      Name: !Sub "${AWS::StackName}-PublicSubnetBID"
+      Name: !Sub "${AWS::StackName}:PublicSubnetBID"
 
   PublicSubnetC:
     Description: Public Subnet C ID
     Value: !Ref PublicSubnetC
     Export:
-      Name: !Sub "${AWS::StackName}-PublicSubnetCID"
+      Name: !Sub "${AWS::StackName}:PublicSubnetCID"
 
   PrivateSubnetA:
     Description: Private Subnet A ID
     Value: !Ref PrivateSubnetA
     Export:
-      Name: !Sub "${AWS::StackName}-PrivateSubnetAID"
+      Name: !Sub "${AWS::StackName}:PrivateSubnetAID"
 
   PrivateSubnetB:
     Description: Private Subnet B ID
     Value: !Ref PrivateSubnetB
     Export:
-      Name: !Sub "${AWS::StackName}-PrivateSubnetBID"
+      Name: !Sub "${AWS::StackName}:PrivateSubnetBID"
 
   PrivateSubnetC:
     Description: Private Subnet C ID
     Value: !Ref PrivateSubnetC
     Export:
-      Name: !Sub "${AWS::StackName}-PrivateSubnetCID"
+      Name: !Sub "${AWS::StackName}:PrivateSubnetCID"

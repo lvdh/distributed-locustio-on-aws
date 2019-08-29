@@ -45,7 +45,7 @@ aws-init: ## Deploy AWS resources for Locust
 	$(call cyan, "make $@ ... (Patience is a virtue. Have some tea or coffee.)")
 	. ./env/bin/activate
 	cd ./aws/
-	sceptre create --yes locust/stack.yaml
+	sceptre create --yes locust
 
 .ONESHELL: aws-update
 .PHONY: aws-update
@@ -53,7 +53,7 @@ aws-update: ## Update AWS resources for Locust
 	$(call cyan, "make $@ ... (Patience is a virtue. Have some tea or coffee.)")
 	. ./env/bin/activate
 	cd ./aws/
-	sceptre update --yes locust/stack.yaml
+	sceptre update --yes locust
 
 .ONESHELL: aws-terminate
 .PHONY: aws-terminate
@@ -61,7 +61,7 @@ aws-terminate: ## Terminate all AWS resources related to this stack
 	$(call cyan, "make $@ ...")
 	. ./env/bin/activate
 	cd ./aws/
-	sceptre delete --yes locust/stack.yaml
+	sceptre delete --yes locust
 
 .ONESHELL: locust-smoketest
 .PHONY: locust-smoketest
