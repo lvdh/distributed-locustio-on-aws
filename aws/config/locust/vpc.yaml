@@ -1,0 +1,5 @@
+template_path: locust/vpc.yaml
+
+stack_tags:
+  ProjectCode: {{ project_code }}
+  Documentation: https://github.com/lvdh/distributed-locustio-on-aws/blob/master/README.md
