@@ -4,16 +4,17 @@
 VARS:=$(shell grep -E "profile|region|project_code" ./aws/config/config.yaml | sed -e 's/: /=/g')
 $(foreach v,$(VARS),$(eval $(shell echo export $(v))))
 
-# Make Sceptre's generated stack name available in this Makefile. It is based on:
+# Make the generated network stack name available in this Makefile.
+# Sceptre generates the stack name based on:
 #  * The project code
-#  * The locust/stack/ path (in ./aws/config/)
-CFN_STACK_NAME:=$(project_code)-locust-stack
+#  * The stack configuration file aws/config/locust/cluster.yaml
+CFN_CLUSTER_STACK_NAME:=$(project_code)-locust-cluster
 
 # -- Getters
 
 GET_EB_SOLUTION_STACK_NAME_CMD = $(shell aws --profile $(profile) --region $(region) \
 	cloudformation list-exports \
-	--query "Exports[?Name==\`$(CFN_STACK_NAME)-SolutionStackName\`].Value" \
+	--query "Exports[?Name==\`$(CFN_CLUSTER_STACK_NAME)-SolutionStackName\`].Value" \
 	--output text)
 
 # -- Targets
@@ -82,13 +83,13 @@ locust-deploy: ## (Re)deploy the Locust application
 	rm -rf ./.elasticbeanstalk/
 	$(eval EB_SOLUTION_STACK_NAME=$(GET_EB_SOLUTION_STACK_NAME_CMD))
 	# Configure the EB CLI to target the Elastic Beanstalk environment
-	eb init --profile $(profile) --region $(region) --platform "$(EB_SOLUTION_STACK_NAME)" $(CFN_STACK_NAME)
+	eb init --profile $(profile) --region $(region) --platform "$(EB_SOLUTION_STACK_NAME)" $(CFN_CLUSTER_STACK_NAME)
 	# Deploy Locust to the Elastic Beanstalk environment
-	eb deploy --profile $(profile) --region $(region) --staged $(CFN_STACK_NAME)
+	eb deploy --profile $(profile) --region $(region) --staged $(CFN_CLUSTER_STACK_NAME)
 	# Print out the status of the Elastic Beanstalk deployment
-	eb status --profile $(profile) --region $(region) $(CFN_STACK_NAME)
+	eb status --profile $(profile) --region $(region) $(CFN_CLUSTER_STACK_NAME)
 	# Open a browser window for the Elastic Beanstalk environment's endpoint
-	eb open --profile $(profile) --region $(region) $(CFN_STACK_NAME)
+	eb open --profile $(profile) --region $(region) $(CFN_CLUSTER_STACK_NAME)
 
 .ONESHELL: locust-open
 .PHONY: locust-open
@@ -102,9 +103,9 @@ locust-open: ## Open the Locust web UI
 	pip install texttable==0.9.1 # Workaround for dependency mismatch between awsebcli and formica-cli
 	$(eval EB_SOLUTION_STACK_NAME=$(GET_EB_SOLUTION_STACK_NAME_CMD))
 	# Configure the EB CLI to target the Elastic Beanstalk environment
-	eb init --profile $(profile) --region $(region) --platform "$(EB_SOLUTION_STACK_NAME)" $(CFN_STACK_NAME)
+	eb init --profile $(profile) --region $(region) --platform "$(EB_SOLUTION_STACK_NAME)" $(CFN_CLUSTER_STACK_NAME)
 	# Open a browser window for the Elastic Beanstalk environment's endpoint
-	eb open --profile $(profile) --region $(region) $(CFN_STACK_NAME)
+	eb open --profile $(profile) --region $(region) $(CFN_CLUSTER_STACK_NAME)
 
 # -- Help
 
