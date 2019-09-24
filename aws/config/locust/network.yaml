@@ -1,8 +1,4 @@
-template_path: locust/stack.yaml
-
-parameters:
-  ClusterInstanceCount: "3"
-  SSHKeyPairName: "kp-laurens"
+template_path: locust/network.yaml
 
 stack_tags:
   ProjectCode: {{ project_code }}
