@@ -12,9 +12,9 @@ CFN_STACK_NAME:=$(project_code)-locust-stack
 # -- Getters
 
 GET_EB_SOLUTION_STACK_NAME_CMD = $(shell aws --profile $(profile) --region $(region) \
-		cloudformation list-exports \
-		--query "Exports[?Name==\`$(CFN_STACK_NAME)-SolutionStackName\`].Value" \
-		--output text)
+	cloudformation list-exports \
+	--query "Exports[?Name==\`$(CFN_STACK_NAME)-SolutionStackName\`].Value" \
+	--output text)
 
 # -- Targets
 
@@ -69,7 +69,7 @@ locust-smoketest: ## Run a short load test to validate the local load test suite
 	$(call cyan, "make $@ ...")
 	. ./env/bin/activate
 	locust --no-web --only-summary --locustfile=aws/app/locustfile.py \
-			--clients=100 --hatch-rate=20 --run-time=10s
+		--clients=100 --hatch-rate=20 --run-time=10s
 
 .ONESHELL: locust-deploy
 .PHONY: locust-deploy
