@@ -1,4 +1,4 @@
-template_path: locust/vpc.yaml
+template_path: locust/network.yaml
 
 stack_tags:
   ProjectCode: {{ project_code }}

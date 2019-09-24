@@ -15,42 +15,30 @@ Metadata:
           default: Cluster Configuration
         Parameters:
           - ClusterInstanceCount
-          - SshKeyPairName
+          - SSHKeyPairName
 
       - Label:
           default: Network Configuration
         Parameters:
-          - VpcId
-          - VpcCidr
-          - PrivateSubnetA
-          - PrivateSubnetB
-          - PrivateSubnetC
-          - PublicSubnetA
-          - PublicSubnetB
-          - PublicSubnetC
+          - VPCID
+          - VPCCIDR
+          - PrivateSubnets
+          - PublicSubnets
 
     ParameterLabels:
 
       ClusterInstanceCount:
         default: Number of EC2 instances in the cluster
-      SshKeyPairName:
+      SSHKeyPairName:
         default: Key Pair Name
-      VpcId:
+      VPCID:
         default: VPC ID
-      VpcCidr:
+      VPCCIDR:
         default: VPC CIDR block
-      PrivateSubnetA:
-        default: Private Subnet in AZ A
-      PrivateSubnetB:
-        default: Private Subnet in AZ B
-      PrivateSubnetC:
-        default: Private Subnet in AZ C
-      PublicSubnetA:
-        default: Public Subnet in AZ A
-      PublicSubnetB:
-        default: Public Subnet in AZ B
-      PublicSubnetC:
-        default: Public Subnet in AZ C
+      PrivateSubnets:
+        default: Private Subnets
+      PublicSubnets:
+        default: Public Subnets
 
 Parameters:
 
@@ -62,53 +50,33 @@ Parameters:
     Default: 3
     ConstraintDescription: Specify a number between 1 - 20
 
-  SshKeyPairName:
+  SSHKeyPairName:
     Description: Name of an existing EC2 Key Pair (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair)
     Type: AWS::EC2::KeyPair::KeyName
     MinLength: 1
     MaxLength: 255
-    ConstraintDescription: SshKeyPairName must be specified
+    ConstraintDescription: SSHKeyPairName must be specified
 
-  VpcId:
+  VPCID:
     Description: ID of the existing VPC
     Type: AWS::EC2::VPC::Id
-    ConstraintDescription: VpcId must be specified
+    ConstraintDescription: VPCID must be specified
 
-  VpcCidr:
+  VPCCIDR:
     AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
     ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
     Description: CIDR block for the VPC
     Type: String
 
-  PrivateSubnetA:
-    Description: ID of an existing Private Subnet in AZ A
-    Type: AWS::EC2::Subnet::Id
-    ConstraintDescription: PrivateSubnetA must be specified
+  PrivateSubnets:
+    Description: IDs of Private Subnets
+    Type: List<AWS::EC2::Subnet::Id>
+    ConstraintDescription: PrivateSubnets must be specified
 
-  PrivateSubnetB:
-    Description: ID of an existing Private Subnet in AZ B
-    Type: AWS::EC2::Subnet::Id
-    ConstraintDescription: PrivateSubnetB must be specified
-
-  PrivateSubnetC:
-    Description: ID of an existing Private Subnet in AZ A\C
-    Type: AWS::EC2::Subnet::Id
-    ConstraintDescription: PrivateSubnetC must be specified
-
-  PublicSubnetA:
-    Description: ID of an existing Public Subnet in AZ A
-    Type: AWS::EC2::Subnet::Id
-    ConstraintDescription: PublicSubnetA must be specified
-
-  PublicSubnetB:
-    Description: ID of an existing Public Subnet in AZ B
-    Type: AWS::EC2::Subnet::Id
-    ConstraintDescription: PublicSubnetB must be specified
-
-  PublicSubnetC:
-    Description: ID of an existing Public Subnet in AZ C
-    Type: AWS::EC2::Subnet::Id
-    ConstraintDescription: PublicSubnetC must be specified
+  PublicSubnets:
+    Description: IDs of Public Subnets
+    Type: List<AWS::EC2::Subnet::Id>
+    ConstraintDescription: PublicSubnets must be specified
 
 Mappings:
 
@@ -127,7 +95,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Allow HTTP ingress from the Internet to the load balancer
-      VpcId: !Ref VpcId
+      VpcId: !Ref VPCID
       SecurityGroupIngress:
       - CidrIp: 0.0.0.0/0
         IpProtocol: tcp
@@ -150,7 +118,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Allow HTTP ingress from the Load Balancer to the Application Server
-      VpcId: !Ref VpcId
+      VpcId: !Ref VPCID
       SecurityGroupIngress:
       - SourceSecurityGroupId: !Ref ELBSecurityGroup
         IpProtocol: tcp
@@ -246,7 +214,7 @@ Resources:
 
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: EC2KeyName
-        Value: !Ref SshKeyPairName
+        Value: !Ref SSHKeyPairName
 
       # Allow SSH access from within the VPC
       - Namespace: aws:autoscaling:launchconfiguration
@@ -254,7 +222,7 @@ Resources:
         Value:
           Fn::Sub:
             - tcp, 22, 22, ${SourceCIDR}
-            - { SourceCIDR: !Ref VpcCidr }
+            - { SourceCIDR: !Ref VPCCIDR }
 
       - Namespace: aws:autoscaling:updatepolicy:rollingupdate
         OptionName: RollingUpdateEnabled
@@ -372,26 +340,28 @@ Resources:
         # -- VPC
 
       - Namespace: aws:ec2:vpc
-        OptionName: VpcId
-        Value: !Ref VpcId
+        OptionName: VPCID
+        Value: !Ref VPCID
 
       - Namespace: aws:ec2:vpc
         OptionName: Subnets
+        # Workaround: generate a comma-separated String of List<PrivateSubnets>
         Value:
           "Fn::Join":
-          - ','
-          - - !Ref PrivateSubnetA
-            - !Ref PrivateSubnetB
-            - !Ref PrivateSubnetC
+            - ','
+            - - !Select [0, !Ref PrivateSubnets]
+              - !Select [1, !Ref PrivateSubnets]
+              - !Select [2, !Ref PrivateSubnets]
 
       - Namespace: aws:ec2:vpc
         OptionName: ELBSubnets
+        # Workaround: generate a comma-separated String of List<PublicSubnets>
         Value:
           "Fn::Join":
-          - ','
-          - - !Ref PublicSubnetA
-            - !Ref PublicSubnetB
-            - !Ref PublicSubnetC
+            - ','
+            - - !Select [0, !Ref PublicSubnets]
+              - !Select [1, !Ref PublicSubnets]
+              - !Select [2, !Ref PublicSubnets]
 
       - Namespace: aws:elbv2:listener:default
         OptionName: ListenerEnabled

@@ -304,50 +304,36 @@ Outputs:
     Export:
       Name: !Sub "${AWS::StackName}:Name"
 
-  VPCId:
+  VPCID:
     Description: VPC ID
     Value: !Ref VPC
     Export:
-      Name: !Sub "${AWS::StackName}:VpcID"
+      Name: !Sub "${AWS::StackName}:VPCID"
 
-  VpcCidr:
+  VPCCIDR:
     Description: VPC CIDR Block
     Value: !FindInMap [ VPCMap, VPC, CIDR ]
     Export:
-      Name: !Sub "${AWS::StackName}:VpcCidr"
+      Name: !Sub "${AWS::StackName}:VPCCIDR"
 
-  PublicSubnetA:
-    Description: Public Subnet A ID
-    Value: !Ref PublicSubnetA
+  PublicSubnets:
+    Description: Public Subnet IDs
+    Value:
+      "Fn::Join":
+        - ','
+        - - !Ref PublicSubnetA
+          - !Ref PublicSubnetB
+          - !Ref PublicSubnetC
     Export:
-      Name: !Sub "${AWS::StackName}:PublicSubnetAID"
+      Name: !Sub "${AWS::StackName}:PublicSubnets"
 
-  PublicSubnetB:
-    Description: Public Subnet B ID
-    Value: !Ref PublicSubnetB
+  PrivateSubnets:
+    Description: Private Subnet IDs
+    Value:
+      "Fn::Join":
+        - ','
+        - - !Ref PrivateSubnetA
+          - !Ref PrivateSubnetB
+          - !Ref PrivateSubnetC
     Export:
-      Name: !Sub "${AWS::StackName}:PublicSubnetBID"
-
-  PublicSubnetC:
-    Description: Public Subnet C ID
-    Value: !Ref PublicSubnetC
-    Export:
-      Name: !Sub "${AWS::StackName}:PublicSubnetCID"
-
-  PrivateSubnetA:
-    Description: Private Subnet A ID
-    Value: !Ref PrivateSubnetA
-    Export:
-      Name: !Sub "${AWS::StackName}:PrivateSubnetAID"
-
-  PrivateSubnetB:
-    Description: Private Subnet B ID
-    Value: !Ref PrivateSubnetB
-    Export:
-      Name: !Sub "${AWS::StackName}:PrivateSubnetBID"
-
-  PrivateSubnetC:
-    Description: Private Subnet C ID
-    Value: !Ref PrivateSubnetC
-    Export:
-      Name: !Sub "${AWS::StackName}:PrivateSubnetCID"
+      Name: !Sub "${AWS::StackName}:PrivateSubnets"
