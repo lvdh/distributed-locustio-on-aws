@@ -4,7 +4,7 @@
 VARS:=$(shell grep -E "profile|region|project_code" ./aws/config/config.yaml | sed -e 's/: /=/g')
 $(foreach v,$(VARS),$(eval $(shell echo export $(v))))
 
-# Make the generated network stack name available in this Makefile.
+# Make the generated cluster stack name available in this Makefile.
 # Sceptre generates the stack name based on:
 #  * The project code
 #  * The stack configuration file aws/config/locust/cluster.yaml
