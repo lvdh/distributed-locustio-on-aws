@@ -24,7 +24,7 @@ Mappings:
 
 Resources:
 
-  # Create a Virtual Private Cloud
+  # VPC
 
   VPC:
     Type: AWS::EC2::VPC
@@ -36,89 +36,7 @@ Resources:
       - Key: Name
         Value: !Sub "${AWS::StackName}::VPC"
 
-  # Create Private Subnets
-
-  PublicSubnetA:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: !FindInMap [ VPCMap, PublicSubnetA, CIDR ]
-      AvailabilityZone: !Select
-        - 0
-        - !GetAZs
-          Ref: 'AWS::Region'
-      Tags:
-      - Key: Name
-        Value: !Sub "${AWS::StackName}::PublicSubnetA"
-
-  PublicSubnetB:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: !FindInMap [ VPCMap, PublicSubnetB, CIDR ]
-      AvailabilityZone: !Select
-        - 1
-        - !GetAZs
-          Ref: 'AWS::Region'
-      Tags:
-      - Key: Name
-        Value: !Sub "${AWS::StackName}::PublicSubnetB"
-
-  PublicSubnetC:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: !FindInMap [ VPCMap, PublicSubnetC, CIDR ]
-      AvailabilityZone: !Select
-        - 2
-        - !GetAZs
-          Ref: 'AWS::Region'
-      Tags:
-      - Key: Name
-        Value: !Sub "${AWS::StackName}::PublicSubnetC"
-
-# Create Private Subnets
-
-  PrivateSubnetA:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: !FindInMap [ VPCMap, PrivateSubnetA, CIDR ]
-      AvailabilityZone: !Select
-        - 0
-        - !GetAZs
-          Ref: 'AWS::Region'
-      Tags:
-      - Key: Name
-        Value: !Sub "${AWS::StackName}::PrivateSubnetA"
-
-  PrivateSubnetB:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: !FindInMap [ VPCMap, PrivateSubnetB, CIDR ]
-      AvailabilityZone: !Select
-        - 1
-        - !GetAZs
-          Ref: 'AWS::Region'
-      Tags:
-      - Key: Name
-        Value: !Sub "${AWS::StackName}::PrivateSubnetB"
-
-  PrivateSubnetC:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: !FindInMap [ VPCMap, PrivateSubnetC, CIDR ]
-      AvailabilityZone: !Select
-        - 2
-        - !GetAZs
-          Ref: 'AWS::Region'
-      Tags:
-      - Key: Name
-        Value: !Sub "${AWS::StackName}::PrivateSubnetC"
-
-# Create an Internet Gateway and a public Route Table
+# Internet Gateway
 
   InternetGateway:
     Type: AWS::EC2::InternetGateway
@@ -133,61 +51,7 @@ Resources:
       VpcId: !Ref VPC
       InternetGatewayId: !Ref InternetGateway
 
-  PublicRouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref VPC
-      Tags:
-      - Key: Name
-        Value: !Sub "${AWS::StackName}::PublicRouteTable"
-
-  PublicRouteTableDefaultRoute:
-    Type: AWS::EC2::Route
-    DependsOn: VPCGatewayAttachment
-    Properties:
-      RouteTableId: !Ref PublicRouteTable
-      DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref InternetGateway
-
-# Associate Route Tables and NACLs with Public Subnets
-
-  PublicSubnetRouteTableAssociationA:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PublicSubnetA
-      RouteTableId: !Ref PublicRouteTable
-
-  PublicSubnetRouteTableAssociationB:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PublicSubnetB
-      RouteTableId: !Ref PublicRouteTable
-
-  PublicSubnetRouteTableAssociationC:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PublicSubnetC
-      RouteTableId: !Ref PublicRouteTable
-
-  PublicSubnetNetworkAclAssociationA:
-    Type: AWS::EC2::SubnetNetworkAclAssociation
-    Properties:
-      SubnetId: !Ref PublicSubnetA
-      NetworkAclId: !GetAtt VPC.DefaultNetworkAcl
-
-  PublicSubnetNetworkAclAssociationB:
-    Type: AWS::EC2::SubnetNetworkAclAssociation
-    Properties:
-      SubnetId: !Ref PublicSubnetB
-      NetworkAclId: !GetAtt VPC.DefaultNetworkAcl
-
-  PublicSubnetNetworkAclAssociationC:
-    Type: AWS::EC2::SubnetNetworkAclAssociation
-    Properties:
-      SubnetId: !Ref PublicSubnetC
-      NetworkAclId: !GetAtt VPC.DefaultNetworkAcl
-
-# Create NAT Gateways with static IP addresses
+# NAT Gateways
 
   NatGatewayA:
     DependsOn: VPCGatewayAttachment
@@ -228,7 +92,145 @@ Resources:
     Properties:
       Domain: vpc
 
-# Create default NAT routes for Private Subnets
+  # Public Subnets
+
+  PublicSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !FindInMap [ VPCMap, PublicSubnetA, CIDR ]
+      AvailabilityZone: !Select
+        - 0
+        - !GetAZs
+          Ref: 'AWS::Region'
+      Tags:
+      - Key: Name
+        Value: !Sub "${AWS::StackName}::PublicSubnetA"
+
+  PublicSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !FindInMap [ VPCMap, PublicSubnetB, CIDR ]
+      AvailabilityZone: !Select
+        - 1
+        - !GetAZs
+          Ref: 'AWS::Region'
+      Tags:
+      - Key: Name
+        Value: !Sub "${AWS::StackName}::PublicSubnetB"
+
+  PublicSubnetC:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !FindInMap [ VPCMap, PublicSubnetC, CIDR ]
+      AvailabilityZone: !Select
+        - 2
+        - !GetAZs
+          Ref: 'AWS::Region'
+      Tags:
+      - Key: Name
+        Value: !Sub "${AWS::StackName}::PublicSubnetC"
+
+  # Public Subnet Routing
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+      - Key: Name
+        Value: !Sub "${AWS::StackName}::PublicRouteTable"
+
+  PublicRouteTableDefaultRoute:
+    Type: AWS::EC2::Route
+    DependsOn: VPCGatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicSubnetRouteTableAssociationA:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnetA
+      RouteTableId: !Ref PublicRouteTable
+
+  PublicSubnetRouteTableAssociationB:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnetB
+      RouteTableId: !Ref PublicRouteTable
+
+  PublicSubnetRouteTableAssociationC:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnetC
+      RouteTableId: !Ref PublicRouteTable
+
+  # Public Subnet NACLs
+
+  PublicSubnetNetworkAclAssociationA:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnetA
+      NetworkAclId: !GetAtt VPC.DefaultNetworkAcl
+
+  PublicSubnetNetworkAclAssociationB:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnetB
+      NetworkAclId: !GetAtt VPC.DefaultNetworkAcl
+
+  PublicSubnetNetworkAclAssociationC:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnetC
+      NetworkAclId: !GetAtt VPC.DefaultNetworkAcl
+
+# Private Subnets
+
+  PrivateSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !FindInMap [ VPCMap, PrivateSubnetA, CIDR ]
+      AvailabilityZone: !Select
+        - 0
+        - !GetAZs
+          Ref: 'AWS::Region'
+      Tags:
+      - Key: Name
+        Value: !Sub "${AWS::StackName}::PrivateSubnetA"
+
+  PrivateSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !FindInMap [ VPCMap, PrivateSubnetB, CIDR ]
+      AvailabilityZone: !Select
+        - 1
+        - !GetAZs
+          Ref: 'AWS::Region'
+      Tags:
+      - Key: Name
+        Value: !Sub "${AWS::StackName}::PrivateSubnetB"
+
+  PrivateSubnetC:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !FindInMap [ VPCMap, PrivateSubnetC, CIDR ]
+      AvailabilityZone: !Select
+        - 2
+        - !GetAZs
+          Ref: 'AWS::Region'
+      Tags:
+      - Key: Name
+        Value: !Sub "${AWS::StackName}::PrivateSubnetC"
+
+# Private Subnet Routing
 
   PrivateRouteTableA:
     Type: AWS::EC2::RouteTable
@@ -295,6 +297,26 @@ Resources:
     Properties:
       SubnetId: !Ref PrivateSubnetC
       RouteTableId: !Ref PrivateRouteTableC
+
+  # Private Subnet NACLs
+
+  PrivateSubnetNetworkAclAssociationA:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnetA
+      NetworkAclId: !GetAtt VPC.DefaultNetworkAcl
+
+  PrivateSubnetNetworkAclAssociationB:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnetB
+      NetworkAclId: !GetAtt VPC.DefaultNetworkAcl
+
+  PrivateSubnetNetworkAclAssociationC:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnetC
+      NetworkAclId: !GetAtt VPC.DefaultNetworkAcl
 
 Outputs:
 
