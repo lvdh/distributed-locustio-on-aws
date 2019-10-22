@@ -83,7 +83,7 @@ Mappings:
   EBMap:
     SolutionStack:
       # Note: Choose a Solution Stack with an nginx proxy, not httpd
-      Name: 64bit Amazon Linux 2018.03 v2.11.4 running Go 1.12.6
+      Name: 64bit Amazon Linux 2018.03 v2.14.0 running Go 1.13.1
     LaunchConfiguration:
       InstanceType: c5.large
 
