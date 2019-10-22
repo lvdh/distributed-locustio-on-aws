@@ -151,14 +151,16 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       Path: /
-      AssumeRolePolicyDocument: |
-        {
-          "Statement": [{
-            "Effect": "Allow",
-            "Principal": { "Service": [ "elasticbeanstalk.amazonaws.com" ]},
-            "Action": [ "sts:AssumeRole" ]
-          }]
-        }
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service:
+                - elasticbeanstalk.amazonaws.com
+            Action:
+              - sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth
         - arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkService
