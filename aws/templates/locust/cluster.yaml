@@ -166,8 +166,6 @@ Resources:
       ApplicationName: !Ref Application
       EnvironmentName: !Ref Application # Reuse Application name as Environment name
       TemplateName: !Ref ConfigurationTemplate
-    DependsOn:
-      - ConfigurationTemplate
 
   ConfigurationTemplate:
     Type: AWS::ElasticBeanstalk::ConfigurationTemplate
@@ -226,7 +224,7 @@ Resources:
 
       - Namespace: aws:autoscaling:updatepolicy:rollingupdate
         OptionName: RollingUpdateEnabled
-        Value: true
+        Value: "true"
 
       - Namespace: aws:autoscaling:updatepolicy:rollingupdate
         OptionName: RollingUpdateType
@@ -243,20 +241,20 @@ Resources:
       # Prevent Auto-Scaling
       - Namespace: aws:autoscaling:trigger
         OptionName: UpperThreshold
-        Value: 100
+        Value: "100"
 
       # Prevent Auto-Scaling
       - Namespace: aws:autoscaling:trigger
         OptionName: LowerThreshold
-        Value: 0
+        Value: "0"
 
       - Namespace: aws:autoscaling:trigger
         OptionName: BreachDuration
-        Value: 1
+        Value: "1"
 
       - Namespace: aws:autoscaling:trigger
         OptionName: Period
-        Value: 1
+        Value: "1"
 
         # -- Elastic Beanstalk Health Reporting
 
@@ -365,7 +363,7 @@ Resources:
 
       - Namespace: aws:elbv2:listener:default
         OptionName: ListenerEnabled
-        Value: true
+        Value: "true"
 
       - Namespace: aws:elbv2:loadbalancer
         OptionName: SecurityGroups
@@ -383,11 +381,11 @@ Resources:
 
       - Namespace: aws:elasticbeanstalk:cloudwatch:logs
         OptionName: StreamLogs
-        Value: true
+        Value: "true"
 
       - Namespace: aws:elasticbeanstalk:cloudwatch:logs
         OptionName: DeleteOnTerminate
-        Value: true
+        Value: "true"
 
         # -- Environment Variables
 
