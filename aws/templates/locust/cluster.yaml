@@ -89,94 +89,102 @@ Mappings:
 
 Resources:
 
-# -- Security Groups
+# Security Groups
 
-  ELBSecurityGroup:
+  LoadBalancerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Allow HTTP ingress from the Internet to the load balancer
+      GroupDescription: Load Balancer Security Group
       VpcId: !Ref VPCID
-      SecurityGroupIngress:
-      - CidrIp: 0.0.0.0/0
-        IpProtocol: tcp
-        FromPort: 80
-        ToPort: 80
       Tags:
       - Key: Name
-        Value: !Sub "${AWS::StackName}-ELBSecurityGroup"
+        Value: !Sub "${AWS::StackName}-LoadBalancerSecurityGroup"
 
-  ELBSecurityGroupToAppEgress:
-    Type: AWS::EC2::SecurityGroupEgress  # Prevent circular references within Security Group
+  LoadBalancerSecurityGroupIngress:
+    Type: AWS::EC2::SecurityGroupIngress
     Properties:
-      GroupId: !Ref ELBSecurityGroup
+      GroupId: !Ref LoadBalancerSecurityGroup
       IpProtocol: tcp
       FromPort: 80
       ToPort: 80
-      DestinationSecurityGroupId: !Ref EC2SecurityGroup
+      CidrIp: 0.0.0.0/0
 
-  EC2SecurityGroup:
-    Type: AWS::EC2::SecurityGroup
+  LoadBalancerSecurityGroupEgress:
+    Type: AWS::EC2::SecurityGroupEgress
     Properties:
-      GroupDescription: Allow HTTP ingress from the Load Balancer to the Application Server
-      VpcId: !Ref VPCID
-      SecurityGroupIngress:
-      - SourceSecurityGroupId: !Ref ELBSecurityGroup
-        IpProtocol: tcp
-        FromPort: 80
-        ToPort: 80
-      Tags:
-      - Key: Name
-        Value: !Sub "${AWS::StackName}-EC2SecurityGroup"
-
-  EC2SecurityGroupFromELBIngress:
-    Type: AWS::EC2::SecurityGroupIngress  # Prevent circular references within Security Group
-    Properties:
-      GroupId: !Ref EC2SecurityGroup
+      GroupId: !Ref LoadBalancerSecurityGroup
       IpProtocol: tcp
       FromPort: 80
       ToPort: 80
-      SourceSecurityGroupId: !Ref ELBSecurityGroup
+      DestinationSecurityGroupId: !Ref ApplicationSecurityGroup
 
-  # -- Elastic Beanstalk
+  ApplicationSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Application Security Group
+      VpcId: !Ref VPCID
+      Tags:
+      - Key: Name
+        Value: !Sub "${AWS::StackName}-ApplicationSecurityGroup"
+
+  ApplicationSecurityGroupIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref ApplicationSecurityGroup
+      IpProtocol: tcp
+      FromPort: 80
+      ToPort: 80
+      SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
+
+  ApplicationSecurityGroupEgress:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref ApplicationSecurityGroup
+      IpProtocol: tcp
+      FromPort: 80
+      ToPort: 80
+      DestinationSecurityGroupId: !Ref LoadBalancerSecurityGroup
+
+  # Elastic Beanstalk
 
   ElasticBeanstalkServiceRole:
     Type: AWS::IAM::Role
     Properties:
       Path: /
-      AssumeRolePolicyDocument: |
-        {
-          "Statement": [{
-            "Effect": "Allow",
-            "Principal": { "Service": [ "elasticbeanstalk.amazonaws.com" ]},
-            "Action": [ "sts:AssumeRole" ]
-          }]
-        }
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service:
+                - elasticbeanstalk.amazonaws.com
+            Action:
+              - sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth
         - arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkService
 
-  Application:
+  ElasticBeanstalkApplication:
     Type: AWS::ElasticBeanstalk::Application
     Properties:
       ApplicationName: !Sub "${AWS::StackName}"
 
-  Environment:
+  ElasticBeanstalkEnvironment:
     Type: AWS::ElasticBeanstalk::Environment
     Properties:
-      ApplicationName: !Ref Application
-      EnvironmentName: !Ref Application # Reuse Application name as Environment name
-      TemplateName: !Ref ConfigurationTemplate
-    DependsOn:
-      - ConfigurationTemplate
+      ApplicationName: !Ref ElasticBeanstalkApplication
+      EnvironmentName: !Ref ElasticBeanstalkApplication # Reuse Application name as Environment name
+      TemplateName: !Ref ElasticBeanstalkConfigurationTemplate
 
-  ConfigurationTemplate:
+  ElasticBeanstalkConfigurationTemplate:
     Type: AWS::ElasticBeanstalk::ConfigurationTemplate
     Properties:
-      ApplicationName: !Ref Application
+      ApplicationName: !Ref ElasticBeanstalkApplication
       SolutionStackName: !FindInMap [ EBMap, SolutionStack, Name ]
       OptionSettings:
 
-        # -- Elastic Beanstalk Environment
+      # Elastic Beanstalk Options, Environment
 
       - Namespace: aws:elasticbeanstalk:environment
         OptionName: EnvironmentType
@@ -190,7 +198,7 @@ Resources:
         OptionName: ServiceRole
         Value: !Ref ElasticBeanstalkServiceRole
 
-        # -- Elastic Beanstalk Auto Scaling
+      # Elastic Beanstalk Options, Auto Scaling
 
       - Namespace: aws:autoscaling:asg
         OptionName: MinSize
@@ -202,7 +210,7 @@ Resources:
 
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: SecurityGroups
-        Value: !Ref EC2SecurityGroup
+        Value: !Ref ApplicationSecurityGroup
 
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: InstanceType
@@ -210,7 +218,7 @@ Resources:
 
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: IamInstanceProfile
-        Value: !Ref EC2InstanceProfile
+        Value: !Ref ApplicationInstanceProfile
 
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: EC2KeyName
@@ -226,7 +234,7 @@ Resources:
 
       - Namespace: aws:autoscaling:updatepolicy:rollingupdate
         OptionName: RollingUpdateEnabled
-        Value: true
+        Value: "true"
 
       - Namespace: aws:autoscaling:updatepolicy:rollingupdate
         OptionName: RollingUpdateType
@@ -243,22 +251,21 @@ Resources:
       # Prevent Auto-Scaling
       - Namespace: aws:autoscaling:trigger
         OptionName: UpperThreshold
-        Value: 100
+        Value: "100"
 
-      # Prevent Auto-Scaling
       - Namespace: aws:autoscaling:trigger
         OptionName: LowerThreshold
-        Value: 0
+        Value: "0"
 
       - Namespace: aws:autoscaling:trigger
         OptionName: BreachDuration
-        Value: 1
+        Value: "1"
 
       - Namespace: aws:autoscaling:trigger
         OptionName: Period
-        Value: 1
+        Value: "1"
 
-        # -- Elastic Beanstalk Health Reporting
+        # Elastic Beanstalk Options, Health Reporting
 
       - Namespace: aws:elasticbeanstalk:healthreporting:system
         OptionName: SystemType
@@ -269,8 +276,8 @@ Resources:
         Value: "enhanced"
 
         # Note:
-        #  * '60': enable metric ("check every 60s")
-        #  * 'null': disable metric
+        #  * '60' = enable metric ("check every 60s")
+        #  * 'null' = disable metric
       - Namespace: aws:elasticbeanstalk:healthreporting:system
         OptionName: ConfigDocument
         Value:  '{
@@ -337,7 +344,7 @@ Resources:
                   }
                 }'
 
-        # -- VPC
+        # Elastic Beanstalk Options, VPC
 
       - Namespace: aws:ec2:vpc
         OptionName: VPCID
@@ -345,7 +352,7 @@ Resources:
 
       - Namespace: aws:ec2:vpc
         OptionName: Subnets
-        # Workaround: generate a comma-separated String of List<PrivateSubnets>
+        # Workaround: List<> is not supported, generate a comma-separated String instead
         Value:
           "Fn::Join":
             - ','
@@ -355,7 +362,7 @@ Resources:
 
       - Namespace: aws:ec2:vpc
         OptionName: ELBSubnets
-        # Workaround: generate a comma-separated String of List<PublicSubnets>
+        # Workaround: List<> is not supported, generate a comma-separated String instead
         Value:
           "Fn::Join":
             - ','
@@ -365,39 +372,39 @@ Resources:
 
       - Namespace: aws:elbv2:listener:default
         OptionName: ListenerEnabled
-        Value: true
+        Value: "true"
 
       - Namespace: aws:elbv2:loadbalancer
         OptionName: SecurityGroups
-        Value: !Ref ELBSecurityGroup
+        Value: !Ref LoadBalancerSecurityGroup
 
       - Namespace: aws:elbv2:loadbalancer
         OptionName: ManagedSecurityGroup
-        Value: !Ref ELBSecurityGroup
+        Value: !Ref LoadBalancerSecurityGroup
 
       - Namespace: aws:elbv2:listenerrule:default
         OptionName: PathPatterns
         Value: "/*"
 
-        # -- CloudWatch Logs
+        # Elastic Beanstalk Options, CloudWatch Logs
 
       - Namespace: aws:elasticbeanstalk:cloudwatch:logs
         OptionName: StreamLogs
-        Value: true
+        Value: "true"
 
       - Namespace: aws:elasticbeanstalk:cloudwatch:logs
         OptionName: DeleteOnTerminate
-        Value: true
+        Value: "true"
 
-        # -- Environment Variables
+        # Elastic Beanstalk Options, Environment Variables
 
       - Namespace: aws:elasticbeanstalk:application:environment
         OptionName: AWS_REGION
         Value: !Ref AWS::Region
 
-  # -- IAM
+  # IAM
 
-  EC2Role:
+  ApplicationRole:
     Type: AWS::IAM::Role
     Properties:
       Path: /
@@ -412,12 +419,12 @@ Resources:
             Action:
               - sts:AssumeRole
 
-  EC2Policies:
+  ApplicationPolicy:
     Type: AWS::IAM::Policy
     Properties:
       PolicyName: App
       Roles:
-      - !Ref EC2Role
+      - !Ref ApplicationRole
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -426,12 +433,12 @@ Resources:
             Action: "*"
             Resource: "*"
 
-  EC2InstanceProfile:
+  ApplicationInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
       Path: /
       Roles:
-      - !Ref EC2Role
+      - !Ref ApplicationRole
 
 Outputs:
 
@@ -443,7 +450,7 @@ Outputs:
 
   EnvironmentURL:
     Description: Environment URL
-    Value: !GetAtt Environment.EndpointURL
+    Value: !GetAtt ElasticBeanstalkEnvironment.EndpointURL
     Export:
       Name: !Sub "${AWS::StackName}-EnvironmentURL"
 
@@ -453,14 +460,14 @@ Outputs:
     Export:
       Name: !Sub "${AWS::StackName}-SolutionStackName"
 
-  ELBSecurityGroup:
+  LoadBalancerSecurityGroup:
     Description: Security Group ID for Internet-facing ELB
-    Value: !GetAtt ELBSecurityGroup.GroupId
+    Value: !GetAtt LoadBalancerSecurityGroup.GroupId
     Export:
-      Name: !Sub "${AWS::StackName}-ELBSecurityGroupID"
+      Name: !Sub "${AWS::StackName}-LoadBalancerSecurityGroupID"
 
-  EC2SecurityGroup:
+  ApplicationSecurityGroup:
     Description: Security Group ID for app behind ELB
-    Value: !GetAtt EC2SecurityGroup.GroupId
+    Value: !GetAtt ApplicationSecurityGroup.GroupId
     Export:
-      Name: !Sub "${AWS::StackName}-EC2SecurityGroupID"
+      Name: !Sub "${AWS::StackName}-ApplicationSecurityGroupID"
