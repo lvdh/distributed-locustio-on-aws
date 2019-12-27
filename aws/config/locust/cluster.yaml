@@ -8,6 +8,7 @@ parameters:
   InstanceCount: "3"
   InstanceType: "c5.large"
   EC2KeyPair: "kp-laurens"
+
   SolutionStackName: "64bit Amazon Linux 2018.03 v2.14.1 running Go 1.13.2"
   VPCID: !stack_output locust/network.yaml::VPCID
   VPCCIDR: !stack_output locust/network.yaml::VPCCIDR
