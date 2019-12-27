@@ -14,13 +14,11 @@ EB_SOLUTION_STACK_NAME := $(shell sed -n -e 's/^.*SolutionStackName: //p' ./aws/
 stack := locust
 CFN_CLUSTER_STACK_NAME := $(project_code)-$(stack)-cluster
 
-install: deps launch locust-smoketest locust-deploy ## Deploy Locust on AWS
+install: deps update locust-smoketest locust-deploy ## Deploy/update the Locust test suite on AWS
 
 uninstall: deps delete ## Terminate all AWS resources related to this Locust environment
 
-update: deps update locust-smoketest locust-deploy ## Deploy local changes (ie. load test suite and/or AWS resources)
-
-reinstall: deps uninstall install ## Redeploy all Locust AWS resources
+reinstall: deps uninstall install # Terminate and redeploy the Locust test suite on AWS
 
 deps: # Install local dependencies (requires pipenv)
 	$(call cyan, "make $@ ...")
