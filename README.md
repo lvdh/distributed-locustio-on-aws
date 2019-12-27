@@ -14,27 +14,27 @@ Essentially, this repo automates the manual setup and deployment procedure of [e
 
 ## Requirements
 
-What you need on your local machine.
+What you need on your local machine:
 
+* Git client
 * Python >=3.7.5
-* an [AWS CLI Named Profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html) with sufficient permissions to spin up [a VPC, Elastic Beanstalk stack, ...](aws/templates/locust/stack.yaml)
+* [pipenv](https://github.com/pypa/pipenv) >=2018.11.26
+* [AWS CLI Named Profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html) with sufficient permissions to manage AWS resources defined by the CloudFormation templates.
 
-Additional dependencies will be installed in a virtual Python environment.
+Additional dependencies will be installed in a Python 'virtual environment'.
 
 ### Notes
 
-Issues might arise when running certain packages/versions in the same virtual environment:
-
 * `awsebcli` and `sceptre` have incompatible dependencies
-* `locustio` versions >13.0 have incompatible dependencies
-
-For this reason, `awsebcli` is installed in a separate `pipenv` package group.
+    * For this reason, `awsebcli` is installed in a separate `pipenv` package group.
+* `locustio` package versions >=13.1 have dependencies incompatible with `sceptre`
+    * For this reason, `locustio` is pinned at version 13.0.
 
 ## Usage
 
 ### Create a New Load Test Stack
 
-1. Review [aws/config/config.yaml](aws/config/config.yaml):
+1. Review and update [aws/config/config.yaml](aws/config/config.yaml):
 
     1. `profile`
 
@@ -44,34 +44,42 @@ For this reason, `awsebcli` is installed in a separate `pipenv` package group.
 
         Configure your preferred AWS Region to deploy to.
 
-1. Review [aws/config/locust/stack.yaml](aws/config/locust/stack.yaml) and update it to match your preferences.
+    3. `project_code`
+
+        Custom name/ID for your project. (Lower case, alpha-numeric.)
+
+2. Review and update [aws/config/locust/cluster.yaml](aws/config/locust/cluster.yaml):
 
     1. `InstanceCount`
 
-        Configure the amount of EC2 instances (`c5.large`) to spin up.
+        Total count of EC2 instances to spin up.
 
-    2. `EC2KeyPair`
+    2. `InstanceType`
 
-        Provide an existing [AWS EC2 SSH Key Pair](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html) name.
+        Type of EC2 instances (default `c5.large`) to spin up.
 
-2. Create the load testing infrastructure and deploy a [sample Locust configuration](aws/app/locustfile.py):
+    3. `EC2KeyPair`
+
+        Name of an existing [AWS EC2 SSH Key Pair](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html).
+
+3. Create the load testing infrastructure and deploy a [sample Locust test suite](aws/app/locustfile.py):
 
     ```
     make install
     ```
 
-3. The Locust web UI opens in your browser automatically once Locust is deployed on AWS.
+3. The Locust web UI opens in your browser automatically once Locust is deployed.
 
 ### Upload changes to your Load Test Specification
 
-1. Update the sample `host` and tasks (HTTP calls) in the [Locustfile](aws/app/locustfile.py).
+1. Update the sample `host` and HTTP calls ('Locust Tasks') in the [Locustfile](aws/app/locustfile.py).
 
     > See ["Writing a locustfile"](http://docs.locust.io/en/latest/writing-a-locustfile.html) for reference.
 
 2. Deploy the updated [Locustfile](aws/app/locustfile.py):
 
     ```
-    make update
+    make deploy
     ```
 
 3. The Locust web UI opens in your browser automatically once the update is complete.
@@ -86,17 +94,12 @@ For this reason, `awsebcli` is installed in a separate `pipenv` package group.
 
 ## Overview of CLI Commands
 
+Note: see [`Makefile`](Makefile) for sub-targets called by `install`, `deploy` etc.
+
 ```bash
 $ make
-install              Deploy Locust on AWS
-uninstall            Terminate all AWS resources related to this stack
-update               Deploy local changes (ie. load test suite and/or AWS resources)
-reinstall            Redeploy all Locust AWS resources
-dependencies         Install or upgrade local dependencies
-aws-init             Deploy AWS resources for Locust
-aws-update           Update AWS resources for Locust
-aws-terminate        Terminate all AWS resources related to this stack
-locust-smoketest     Run a short load test to validate the local load test suite
-locust-deploy        (Re)deploy the Locust application
-locust-open          Open the Locust web UI
+install            Create the Locust environment, deploy demo test suite
+deploy             Deploy updated CloudFormation templates and Locust test suite
+uninstall          Delete the Locust environment
+reinstall          Recreate the Locust environment from scratch
 ```
