@@ -14,13 +14,13 @@ EB_SOLUTION_STACK_NAME := $(shell sed -n -e 's/^.*SolutionStackName: //p' ./aws/
 stack := $(shell find ./aws/config/ -mindepth 1 -maxdepth 1 -type d -printf '%f' | tr -d '/')
 CFN_CLUSTER_STACK_NAME := $(project_code)-$(stack)-cluster
 
-install: deps launch locust-smoketest locust-deploy ## Create the Locust environment
+install: deps launch locust-smoketest locust-deploy ## Create the Locust environment, deploy demo test suite
 
-deploy: deps update locust-smoketest locust-deploy ## Deploy an updated CloudFormation template and Locust test suite
+deploy: deps update locust-smoketest locust-deploy ## Deploy updated CloudFormation templates and Locust test suite
 
 uninstall: deps delete ## Delete the Locust environment
 
-reinstall: uninstall install ## Delete and recreate the Locust environment
+reinstall: uninstall install ## Recreate the Locust environment from scratch
 
 deps: # Install local dependencies (requires pipenv)
 	$(call cyan, "make $@ ...")
