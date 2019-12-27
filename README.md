@@ -16,10 +16,19 @@ Essentially, this repo automates the manual setup and deployment procedure of [e
 
 What you need on your local machine.
 
-* Python >=3.6.8
+* Python >=3.7.5
 * an [AWS CLI Named Profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html) with sufficient permissions to spin up [a VPC, Elastic Beanstalk stack, ...](aws/templates/locust/stack.yaml)
 
 Additional dependencies will be installed in a virtual Python environment.
+
+### Notes
+
+Issues might arise when running certain packages/versions in the same virtual environment:
+
+* `awsebcli` and `sceptre` have incompatible dependencies
+* `locustio` versions >13.0 have incompatible dependencies
+
+For this reason, `awsebcli` is installed in a separate `pipenv` package group.
 
 ## Usage
 
