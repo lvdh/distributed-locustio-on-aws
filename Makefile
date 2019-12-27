@@ -57,12 +57,12 @@ list-resources: deps # List CloudFormation Resources of the Stack(s)
 locust-smoketest: # Smoke test the local Locust test suite
 	$(call cyan, "make $@ ...")
 	@pipenv run locust --no-web --only-summary \
-		--locustfile=./aws/app/locustfile.py \
+		--locustfile=./aws/files/app/locustfile.py \
 		--clients=100 --hatch-rate=20 --run-time=10s
 
 locust-deploy: # (Re)deploy the Locust application
 	$(call cyan, "make $@ ...")
-	@cd ./aws/app/
+	@cd ./aws/files/app/
 	@rm -rf ./.elasticbeanstalk/
 	# Configure EB CLI to target the Elastic Beanstalk environment
 	@pipenv run eb init --profile $(profile) --region $(region) --platform $(EB_SOLUTION_STACK_NAME) $(CFN_CLUSTER_STACK_NAME)
@@ -75,7 +75,7 @@ locust-deploy: # (Re)deploy the Locust application
 
 locust-open: # Open the Locust web UI
 	$(call cyan, "make $@ ...")
-	@cd ./aws/app/
+	@cd ./aws/files/app/
 	@rm -rf ./.elasticbeanstalk/
 	# Configure EB CLI to target the Elastic Beanstalk environment
 	@pipenv run eb init --profile $(profile) --region $(region) --platform $(EB_SOLUTION_STACK_NAME) $(CFN_CLUSTER_STACK_NAME)

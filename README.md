@@ -4,7 +4,7 @@ Set up a basic, stateless, distributed HTTP load testing platform on AWS, based 
 
 > _Define user behaviour with Python code, and swarm your system with millions of simultaneous users._
 
-For more information on the format of the [Python code which specifies the load test](aws/app/locustfile.py), see ["Writing a locustfile"](http://docs.locust.io/en/latest/writing-a-locustfile.html).
+For more information on the format of the [Python code which specifies the load test](aws/files/app/locustfile.py), see ["Writing a locustfile"](http://docs.locust.io/en/latest/writing-a-locustfile.html).
 
 ## Attribution
 
@@ -62,7 +62,7 @@ Additional dependencies will be installed in a Python 'virtual environment'.
 
         Name of an existing [AWS EC2 SSH Key Pair](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html).
 
-3. Create the load testing infrastructure and deploy a [sample Locust test suite](aws/app/locustfile.py):
+3. Create the load testing infrastructure and deploy a [sample Locust test suite](aws/files/app/locustfile.py):
 
     ```
     make install
@@ -72,11 +72,11 @@ Additional dependencies will be installed in a Python 'virtual environment'.
 
 ### Upload changes to your Load Test Specification
 
-1. Update the sample `host` and HTTP calls ('Locust Tasks') in the [Locustfile](aws/app/locustfile.py).
+1. Update the sample `host` and HTTP calls ('Locust Tasks') in the [Locustfile](aws/files/app/locustfile.py).
 
     > See ["Writing a locustfile"](http://docs.locust.io/en/latest/writing-a-locustfile.html) for reference.
 
-2. Deploy the updated [Locustfile](aws/app/locustfile.py):
+2. Deploy the updated [Locustfile](aws/files/app/locustfile.py):
 
     ```
     make deploy
