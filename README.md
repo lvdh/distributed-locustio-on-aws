@@ -23,7 +23,7 @@ What you need on your local machine:
 
 Additional dependencies will be installed in a Python 'virtual environment'.
 
-### Notes
+### Notes on Python Package Incompatibility
 
 * `awsebcli` and `sceptre` have incompatible dependencies
     * For this reason, `awsebcli` is installed in a separate `pipenv` package group.
@@ -94,8 +94,6 @@ Additional dependencies will be installed in a Python 'virtual environment'.
 
 ## Overview of CLI Commands
 
-Note: see [`Makefile`](Makefile) for sub-targets called by `install`, `deploy` etc.
-
 ```bash
 $ make
 install            Create the Locust environment, deploy demo test suite
@@ -103,3 +101,5 @@ deploy             Deploy updated CloudFormation templates and Locust test suite
 uninstall          Delete the Locust environment
 reinstall          Recreate the Locust environment from scratch
 ```
+
+See [`Makefile`](Makefile) for a list of sub-targets called by `install`, `deploy` etc. in case you are developing/troubleshooting this codebase.
