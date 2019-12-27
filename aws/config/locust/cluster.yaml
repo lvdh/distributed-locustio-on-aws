@@ -5,8 +5,10 @@ stack_tags:
   Documentation: https://github.com/lvdh/distributed-locustio-on-aws/blob/master/README.md
 
 parameters:
-  ClusterInstanceCount: "3"
+  InstanceCount: "3"
   SSHKeyPairName: "kp-laurens"
+  InstanceType: "c5.large"
+  SolutionStackName: "64bit Amazon Linux 2018.03 v2.14.1 running Go 1.13.2"
   VPCID: !stack_output locust/network.yaml::VPCID
   VPCCIDR: !stack_output locust/network.yaml::VPCCIDR
   PrivateSubnets: !stack_output locust/network.yaml::PrivateSubnets

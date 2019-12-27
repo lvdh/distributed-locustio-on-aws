@@ -46,7 +46,7 @@ For this reason, `awsebcli` is installed in a separate `pipenv` package group.
 
 1. Review [aws/config/locust/stack.yaml](aws/config/locust/stack.yaml) and update it to match your preferences.
 
-    1. `ClusterInstanceCount`
+    1. `InstanceCount`
 
         Configure the amount of EC2 instances (`c5.large`) to spin up.
 

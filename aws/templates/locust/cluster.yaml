@@ -14,7 +14,7 @@ Metadata:
       - Label:
           default: Cluster Configuration
         Parameters:
-          - ClusterInstanceCount
+          - InstanceCount
           - SSHKeyPairName
 
       - Label:
@@ -27,7 +27,7 @@ Metadata:
 
     ParameterLabels:
 
-      ClusterInstanceCount:
+      InstanceCount:
         default: Number of EC2 instances in the cluster
       SSHKeyPairName:
         default: Key Pair Name
@@ -42,7 +42,7 @@ Metadata:
 
 Parameters:
 
-  ClusterInstanceCount:
+  InstanceCount:
     Description: Size of the Locust cluster (number of EC2 instances)
     Type: Number
     MinValue: 1
@@ -78,14 +78,13 @@ Parameters:
     Type: List<AWS::EC2::Subnet::Id>
     ConstraintDescription: PublicSubnets must be specified
 
-Mappings:
+  InstanceType:
+    Description: Cluster Instance Type
+    Type: String
 
-  EBMap:
-    SolutionStack:
-      # Note: Choose a Solution Stack with an nginx proxy, not httpd
-      Name: 64bit Amazon Linux 2018.03 v2.14.0 running Go 1.13.1
-    LaunchConfiguration:
-      InstanceType: c5.large
+  SolutionStackName:
+    Description: Cluster Solution Stack Name
+    Type: String
 
 Resources:
 
@@ -181,7 +180,7 @@ Resources:
     Type: AWS::ElasticBeanstalk::ConfigurationTemplate
     Properties:
       ApplicationName: !Ref ElasticBeanstalkApplication
-      SolutionStackName: !FindInMap [ EBMap, SolutionStack, Name ]
+      SolutionStackName: !Ref SolutionStackName
       OptionSettings:
 
       # Elastic Beanstalk Options, Environment
@@ -202,11 +201,11 @@ Resources:
 
       - Namespace: aws:autoscaling:asg
         OptionName: MinSize
-        Value: !Ref ClusterInstanceCount
+        Value: !Ref InstanceCount
 
       - Namespace: aws:autoscaling:asg
         OptionName: MaxSize
-        Value: !Ref ClusterInstanceCount
+        Value: !Ref InstanceCount
 
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: SecurityGroups
@@ -214,7 +213,7 @@ Resources:
 
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: InstanceType
-        Value: !FindInMap [ EBMap, LaunchConfiguration, InstanceType ]
+        Value: !Ref InstanceType
 
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: IamInstanceProfile
@@ -453,12 +452,6 @@ Outputs:
     Value: !GetAtt ElasticBeanstalkEnvironment.EndpointURL
     Export:
       Name: !Sub "${AWS::StackName}-EnvironmentURL"
-
-  SolutionStackName:
-    Description: Solution Stack Name
-    Value: !FindInMap [ EBMap, SolutionStack, Name ]
-    Export:
-      Name: !Sub "${AWS::StackName}-SolutionStackName"
 
   LoadBalancerSecurityGroup:
     Description: Security Group ID for Internet-facing ELB
