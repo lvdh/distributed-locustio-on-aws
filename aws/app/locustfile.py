@@ -113,7 +113,7 @@ class UserRegistration(CustomTaskSequence):
         response = self.get(
             "/",  # NOQA
             "1000",  # NOQA
-            "(UserRegistration) Visit  http://blazedemo.com/",  # NOQA
+            "(UserRegistration) Visit http://blazedemo.com/",  # NOQA
         )
 
         # Logging
@@ -245,7 +245,7 @@ class UserLogin(CustomTaskSequence):
         response = self.get(
             "/",  # NOQA
             "1100",  # NOQA
-            "(UserLogin) Visit  http://blazedemo.com/",  # NOQA
+            "(UserLogin) Visit http://blazedemo.com/",  # NOQA
         )
 
         # Logging
@@ -377,7 +377,7 @@ class UserPasswordReset(CustomTaskSequence):
         response = self.get(
             "/",  # NOQA
             "1200",  # NOQA
-            "(UserPasswordReset) Visit  http://blazedemo.com/",  # NOQA
+            "(UserPasswordReset) Visit http://blazedemo.com/",  # NOQA
         )
 
         # Logging
@@ -509,7 +509,7 @@ class TravelTheWorld(CustomTaskSequence):
         response = self.get(
             "/",  # NOQA
             "1300",  # NOQA
-            "(TravelTheWorld) Visit  http://blazedemo.com/",  # NOQA
+            "(TravelTheWorld) Visit http://blazedemo.com/",  # NOQA
         )
 
         # Logging
@@ -576,7 +576,7 @@ class DestinationOfTheWeek(CustomTaskSequence):
         response = self.get(
             "/",  # NOQA
             "1400",  # NOQA
-            "(DestinationOfTheWeek) Visit  http://blazedemo.com/",  # NOQA
+            "(DestinationOfTheWeek) Visit http://blazedemo.com/",  # NOQA
         )
 
         # Logging
@@ -643,7 +643,7 @@ class BookFlight(CustomTaskSequence):
         response = self.get(
             "/",  # NOQA
             "1500",  # NOQA
-            "(BookFlight) Visit  http://blazedemo.com/",  # NOQA
+            "(BookFlight) Visit http://blazedemo.com/",  # NOQA
         )
 
         # Logging
