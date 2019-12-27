@@ -145,7 +145,7 @@ class UserRegistration(CustomTaskSequence):
         response = self.get(
             "/home",  # NOQA
             "1001",  # NOQA
-            "(UserRegistration) Click ‘home’",  # NOQA
+            "(UserRegistration) Click 'home'",  # NOQA
         )
 
         # Logging
@@ -177,7 +177,7 @@ class UserRegistration(CustomTaskSequence):
         response = self.get(
             "/register",  # NOQA
             "1002",  # NOQA
-            "(UserRegistration) Click ‘Register’",  # NOQA
+            "(UserRegistration) Click 'Register'",  # NOQA
         )
 
         # Logging
@@ -277,7 +277,7 @@ class UserLogin(CustomTaskSequence):
         response = self.get(
             "/",  # NOQA
             "1101",  # NOQA
-            "(UserLogin) Click ‘home’",  # NOQA
+            "(UserLogin) Click 'home'",  # NOQA
         )
 
         # Logging
@@ -309,7 +309,7 @@ class UserLogin(CustomTaskSequence):
         response = self.get(
             "/",  # NOQA
             "1102",  # NOQA
-            "(UserLogin) Click ‘Login’",  # NOQA
+            "(UserLogin) Click 'Login'",  # NOQA
         )
 
         # Logging
@@ -409,7 +409,7 @@ class UserPasswordReset(CustomTaskSequence):
         response = self.get(
             "/home",  # NOQA
             "1201",  # NOQA
-            "(UserPasswordReset) Click ‘home’",  # NOQA
+            "(UserPasswordReset) Click 'home'",  # NOQA
         )
 
         # Logging
@@ -441,7 +441,7 @@ class UserPasswordReset(CustomTaskSequence):
         response = self.get(
             "/password/reset",  # NOQA
             "1202",  # NOQA
-            "(UserPasswordReset) Click ‘Forgot Your Password?’",  # NOQA
+            "(UserPasswordReset) Click 'Forgot Your Password?'",  # NOQA
         )
 
         # Logging
@@ -541,7 +541,7 @@ class TravelTheWorld(CustomTaskSequence):
         response = self.get(
             "/index.php",  # NOQA
             "1301",  # NOQA
-            "(TravelTheWorld) Click ‘Travel The World’",  # NOQA
+            "(TravelTheWorld) Click 'Travel The World'",  # NOQA
         )
 
         # Logging
@@ -608,7 +608,7 @@ class DestinationOfTheWeek(CustomTaskSequence):
         response = self.get(
             "/vacation.html",  # NOQA
             "1401",  # NOQA
-            "(DestinationOfTheWeek) Click ‘destination of the week!’",  # NOQA
+            "(DestinationOfTheWeek) Click 'destination of the week!'",  # NOQA
         )
 
         # Logging
@@ -741,7 +741,7 @@ class BookFlight(CustomTaskSequence):
         response = self.post(
             "/purchase.php",  # NOQA
             "1503",  # NOQA
-            "(BookFlight) Click ‘Purchase Flight’",  # NOQA
+            "(BookFlight) Click 'Purchase Flight'",  # NOQA
             "inputName=John+Smith&address=123+Main+St.&city=Anytown&state=State&zipCode=12345&cardType=visa&creditCardNumber=0000000000000000&creditCardMonth=11&creditCardYear=2017&nameOnCard=John+Smith"  # NOQA
         )
 
