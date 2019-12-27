@@ -51,7 +51,7 @@ Parameters:
     ConstraintDescription: Specify a number between 1 - 20
 
   EC2KeyPair:
-    Description: Name of an existing EC2 Key Pair (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair)
+    Description: Name of an existing EC2 Key Pair
     Type: AWS::EC2::KeyPair::KeyName
     MinLength: 1
     MaxLength: 255
