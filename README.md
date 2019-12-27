@@ -50,7 +50,7 @@ For this reason, `awsebcli` is installed in a separate `pipenv` package group.
 
         Configure the amount of EC2 instances (`c5.large`) to spin up.
 
-    2. `SSHKeyPairName`
+    2. `EC2KeyPair`
 
         Provide an existing [AWS EC2 SSH Key Pair](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html) name.
 

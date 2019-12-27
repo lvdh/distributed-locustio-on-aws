@@ -15,7 +15,7 @@ Metadata:
           default: Cluster Configuration
         Parameters:
           - InstanceCount
-          - SSHKeyPairName
+          - EC2KeyPair
 
       - Label:
           default: Network Configuration
@@ -29,7 +29,7 @@ Metadata:
 
       InstanceCount:
         default: Number of EC2 instances in the cluster
-      SSHKeyPairName:
+      EC2KeyPair:
         default: Key Pair Name
       VPCID:
         default: VPC ID
@@ -50,12 +50,12 @@ Parameters:
     Default: 3
     ConstraintDescription: Specify a number between 1 - 20
 
-  SSHKeyPairName:
+  EC2KeyPair:
     Description: Name of an existing EC2 Key Pair (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair)
     Type: AWS::EC2::KeyPair::KeyName
     MinLength: 1
     MaxLength: 255
-    ConstraintDescription: SSHKeyPairName must be specified
+    ConstraintDescription: EC2KeyPair must be specified
 
   VPCID:
     Description: ID of the existing VPC
@@ -221,7 +221,7 @@ Resources:
 
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: EC2KeyName
-        Value: !Ref SSHKeyPairName
+        Value: !Ref EC2KeyPair
 
       # Allow SSH access from within the VPC
       - Namespace: aws:autoscaling:launchconfiguration
