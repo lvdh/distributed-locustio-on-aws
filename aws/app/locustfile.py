@@ -2,7 +2,7 @@
 
 # Locustfile for http://blazedemo.com/
 
-from locust import HttpLocust, TaskSet, TaskSequence, seq_task, task
+from locust import HttpLocust, TaskSet, TaskSequence, seq_task, task, between
 from bs4 import BeautifulSoup
 import logging
 import sys
@@ -776,8 +776,6 @@ class LoadTest(HttpLocust):
     host = "http://blazedemo.com"
     task_set = UserBehavior
     # Speed up things during development
-    min_wait = 500
-    max_wait = 1500
-    # # More realistic values for load testing
-    # min_wait = 5000
-    # max_wait = 15000
+    wait_time = between(0.500, 1.500)
+    # More realistic values for load testing
+    #wait_time = between(5000, 15000)
