@@ -2,11 +2,14 @@ template_path: locust/cluster.yaml
 
 stack_tags:
   ProjectCode: {{ project_code }}
-  Documentation: https://github.com/lvdh/distributed-locustio-on-aws/blob/master/README.md
+  Documentation: "https://github.com/lvdh/distributed-locustio-on-aws/"
 
 parameters:
-  ClusterInstanceCount: "3"
-  SSHKeyPairName: "kp-laurens"
+  InstanceCount: "3"
+  InstanceType: "c5.large"
+  EC2KeyPair: "kp-laurens"
+
+  SolutionStackName: "64bit Amazon Linux 2018.03 v2.14.1 running Go 1.13.2"
   VPCID: !stack_output locust/network.yaml::VPCID
   VPCCIDR: !stack_output locust/network.yaml::VPCCIDR
   PrivateSubnets: !stack_output locust/network.yaml::PrivateSubnets

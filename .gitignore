@@ -1,3 +1,2 @@
-env/
-aws/app/__pycache__/
-aws/app/.elasticbeanstalk/
+aws/files/app/__pycache__/
+aws/files/app/.elasticbeanstalk/

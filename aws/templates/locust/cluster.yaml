@@ -14,8 +14,8 @@ Metadata:
       - Label:
           default: Cluster Configuration
         Parameters:
-          - ClusterInstanceCount
-          - SSHKeyPairName
+          - InstanceCount
+          - EC2KeyPair
 
       - Label:
           default: Network Configuration
@@ -27,9 +27,9 @@ Metadata:
 
     ParameterLabels:
 
-      ClusterInstanceCount:
+      InstanceCount:
         default: Number of EC2 instances in the cluster
-      SSHKeyPairName:
+      EC2KeyPair:
         default: Key Pair Name
       VPCID:
         default: VPC ID
@@ -42,7 +42,7 @@ Metadata:
 
 Parameters:
 
-  ClusterInstanceCount:
+  InstanceCount:
     Description: Size of the Locust cluster (number of EC2 instances)
     Type: Number
     MinValue: 1
@@ -50,12 +50,12 @@ Parameters:
     Default: 3
     ConstraintDescription: Specify a number between 1 - 20
 
-  SSHKeyPairName:
-    Description: Name of an existing EC2 Key Pair (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair)
+  EC2KeyPair:
+    Description: Name of an existing EC2 Key Pair
     Type: AWS::EC2::KeyPair::KeyName
     MinLength: 1
     MaxLength: 255
-    ConstraintDescription: SSHKeyPairName must be specified
+    ConstraintDescription: EC2KeyPair must be specified
 
   VPCID:
     Description: ID of the existing VPC
@@ -78,14 +78,13 @@ Parameters:
     Type: List<AWS::EC2::Subnet::Id>
     ConstraintDescription: PublicSubnets must be specified
 
-Mappings:
+  InstanceType:
+    Description: Cluster Instance Type
+    Type: String
 
-  EBMap:
-    SolutionStack:
-      # Note: Choose a Solution Stack with an nginx proxy, not httpd
-      Name: 64bit Amazon Linux 2018.03 v2.14.0 running Go 1.13.1
-    LaunchConfiguration:
-      InstanceType: c5.large
+  SolutionStackName:
+    Description: Cluster Solution Stack Name
+    Type: String
 
 Resources:
 
@@ -181,7 +180,7 @@ Resources:
     Type: AWS::ElasticBeanstalk::ConfigurationTemplate
     Properties:
       ApplicationName: !Ref ElasticBeanstalkApplication
-      SolutionStackName: !FindInMap [ EBMap, SolutionStack, Name ]
+      SolutionStackName: !Ref SolutionStackName
       OptionSettings:
 
       # Elastic Beanstalk Options, Environment
@@ -202,11 +201,11 @@ Resources:
 
       - Namespace: aws:autoscaling:asg
         OptionName: MinSize
-        Value: !Ref ClusterInstanceCount
+        Value: !Ref InstanceCount
 
       - Namespace: aws:autoscaling:asg
         OptionName: MaxSize
-        Value: !Ref ClusterInstanceCount
+        Value: !Ref InstanceCount
 
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: SecurityGroups
@@ -214,7 +213,7 @@ Resources:
 
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: InstanceType
-        Value: !FindInMap [ EBMap, LaunchConfiguration, InstanceType ]
+        Value: !Ref InstanceType
 
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: IamInstanceProfile
@@ -222,7 +221,7 @@ Resources:
 
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: EC2KeyName
-        Value: !Ref SSHKeyPairName
+        Value: !Ref EC2KeyPair
 
       # Allow SSH access from within the VPC
       - Namespace: aws:autoscaling:launchconfiguration
@@ -453,12 +452,6 @@ Outputs:
     Value: !GetAtt ElasticBeanstalkEnvironment.EndpointURL
     Export:
       Name: !Sub "${AWS::StackName}-EnvironmentURL"
-
-  SolutionStackName:
-    Description: Solution Stack Name
-    Value: !FindInMap [ EBMap, SolutionStack, Name ]
-    Export:
-      Name: !Sub "${AWS::StackName}-SolutionStackName"
 
   LoadBalancerSecurityGroup:
     Description: Security Group ID for Internet-facing ELB

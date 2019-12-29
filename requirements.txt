@@ -1,8 +1,0 @@
-PyYAML==5.1.2 # Keep this as long as awsebcli depends on PyYAML 3.13 (See Makefile)
-awscli==1.16.227
-awsebcli==3.15.3
-locustio==0.11.0
-beautifulsoup4==4.8.0
-flake8==3.7.8
-sceptre==2.2.1
-botocore==1.12.217

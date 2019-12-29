@@ -2,4 +2,4 @@ template_path: locust/network.yaml
 
 stack_tags:
   ProjectCode: {{ project_code }}
-  Documentation: https://github.com/lvdh/distributed-locustio-on-aws/blob/master/README.md
+  Documentation: "https://github.com/lvdh/distributed-locustio-on-aws/"
