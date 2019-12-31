@@ -96,10 +96,9 @@ Where required, additional dependencies will be installed in a Python 3 'virtual
 
 ```bash
 $ make
-install            Create the Locust environment, deploy demo test suite
-deploy             Deploy updated CloudFormation templates and Locust test suite
+install            Create the Locust environment and deploy a test suite for blazedemo.com
+deploy             Deploy modifications to the Locust test suite and/or CloudFormation templates
 uninstall          Delete the Locust environment
-reinstall          Recreate the Locust environment from scratch
 ```
 
 See [`Makefile`](Makefile) for a list of sub-targets called by `install`, `deploy` etc. in case you are developing/troubleshooting this codebase.
