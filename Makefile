@@ -24,7 +24,7 @@ reinstall: uninstall install ## Recreate the Locust environment from scratch
 
 deps: # Install local dependencies (requires pipenv)
 	$(call cyan, "make $@ ...")
-	@pipenv install --deploy
+	@pipenv install
 
 validate: deps # Validate CloudFormation Template(s)
 	$(call cyan, "make $@ ...")
