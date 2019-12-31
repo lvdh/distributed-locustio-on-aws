@@ -16,7 +16,7 @@ CFN_CLUSTER_STACK_NAME := $(project_code)-$(stack)-cluster
 
 install: deps launch locust-smoketest locust-deploy ## Create the Locust environment and deploy a test suite for blazedemo.com
 
-deploy: deps update locust-smoketest locust-deploy ## Deploy updated CloudFormation templates and Locust test suite
+deploy: deps update locust-smoketest locust-deploy ## Deploy modified CloudFormation templates and/or Locust test suite
 
 uninstall: deps delete ## Delete the Locust environment
 
