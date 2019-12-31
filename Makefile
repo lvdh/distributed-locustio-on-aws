@@ -14,7 +14,7 @@ EB_SOLUTION_STACK_NAME := $(shell sed -n -e 's/^.*SolutionStackName: //p' ./aws/
 stack := $(shell find ./aws/config/ -mindepth 1 -maxdepth 1 -type d -printf '%f' | tr -d '/')
 CFN_CLUSTER_STACK_NAME := $(project_code)-$(stack)-cluster
 
-install: deps launch locust-smoketest locust-deploy ## Create the Locust environment, deploy demo test suite
+install: deps launch locust-smoketest locust-deploy ## Create the Locust environment and deploy a test suite for blazedemo.com
 
 deploy: deps update locust-smoketest locust-deploy ## Deploy updated CloudFormation templates and Locust test suite
 
