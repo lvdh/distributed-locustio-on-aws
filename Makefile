@@ -65,22 +65,28 @@ locust-deploy: # (Re)deploy the Locust application
 	@cd ./aws/files/app/
 	@rm -rf ./.elasticbeanstalk/
 	# Configure EB CLI to target the Elastic Beanstalk environment
-	@pipenv run eb init --profile $(profile) --region $(region) --platform $(EB_SOLUTION_STACK_NAME) $(CFN_CLUSTER_STACK_NAME)
+	@pipenv run eb init --profile $(profile) --region $(region) \
+		--platform $(EB_SOLUTION_STACK_NAME) $(CFN_CLUSTER_STACK_NAME)
 	# Deploy Locust to the Elastic Beanstalk environment
-	@pipenv run eb deploy --profile $(profile) --region $(region) --staged $(CFN_CLUSTER_STACK_NAME)
+	@pipenv run eb deploy --profile $(profile) --region $(region) \
+		--staged $(CFN_CLUSTER_STACK_NAME)
 	# Show the status of the Elastic Beanstalk deployment
-	@pipenv run eb status --profile $(profile) --region $(region) $(CFN_CLUSTER_STACK_NAME)
+	@pipenv run eb status --profile $(profile) --region $(region) \
+		$(CFN_CLUSTER_STACK_NAME)
 	# Open the Locust web GUI in a browser window
-	@pipenv run eb open --profile $(profile) --region $(region) $(CFN_CLUSTER_STACK_NAME)
+	@pipenv run eb open --profile $(profile) --region $(region) \
+		$(CFN_CLUSTER_STACK_NAME)
 
 locust-open: # Open the Locust web UI
 	$(call cyan, "make $@ ...")
 	@cd ./aws/files/app/
 	@rm -rf ./.elasticbeanstalk/
 	# Configure EB CLI to target the Elastic Beanstalk environment
-	@pipenv run eb init --profile $(profile) --region $(region) --platform $(EB_SOLUTION_STACK_NAME) $(CFN_CLUSTER_STACK_NAME)
+	@pipenv run eb init --profile $(profile) --region $(region) \
+		--platform $(EB_SOLUTION_STACK_NAME) $(CFN_CLUSTER_STACK_NAME)
 	# Open the Locust web GUI in a browser window
-	@pipenv run eb open --profile $(profile) --region $(region) $(CFN_CLUSTER_STACK_NAME)
+	@pipenv run eb open --profile $(profile) --region $(region) \
+		$(CFN_CLUSTER_STACK_NAME)
 
 help:
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-18s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
