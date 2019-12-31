@@ -6,10 +6,7 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-beautifulsoup4 = "==4.8.2"
-flake8 = "==3.7.9"
-locustio = "==0.13.0"
-sceptre = "==2.2.1"
+awsebcli = "==3.17.0"
 
 [requires]
 python_version = "3.7"
