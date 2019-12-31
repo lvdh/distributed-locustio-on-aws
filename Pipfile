@@ -8,10 +8,9 @@ awsebcli = "==3.17.0"
 
 [packages]
 beautifulsoup4 = "==4.8.2"
-flake8 = "==3.7.8"
+flake8 = "==3.7.9"
 locustio = "==0.13.0"
 sceptre = "==2.2.1"
-yq = "==2.10.0"
 
 [requires]
 python_version = "3.7"
