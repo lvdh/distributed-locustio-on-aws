@@ -19,9 +19,9 @@ What you need on your local machine:
 * Git client
 * Python >=3.7.5
 * [pipenv](https://github.com/pypa/pipenv) >=2018.11.26
-* [AWS CLI Named Profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html) with sufficient permissions to manage AWS resources defined by the CloudFormation templates.
+* A [Named Profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html) for AWS CLI with sufficient permissions to manage AWS resources defined by [the CloudFormation templates](aws/templates).
 
-Additional dependencies will be installed in a Python 'virtual environment'.
+Where required, additional dependencies will be installed in a Python 3 'virtual environment'.
 
 ### Notes on Python Package Incompatibility
 
