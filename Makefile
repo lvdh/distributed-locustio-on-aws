@@ -20,8 +20,6 @@ uninstall: ## Delete the CloudFormation Stacks and clean up
 help:
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-18s\033[0m %s\n", $$1, $$2}' \
 		$(MAKEFILE_LIST)
-	$(MAKE) -s -C cfn
-	$(MAKE) -s -C eb
 
 define cyan
 	@tput setaf 6

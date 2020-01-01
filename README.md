@@ -106,21 +106,39 @@ Additional dependencies will be installed in [Python 3 Virtual Environments](htt
 ## Overview of CLI Commands
 
 ```bash
-$ make
+$ make                                                        
 install            Create the Locust environment and deploy a test suite for blazedemo.com
 apply              Deploy modifications to the Locust test suite and/or CloudFormation templates
 status             Show status of the CloudFormation Stacks and Locust deployment
 uninstall          Delete the CloudFormation Stacks and clean up
-make -s -C cfn/
+laurens@u5b95x ~lvdh.distributed-locustio-on-aws (git)-[refactor/ebcli] 
+```
+
+### Sub Makefiles
+
+See Makefiles below for a list of sub-targets which may be useful during development and troubleshooting.
+
+#### CloudFormation
+
+[`cfn/Makefile`](cfn/Makefile)
+
+```bash
+$ make -s -C cfn/
 install            Create the Locust environment and deploy a test suite for blazedemo.com
 apply              Deploy modifications to the Locust test suite and/or CloudFormation templates
 status             Show deployment status of the CloudFormation Stack(s)
 uninstall          Delete the Locust environment, local dependencies and temporary files
-make -s -C eb/
+laurens@u5b95x ~lvdh.distributed-locustio-on-aws (git)-[refactor/ebcli] 
+```
+
+#### Elastic Beanstalk
+
+[`eb/Makefile`](eb/Makefile)
+
+```bash
+$ make -s -C eb/
 install            Initialize and deploy the Locust test suite
 apply              Deploy an updated Locust test suite
 status             Show deployment status of the Locust application
 uninstall          Clean up virtual environment and temporary files
 ```
-
-See [`Makefile`](Makefile) for a list of sub-targets called by `install`, `deploy` etc. in case you are developing/troubleshooting this codebase.
