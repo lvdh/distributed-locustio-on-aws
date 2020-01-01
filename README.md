@@ -61,6 +61,16 @@ Additional dependencies will be installed in [Python 3 Virtual Environments](htt
 
         Name of an existing [AWS EC2 SSH Key Pair](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html).
 
+### Smoke Test the Test Suite
+
+1. Test the local Locust test suite.
+
+    **Note:** This runs a short Locust load test locally, which targets the Locust `host` (see below).
+
+    ```
+    make smoketest
+    ```
+
 ### Install Cluster
 
 1. Create the load testing infrastructure and deploy a [sample Locust test suite](eb/locustfile.py):
