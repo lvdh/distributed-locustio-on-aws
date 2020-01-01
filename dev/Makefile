@@ -25,7 +25,7 @@ dependencies: # Install local dependencies in virtual environment (requires pipe
 	pipenv --bare install
 
 locust-smoketest: # Smoke test the local Locust test suite
-	$(call cyan, "make $@ ...")
+	$(call cyan, "make dev/$@ ...")
 	pipenv run locust --no-web --only-summary \
 		--locustfile=./locustfile.py \
 		--clients=100 --hatch-rate=20 --run-time=10s
