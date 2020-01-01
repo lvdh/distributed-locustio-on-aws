@@ -69,7 +69,7 @@ Additional dependencies will be installed in [Python 3 Virtual Environments](htt
     make install
     ```
 
-    Note: Initializing the environment takes roughly 15 minutes, usually.
+    **Note:** Initializing the environment takes roughly 15 minutes, usually.
 
 2. The Locust web UI opens in your browser automatically once Locust is deployed.
 
