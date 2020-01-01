@@ -1,4 +1,4 @@
-.PHONY: install deploy status uninstall help
+.PHONY: smoketest install apply status uninstall help
 .DEFAULT_GOAL := help
 
 smoketest: ## Verify the local Locust test suite
