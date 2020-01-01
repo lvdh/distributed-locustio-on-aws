@@ -1,4 +1,4 @@
-.PHONY: install dependencies  deploy open clean help
+.PHONY: install apply uninstall dependencies init deploy status open clean help
 .DEFAULT_GOAL := help
 
 # Load Sceptre deployment configuration (used by awsebcli)
@@ -15,8 +15,6 @@ CLUSTER_EB_SOLUTION_STACK_NAME := $(shell sed -n -e 's/^.*SolutionStackName: //p
 install: dependencies  init deploy status open ## Initialize and deploy the Locust test suite
 
 apply:  deploy status open ## Deploy an updated Locust test suite
-
-status: status ## Show deployment status of the Locust application
 
 uninstall: clean ## Clean up virtual environment and temporary files
 
@@ -43,7 +41,7 @@ deploy: # (Re)deploy the Locust application
 	pipenv run eb deploy --profile $(profile) --region $(region) \
 		--staged $(CLUSTER_CFN_STACK_NAME)
 
-status: # Show deployment status of the Locust application
+status: ## Show deployment status of the Locust application
 	$(call cyan, "make eb/$@ ...")
 	pipenv run eb status --profile $(profile) --region $(region) \
 		$(CLUSTER_CFN_STACK_NAME)

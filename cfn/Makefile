@@ -1,4 +1,4 @@
-.PHONY: install deploy uninstall dependencies validate launch update delete status
+.PHONY: install apply uninstall dependencies validate launch update delete status
 .PHONY: list-outputs list-resources clean help
 .DEFAULT_GOAL := help
 
@@ -8,8 +8,6 @@ stack := $(shell find ./config/ -mindepth 1 -maxdepth 1 -type d -printf '%f' | t
 install: dependencies launch ## Create the Locust environment and deploy a test suite for blazedemo.com
 
 apply: dependencies update ## Deploy modifications to the Locust test suite and/or CloudFormation templates
-
-status: dependencies status ## Show deployment status of the CloudFormation Stack(s)
 
 uninstall: dependencies delete clean ## Delete the Locust environment, local dependencies and temporary files
 
@@ -33,7 +31,7 @@ delete: # Terminate CloudFormation Stack(s)
 	$(call cyan, "make cfn/$@ ...")
 	pipenv run sceptre delete --yes $(stack)
 
-status: # Show deployment status of the CloudFormation Stack(s)
+status: ## Show deployment status of the CloudFormation Stack(s)
 	$(call cyan, "make cfn/$@ ...")
 	pipenv run sceptre status $(stack)
 
