@@ -1,2 +1,2 @@
-aws/files/app/__pycache__/
-aws/files/app/.elasticbeanstalk/
+app/__pycache__/
+app/.elasticbeanstalk/
