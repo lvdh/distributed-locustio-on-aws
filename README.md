@@ -61,7 +61,7 @@ Additional dependencies will be installed in [Python 3 Virtual Environments](htt
 
         Name of an existing [AWS EC2 SSH Key Pair](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html).
 
-### New Cluster
+### Install Cluster
 
 1. Create the load testing infrastructure and deploy a [sample Locust test suite](eb/locustfile.py):
 
@@ -73,7 +73,9 @@ Additional dependencies will be installed in [Python 3 Virtual Environments](htt
 
 2. The Locust web UI opens in your browser automatically once Locust is deployed.
 
-### Deploy New Test Suite
+### Deploy Changes
+
+Deploy a new test suite, or changes to CloudFormation templates.
 
 1. Update the sample `host` and HTTP calls ('Locust Tasks') in the [Locustfile](eb/locustfile.py).
 
@@ -87,7 +89,7 @@ Additional dependencies will be installed in [Python 3 Virtual Environments](htt
 
 3. The Locust web UI opens in your browser automatically once the update is complete.
 
-### Cluster Status
+### View Cluster Status
 
 1. View the status of the CloudFormation stacks and the Elastic Beanstalk deployment:
 
@@ -95,7 +97,7 @@ Additional dependencies will be installed in [Python 3 Virtual Environments](htt
     make status
     ```
 
-### Cluster Turndown
+### Terminate Cluster
 
 1. Destroy all CloudFormation stacks and clean up temporary files:
 
