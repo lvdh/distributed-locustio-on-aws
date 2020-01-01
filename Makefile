@@ -1,4 +1,4 @@
-.PHONY: install deploy uninstall help
+.PHONY: install deploy status uninstall help
 .DEFAULT_GOAL := help
 
 install: ## Create the Locust environment and deploy a test suite for blazedemo.com
@@ -14,8 +14,8 @@ status: ## Show status of the CloudFormation Stacks and Locust deployment
 	@$(MAKE) -C ./app/ status
 
 uninstall: ## Delete the Locust environment and clean up
-	@$(MAKE) -C ./aws/ uninstall
 	@$(MAKE) -C ./app/ uninstall
+	@$(MAKE) -C ./aws/ uninstall
 
 help:
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-18s\033[0m %s\n", $$1, $$2}' \
