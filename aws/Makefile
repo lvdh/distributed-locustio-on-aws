@@ -9,6 +9,8 @@ install: deps cfn-launch ## Create the Locust environment and deploy a test suit
 
 deploy: deps cfn-update ## Deploy modifications to the Locust test suite and/or CloudFormation templates
 
+status: deps cfn-status ## Show deployment status of the CloudFormation Stack(s)
+
 uninstall: deps cfn-delete clean ## Delete the Locust environment, local dependencies and temporary files
 
 deps: # Install local dependencies in virtual environments (requires pipenv)

@@ -16,6 +16,8 @@ install: deps locust-smoketest eb-init eb-deploy eb-status eb-open ## Initialize
 
 deploy: locust-smoketest eb-deploy eb-status eb-open ## Deploy an updated Locust test suite
 
+status: eb-status ## Show deployment status of the Locust application
+
 uninstall: clean ## Clean up virtual environment and temporary files
 
 deps: # Install local dependencies in virtual environment (requires pipenv)
