@@ -97,7 +97,7 @@ Additional dependencies will be installed in [Python 3 Virtual Environments](htt
 
 ### Cluster Turndown
 
-1. Destroy the entire load testing stack:
+1. Destroy all CloudFormation stacks and clean up temporary files:
 
     ```
     make uninstall
