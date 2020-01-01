@@ -1,6 +1,9 @@
 .PHONY: install deploy status uninstall help
 .DEFAULT_GOAL := help
 
+smoketest: ## Smoke test the local Locust test suite
+	@$(MAKE) -s -C ./eb/ smoketest
+
 install: ## Create the Locust environment and deploy a test suite for blazedemo.com
 	@$(MAKE) -s -C ./cfn/ install
 	@$(MAKE) -s -C ./eb/ install

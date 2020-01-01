@@ -109,6 +109,7 @@ Deploy a new test suite, or changes to CloudFormation templates.
 
 ```bash
 $ make                                                        
+smoketest          Smoke test the local Locust test suite
 install            Create the Locust environment and deploy a test suite for blazedemo.com
 apply              Deploy modifications to the Locust test suite and/or CloudFormation templates
 status             Show status of the CloudFormation Stacks and Locust deployment
@@ -127,8 +128,8 @@ See Makefiles below for a list of sub-targets which may be useful during develop
 $ make -s -C cfn/
 install            Create the Locust environment and deploy a test suite for blazedemo.com
 apply              Deploy modifications to the Locust test suite and/or CloudFormation templates
-status             Show deployment status of the CloudFormation Stack(s)
 uninstall          Delete the Locust environment, local dependencies and temporary files
+status             Show deployment status of the CloudFormation Stack(s)
 ```
 
 #### Elastic Beanstalk
@@ -137,8 +138,9 @@ uninstall          Delete the Locust environment, local dependencies and tempora
 
 ```bash
 $ make -s -C eb/
+smoketest          Smoke test the local Locust test suite
 install            Initialize and deploy the Locust test suite
 apply              Deploy an updated Locust test suite
-status             Show deployment status of the Locust application
 uninstall          Clean up virtual environment and temporary files
+status             Show deployment status of the Locust application
 ```

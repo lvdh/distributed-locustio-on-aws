@@ -1,4 +1,4 @@
-.PHONY: install apply uninstall dependencies init deploy status open clean help
+.PHONY: smoketest install apply uninstall dependencies run-locust init deploy status open clean help
 .DEFAULT_GOAL := help
 
 # Load Sceptre deployment configuration (used by awsebcli)
@@ -12,7 +12,9 @@ CLUSTER_CFN_STACK_NAME := $(project_code)-$(stack)-cluster
 # Load Elastic Beanstalk "Solution Stack Name" (used by awsebcli)
 CLUSTER_EB_SOLUTION_STACK_NAME := $(shell sed -n -e 's/^.*SolutionStackName: //p' ../cfn/config/locust/cluster.yaml)
 
-install: dependencies  init deploy status open ## Initialize and deploy the Locust test suite
+smoketest: dependencies run-locust ## Smoke test the local Locust test suite
+
+install: dependencies run-locust init deploy status open ## Initialize and deploy the Locust test suite
 
 apply:  deploy status open ## Deploy an updated Locust test suite
 
@@ -22,7 +24,7 @@ dependencies: # Install local dependencies in virtual environment (requires pipe
 	$(call cyan, "make eb/$@ ...")
 	pipenv --bare install
 
-: # Smoke test the local Locust test suite
+run-locust: # Smoke test the local Locust test suite
 	$(call cyan, "make eb/$@ ...")
 	pipenv run locust --no-web --only-summary \
 		--locustfile=./locustfile.py \
