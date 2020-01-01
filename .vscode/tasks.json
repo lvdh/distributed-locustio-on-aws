@@ -6,8 +6,8 @@
     {
       "label": "Locust Test Run",
       "type": "shell",
-      "command": "make locust-smoketest",
-      "detail": "make locust-smoketest",
+      "command": "make -C app/ smoketest",
+      "detail": "make -C app/ smoketest",
       "group": {
         "kind": "build",
         "isDefault": true
