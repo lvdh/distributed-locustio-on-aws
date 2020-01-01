@@ -4,7 +4,7 @@ Set up a basic, stateless, distributed HTTP load testing platform on AWS, based 
 
 > _Define user behaviour with Python code, and swarm your system with millions of simultaneous users._
 
-For more information on the format of the [Python code which specifies the load test](app/locustfile.py), see ["Writing a locustfile"](http://docs.locust.io/en/latest/writing-a-locustfile.html).
+For more information on the format of the [Python code which specifies the load test](dev/locustfile.py), see ["Writing a locustfile"](http://docs.locust.io/en/latest/writing-a-locustfile.html).
 
 ## Attribution
 
@@ -19,7 +19,7 @@ What you need on your local machine:
 * Git client
 * Python >=3.7.5
 * [pipenv](https://github.com/pypa/pipenv) >=2018.11.26
-* A [Named Profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html) for AWS CLI with sufficient permissions to manage AWS resources defined by [the CloudFormation templates](aws/templates).
+* A [Named Profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html) for AWS CLI with sufficient permissions to manage AWS resources defined by [the CloudFormation templates](ops/templates).
 
 Where required, additional dependencies will be installed in a Python 3 'virtual environment'.
 
@@ -34,7 +34,7 @@ Where required, additional dependencies will be installed in a Python 3 'virtual
 
 ### Create a New Load Test Stack
 
-1. Review and update [aws/config/config.yaml](aws/config/config.yaml):
+1. Review and update [ops/config/config.yaml](ops/config/config.yaml):
 
     1. `profile`
 
@@ -48,7 +48,7 @@ Where required, additional dependencies will be installed in a Python 3 'virtual
 
         Custom name/ID for your project. (Lower case, alpha-numeric.)
 
-2. Review and update [aws/config/locust/cluster.yaml](aws/config/locust/cluster.yaml):
+2. Review and update [ops/config/locust/cluster.yaml](ops/config/locust/cluster.yaml):
 
     1. `InstanceCount`
 
@@ -62,7 +62,7 @@ Where required, additional dependencies will be installed in a Python 3 'virtual
 
         Name of an existing [AWS EC2 SSH Key Pair](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html).
 
-3. Create the load testing infrastructure and deploy a [sample Locust test suite](app/locustfile.py):
+3. Create the load testing infrastructure and deploy a [sample Locust test suite](dev/locustfile.py):
 
     ```
     make install
@@ -72,11 +72,11 @@ Where required, additional dependencies will be installed in a Python 3 'virtual
 
 ### Upload changes to your Load Test Specification
 
-1. Update the sample `host` and HTTP calls ('Locust Tasks') in the [Locustfile](app/locustfile.py).
+1. Update the sample `host` and HTTP calls ('Locust Tasks') in the [Locustfile](dev/locustfile.py).
 
     > See ["Writing a locustfile"](http://docs.locust.io/en/latest/writing-a-locustfile.html) for reference.
 
-2. Deploy the updated [Locustfile](app/locustfile.py):
+2. Deploy the updated [Locustfile](dev/locustfile.py):
 
     ```
     make deploy

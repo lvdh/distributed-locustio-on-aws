@@ -1,2 +1,2 @@
-app/__pycache__/
-app/.elasticbeanstalk/
+dev/__pycache__/
+dev/.elasticbeanstalk/

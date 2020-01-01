@@ -14,39 +14,39 @@ status: deps cfn-status ## Show deployment status of the CloudFormation Stack(s)
 uninstall: deps cfn-delete clean ## Delete the Locust environment, local dependencies and temporary files
 
 deps: # Install local dependencies in virtual environments (requires pipenv)
-	$(call cyan, "make aws/$@ ...")
+	$(call cyan, "make ops/$@ ...")
 	@pipenv --bare install
 
 cfn-validate: # Validate CloudFormation Template(s)
-	$(call cyan, "make aws/$@ ...")
+	$(call cyan, "make ops/$@ ...")
 	@pipenv run sceptre validate $(stack)
 
 cfn-launch: cfn-validate # Deploy CloudFormation Stack(s)
-	$(call cyan, "make aws/$@ ...")
+	$(call cyan, "make ops/$@ ...")
 	@pipenv run sceptre launch --yes $(stack)
 
 cfn-update: cfn-validate # Update CloudFormation Stack(s)
-	$(call cyan, "make aws/$@ ...")
+	$(call cyan, "make ops/$@ ...")
 	@pipenv run sceptre update --yes $(stack)
 
 cfn-delete: # Terminate CloudFormation Stack(s)
-	$(call cyan, "make aws/$@ ...")
+	$(call cyan, "make ops/$@ ...")
 	@pipenv run sceptre delete --yes $(stack)
 
 cfn-status: # Show deployment status of the CloudFormation Stack(s)
-	$(call cyan, "make aws/$@ ...")
+	$(call cyan, "make ops/$@ ...")
 	@pipenv run sceptre status $(stack)
 
 cfn-list-outputs: # List CloudFormation Outputs of the Stack(s)
-	$(call cyan, "make aws/$@ ...")
+	$(call cyan, "make ops/$@ ...")
 	@pipenv run sceptre list outputs $(stack)
 
 cfn-list-resources: # List CloudFormation Resources of the Stack(s)
-	$(call cyan, "make aws/$@ ...")
+	$(call cyan, "make ops/$@ ...")
 	@pipenv run sceptre list resources $(stack)
 
 clean: # Delete virtual environment
-	$(call cyan, "make aws/$@ ...")
+	$(call cyan, "make ops/$@ ...")
 	@pipenv --rm
 
 help:

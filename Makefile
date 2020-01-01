@@ -2,20 +2,20 @@
 .DEFAULT_GOAL := help
 
 install: ## Create the Locust environment and deploy a test suite for blazedemo.com
-	@$(MAKE) -C ./aws/ install
-	@$(MAKE) -C ./app/ install
+	@$(MAKE) -C ./ops/ install
+	@$(MAKE) -C ./dev/ install
 
 deploy: ## Deploy modifications to the Locust test suite and/or CloudFormation templates
-	@$(MAKE) -C ./aws/ deploy
-	@$(MAKE) -C ./app/ deploy
+	@$(MAKE) -C ./ops/ deploy
+	@$(MAKE) -C ./dev/ deploy
 
 status: ## Show status of the CloudFormation Stacks and Locust deployment
-	@$(MAKE) -C ./aws/ status
-	@$(MAKE) -C ./app/ status
+	@$(MAKE) -C ./ops/ status
+	@$(MAKE) -C ./dev/ status
 
 uninstall: ## Delete the CloudFormation Stacks and clean up
-	@$(MAKE) -C ./app/ uninstall
-	@$(MAKE) -C ./aws/ uninstall
+	@$(MAKE) -C ./dev/ uninstall
+	@$(MAKE) -C ./ops/ uninstall
 
 help:
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-18s\033[0m %s\n", $$1, $$2}' \
