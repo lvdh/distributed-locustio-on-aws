@@ -111,7 +111,6 @@ install            Create the Locust environment and deploy a test suite for bla
 apply              Deploy modifications to the Locust test suite and/or CloudFormation templates
 status             Show status of the CloudFormation Stacks and Locust deployment
 uninstall          Delete the CloudFormation Stacks and clean up
-laurens@u5b95x ~lvdh.distributed-locustio-on-aws (git)-[refactor/ebcli] 
 ```
 
 ### Sub Makefiles
@@ -128,7 +127,6 @@ install            Create the Locust environment and deploy a test suite for bla
 apply              Deploy modifications to the Locust test suite and/or CloudFormation templates
 status             Show deployment status of the CloudFormation Stack(s)
 uninstall          Delete the Locust environment, local dependencies and temporary files
-laurens@u5b95x ~lvdh.distributed-locustio-on-aws (git)-[refactor/ebcli] 
 ```
 
 #### Elastic Beanstalk
