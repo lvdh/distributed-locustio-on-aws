@@ -18,7 +18,7 @@ What you need on your local machine:
 
 * [Git](https://git-scm.com/) >=2.17.1
 * [Python](https://www.python.org/) >=3.7.5
-* [pipenv](https://github.com/pypa/pipenv) >=2018.11.26
+* [Pipenv](https://github.com/pypa/pipenv) >=2018.11.26
 * An [AWS Named Profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html) with sufficient permissions to deploy [the CloudFormation templates](cfn/templates).
 
 Additional dependencies will be installed in a [Python 3 Virtual Environment](https://docs.python.org/3/tutorial/venv.html).
