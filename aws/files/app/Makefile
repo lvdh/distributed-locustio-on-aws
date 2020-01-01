@@ -1,4 +1,4 @@
-.PHONY: deps locust-deploy locust-open clean help
+.PHONY: deps deploy open clean help
 .DEFAULT_GOAL := help
 
 # Load Sceptre deployment configuration (used by awsebcli)
@@ -13,11 +13,11 @@ CLUSTER_CFN_STACK_NAME := $(project_code)-$(stack)-cluster
 CLUSTER_EB_SOLUTION_STACK_NAME := $(shell sed -n -e 's/^.*SolutionStackName: //p' ../../config/locust/cluster.yaml)
 
 deps: # Install local dependencies in virtual environment (requires pipenv)
-	$(call cyan, "make $@ ...")
+	$(call cyan, "make $@ (aws/files/app/) ...")
 	@pipenv --bare install
 
-locust-deploy: deps ## (Re)deploy the Locust application
-	$(call cyan, "make $@ ...")
+deploy: deps ## (Re)deploy the Locust application
+	$(call cyan, "make $@ (aws/files/app/) ...")
 	# (Re)initialize the EB CLI to target the Elastic Beanstalk environment
 	@rm -rf ./.elasticbeanstalk/
 	@pipenv run eb init --profile $(profile) --region $(region) \
@@ -33,8 +33,8 @@ locust-deploy: deps ## (Re)deploy the Locust application
 	@pipenv run eb open --profile $(profile) --region $(region) \
 		$(CLUSTER_CFN_STACK_NAME)
 
-locust-open: deps ## Open the Locust web UI
-	$(call cyan, "make $@ ...")
+open: deps ## Open the Locust web UI
+	$(call cyan, "make $@ (aws/files/app/) ...")
 	# (Re)initialize the EB CLI to target the Elastic Beanstalk environment
 	@rm -rf ./.elasticbeanstalk/
 	@pipenv run eb init --profile $(profile) --region $(region) \
@@ -45,7 +45,7 @@ locust-open: deps ## Open the Locust web UI
 		$(CLUSTER_CFN_STACK_NAME)
 
 clean: # Delete virtualenvironment and temporary files
-	$(call cyan, "make $@ ...")
+	$(call cyan, "make $@ (aws/files/app/) ...")
 	@pipenv --rm
 	@rm -vrf __pycache__/
 	@rm -vrf .elasticbeanstalk/
