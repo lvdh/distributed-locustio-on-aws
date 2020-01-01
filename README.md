@@ -21,7 +21,7 @@ What you need on your local machine:
 * [Pipenv](https://github.com/pypa/pipenv) >=2018.11.26
 * An [AWS Named Profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html) with sufficient permissions to deploy [the CloudFormation templates](cfn/templates).
 
-Additional dependencies will be installed in a [Python 3 Virtual Environment](https://docs.python.org/3/tutorial/venv.html).
+Additional dependencies will be installed in [Python 3 Virtual Environments](https://docs.python.org/3/tutorial/venv.html).
 
 ### Notes on Python Dependencies
 
