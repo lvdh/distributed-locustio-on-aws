@@ -4,7 +4,7 @@
 smoketest: ## Verify the local Locust test suite
 	@$(MAKE) -s -C ./eb/ smoketest
 
-install: ## Create the Locust environment and deploy a test suite for blazedemo.com
+install: ## Create the CloudFormation templates and deploy the Locust test suite
 	@$(MAKE) -s -C ./cfn/ install
 	@$(MAKE) -s -C ./eb/ install
 
