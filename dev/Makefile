@@ -22,42 +22,42 @@ uninstall: clean ## Clean up virtual environment and temporary files
 
 deps: # Install local dependencies in virtual environment (requires pipenv)
 	$(call cyan, "make dev/$@ ...")
-	@pipenv --bare install
+	pipenv --bare install
 
 locust-smoketest: # Smoke test the local Locust test suite
 	$(call cyan, "make $@ ...")
-	@pipenv run locust --no-web --only-summary \
+	pipenv run locust --no-web --only-summary \
 		--locustfile=./locustfile.py \
 		--clients=100 --hatch-rate=20 --run-time=10s
 
 eb-init: # (Re)initialize the EB CLI to target the Elastic Beanstalk environment
 	$(call cyan, "make dev/$@ ...")
 	# (Re)initialize the EB CLI to target the Elastic Beanstalk environment
-	@rm -rf ./.elasticbeanstalk/
-	@pipenv run eb init --profile $(profile) --region $(region) \
+	rm -rf ./.elasticbeanstalk/
+	pipenv run eb init --profile $(profile) --region $(region) \
 		--platform $(CLUSTER_EB_SOLUTION_STACK_NAME) \
 		$(CLUSTER_CFN_STACK_NAME)
 
 eb-deploy: # (Re)deploy the Locust application
 	$(call cyan, "make dev/$@ ...")
-	@pipenv run eb deploy --profile $(profile) --region $(region) \
+	pipenv run eb deploy --profile $(profile) --region $(region) \
 		--staged $(CLUSTER_CFN_STACK_NAME)
 
 eb-status: # Show deployment status of the Locust application
 	$(call cyan, "make dev/$@ ...")
-	@pipenv run eb status --profile $(profile) --region $(region) \
+	pipenv run eb status --profile $(profile) --region $(region) \
 		$(CLUSTER_CFN_STACK_NAME)
 
 eb-open: # Open the Locust web GUI in a browser window
 	$(call cyan, "make dev/$@ ...")
-	@pipenv run eb open --profile $(profile) --region $(region) \
+	pipenv run eb open --profile $(profile) --region $(region) \
 		$(CLUSTER_CFN_STACK_NAME)
 
 clean: # Delete virtual environment and temporary files
 	$(call cyan, "make dev/$@ ...")
-	@pipenv --rm
-	@rm -vrf __pycache__/
-	@rm -vrf .elasticbeanstalk/
+	pipenv --rm
+	rm -vrf __pycache__/
+	rm -vrf .elasticbeanstalk/
 
 help:
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-18s\033[0m %s\n", $$1, $$2}' \
