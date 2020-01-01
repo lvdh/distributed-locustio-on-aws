@@ -48,8 +48,9 @@ eb-status: # Show deployment status of the Locust application
 	pipenv run eb status --profile $(profile) --region $(region) \
 		$(CLUSTER_CFN_STACK_NAME)
 
-eb-open: # Open the Locust web GUI in a browser window
+eb-open: # Open the Locust web GUI in a web browser
 	$(call cyan, "make dev/$@ ...")
+	$(call cyan, "Opening Locust UI in a web browser ...")
 	pipenv run eb open --profile $(profile) --region $(region) \
 		$(CLUSTER_CFN_STACK_NAME)
 
