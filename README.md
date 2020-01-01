@@ -92,7 +92,7 @@ Additional dependencies will be installed in [Python 3 Virtual Environments](htt
 1. View the status of the CloudFormation stacks and the Elastic Beanstalk deployment:
 
     ```
-    make apply
+    make status
     ```
 
 ### Cluster Turndown
