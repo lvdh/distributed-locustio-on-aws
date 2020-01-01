@@ -1,19 +1,19 @@
-.PHONY: install deploy uninstall deps cfn-validate cfn-launch cfn-update cfn-delete cfn-status
+.PHONY: install deploy uninstall dependencies cfn-validate cfn-launch cfn-update cfn-delete cfn-status
 .PHONY: cfn-list-outputs cfn-list-resources clean help
 .DEFAULT_GOAL := help
 
 # Load cluster stack name
 stack := $(shell find ./config/ -mindepth 1 -maxdepth 1 -type d -printf '%f' | tr -d '/')
 
-install: deps cfn-launch ## Create the Locust environment and deploy a test suite for blazedemo.com
+install: dependencies cfn-launch ## Create the Locust environment and deploy a test suite for blazedemo.com
 
-deploy: deps cfn-update ## Deploy modifications to the Locust test suite and/or CloudFormation templates
+deploy: dependencies cfn-update ## Deploy modifications to the Locust test suite and/or CloudFormation templates
 
-status: deps cfn-status ## Show deployment status of the CloudFormation Stack(s)
+status: dependencies cfn-status ## Show deployment status of the CloudFormation Stack(s)
 
-uninstall: deps cfn-delete clean ## Delete the Locust environment, local dependencies and temporary files
+uninstall: dependencies cfn-delete clean ## Delete the Locust environment, local dependencies and temporary files
 
-deps: # Install local dependencies in virtual environments (requires pipenv)
+dependencies: # Install local dependencies in virtual environments (requires pipenv)
 	$(call cyan, "make ops/$@ ...")
 	pipenv --bare install
 

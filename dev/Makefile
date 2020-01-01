@@ -1,4 +1,4 @@
-.PHONY: install deps locust-smoketest eb-deploy eb-open clean help
+.PHONY: install dependencies locust-smoketest eb-deploy eb-open clean help
 .DEFAULT_GOAL := help
 
 # Load Sceptre deployment configuration (used by awsebcli)
@@ -12,7 +12,7 @@ CLUSTER_CFN_STACK_NAME := $(project_code)-$(stack)-cluster
 # Load Elastic Beanstalk "Solution Stack Name" (used by awsebcli)
 CLUSTER_EB_SOLUTION_STACK_NAME := $(shell sed -n -e 's/^.*SolutionStackName: //p' ../ops/config/locust/cluster.yaml)
 
-install: deps locust-smoketest eb-init eb-deploy eb-status eb-open ## Initialize and deploy the Locust test suite
+install: dependencies locust-smoketest eb-init eb-deploy eb-status eb-open ## Initialize and deploy the Locust test suite
 
 deploy: locust-smoketest eb-deploy eb-status eb-open ## Deploy an updated Locust test suite
 
@@ -20,7 +20,7 @@ status: eb-status ## Show deployment status of the Locust application
 
 uninstall: clean ## Clean up virtual environment and temporary files
 
-deps: # Install local dependencies in virtual environment (requires pipenv)
+dependencies: # Install local dependencies in virtual environment (requires pipenv)
 	$(call cyan, "make dev/$@ ...")
 	pipenv --bare install
 
