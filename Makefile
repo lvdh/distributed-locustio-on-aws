@@ -13,7 +13,7 @@ status: ## Show status of the CloudFormation Stacks and Locust deployment
 	@$(MAKE) -C ./aws/ status
 	@$(MAKE) -C ./app/ status
 
-uninstall: ## Delete the Locust environment and clean up
+uninstall: ## Delete the CloudFormation Stacks and clean up
 	@$(MAKE) -C ./app/ uninstall
 	@$(MAKE) -C ./aws/ uninstall
 
