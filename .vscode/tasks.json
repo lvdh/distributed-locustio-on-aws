@@ -6,8 +6,9 @@
     {
       "label": "0. Run Smoke Test",
       "type": "shell",
-      "command": "make -C app/ smoketest",
-      "detail": "make -C app/ smoketest",
+      "command": "make -C eb/ smoketest",
+      "detail": "make -C eb/ smoketest",
+      "problemMatcher": [],
       "group": {
         "kind": "build",
         "isDefault": true
@@ -18,6 +19,7 @@
       "type": "shell",
       "command": "make all",
       "detail": "make all",
+      "problemMatcher": [],
       "group": {
         "kind": "build",
         "isDefault": true
@@ -28,6 +30,7 @@
       "type": "shell",
       "command": "make install",
       "detail": "make install",
+      "problemMatcher": [],
       "group": {
         "kind": "build",
         "isDefault": true
@@ -38,6 +41,7 @@
       "type": "shell",
       "command": "make apply",
       "detail": "make apply",
+      "problemMatcher": [],
       "group": {
         "kind": "build",
         "isDefault": true
@@ -48,6 +52,7 @@
       "type": "shell",
       "command": "make status",
       "detail": "make status",
+      "problemMatcher": [],
       "group": {
         "kind": "build",
         "isDefault": true
@@ -58,6 +63,7 @@
       "type": "shell",
       "command": "make uninstall",
       "detail": "make uninstall",
+      "problemMatcher": [],
       "group": {
         "kind": "build",
         "isDefault": true
