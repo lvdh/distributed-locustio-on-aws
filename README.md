@@ -71,6 +71,16 @@ Additional dependencies will be installed in [Python 3 Virtual Environments](htt
     make smoketest
     ```
 
+### Run Integration Test
+
+1. Run a full cycle of smoketest, install, deploy, status, uninstall:
+
+    **Note:** Certain targets will be executed multiple times.
+
+    ```
+    make all
+    ```
+
 ### Install Cluster
 
 1. Create the load testing infrastructure and deploy a [sample Locust test suite](eb/locustfile.py):
