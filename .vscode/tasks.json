@@ -6,8 +6,8 @@
     {
       "label": "0. Run Smoke Test",
       "type": "shell",
-      "command": "make -C eb/ smoketest",
-      "detail": "make -C eb/ smoketest",
+      "command": "make test",
+      "detail": "make test",
       "problemMatcher": [],
       "group": {
         "kind": "build",
