@@ -127,7 +127,7 @@ Deploy a new test suite, or changes to CloudFormation templates.
 
 ## Overview of CLI Commands
 
-```bash
+```
 $ make                                                        
 all                Run integration test
 smoketest          Verify the local Locust test suite
@@ -145,7 +145,7 @@ See Makefiles below for a list of sub-targets which may be useful during develop
 
 [`cfn/Makefile`](cfn/Makefile)
 
-```bash
+```
 $ make -s -C cfn/
 install            Deploy CloudFormation Stack(s)
 apply              Update CloudFormation Stack(s)
@@ -157,7 +157,7 @@ status             Show deployment status of the CloudFormation Stack(s)
 
 [`eb/Makefile`](eb/Makefile)
 
-```bash
+```
 $ make -s -C eb/
 install            Initialize Elastic Beanstalk and deploy the Locust test suite
 apply              Deploy an updated Locust test suite to Elastic Beanstalk
