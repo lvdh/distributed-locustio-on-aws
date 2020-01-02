@@ -45,7 +45,7 @@ list-resources: dependencies # List CloudFormation Resources of the Stack(s)
 
 clean: # Delete virtual environment
 	$(call cyan, "make cfn/$@ ...")
-	pipenv --rm
+	pipenv --rm || true
 
 help:
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-18s\033[0m %s\n", $$1, $$2}' \

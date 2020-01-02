@@ -54,7 +54,7 @@ open: dependencies # Open the Locust web GUI in a web browser
 
 clean: # Delete virtual environment and temporary files
 	$(call cyan, "make eb/$@ ...")
-	pipenv --rm
+	pipenv --rm || true
 	rm -vrf __pycache__/
 	rm -vrf .elasticbeanstalk/
 
