@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 import logging
 import sys
 
-# Output for this logger is included in Locust's CLI mode output
+# Log to stdout during Locust run
 logger = logging.getLogger("locust")
 logger.setLevel(logging.INFO)
 
@@ -71,10 +71,10 @@ class CustomTaskSequence(TaskSequence):
 
         # With CSRF:
         # csrf_data = self.get_csrf(task_url)
-        # logger.debug((
+        # logger.debug(
         #     "Running '{}': ".format(sys._getframe().f_code.co_name) +
         #     "CSRF: {}".format(csrf_data)
-        # ))
+        # )
 
         response = self.client.post(
             name="#{}: {}".format(task_id, task_description),
@@ -99,26 +99,32 @@ class UserRegistration(CustomTaskSequence):
     @seq_task(1000)
     @task(1)
     def task_1000(self):
+        task_url = "/"  # NOQA
+        task_id = "1000"  # NOQA
+        task_description = "(UserRegistration) Visit /"  # NOQA
+        task_data_params = "None"  # NOQA
+
         # Logging
-        logger.info((
-            "Run '{}' ...".format(sys._getframe().f_code.co_name)
-        ))
-
-        logger.debug((
-            "Running '{}': ".format(sys._getframe().f_code.co_name) +
-            "locust.client: {}".format(self.locust.client.__dict__)
-        ))
-
-        # HTTP request logic
-        response = self.get(
-            "/",  # NOQA
-            "1000",  # NOQA
-            "(UserRegistration) Visit /",  # NOQA
+        logger.info(
+            "Run {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            )
         )
 
+        logger.debug(
+            "locust.client: {}".format(self.locust.client.__dict__)
+        )
+
+        # HTTP request logic
+        response = self.get(task_url, task_id, task_description)
+
         # Logging
-        logger.debug((
-            "Response for '{}': ".format(sys._getframe().f_code.co_name) +
+        logger.debug(
+            "Response for {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            ) +
             "HTTP {} ({} {}), ".format(
                 response.status_code,
                 response.request,
@@ -126,31 +132,37 @@ class UserRegistration(CustomTaskSequence):
             ) +
             "Headers: {} ,".format(response.headers) +
             "Cookies: {}".format(response.cookies)
-        ))
+        )
 
     @seq_task(1001)
     @task(1)
     def task_1001(self):
+        task_url = "/home"  # NOQA
+        task_id = "1001"  # NOQA
+        task_description = "(UserRegistration) Click 'home'"  # NOQA
+        task_data_params = "None"  # NOQA
+
         # Logging
-        logger.info((
-            "Run '{}' ...".format(sys._getframe().f_code.co_name)
-        ))
-
-        logger.debug((
-            "Running '{}': ".format(sys._getframe().f_code.co_name) +
-            "locust.client: {}".format(self.locust.client.__dict__)
-        ))
-
-        # HTTP request logic
-        response = self.get(
-            "/home",  # NOQA
-            "1001",  # NOQA
-            "(UserRegistration) Click 'home'",  # NOQA
+        logger.info(
+            "Run {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            )
         )
 
+        logger.debug(
+            "locust.client: {}".format(self.locust.client.__dict__)
+        )
+
+        # HTTP request logic
+        response = self.get(task_url, task_id, task_description)
+
         # Logging
-        logger.debug((
-            "Response for '{}': ".format(sys._getframe().f_code.co_name) +
+        logger.debug(
+            "Response for {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            ) +
             "HTTP {} ({} {}), ".format(
                 response.status_code,
                 response.request,
@@ -158,31 +170,37 @@ class UserRegistration(CustomTaskSequence):
             ) +
             "Headers: {} ,".format(response.headers) +
             "Cookies: {}".format(response.cookies)
-        ))
+        )
 
     @seq_task(1002)
     @task(1)
     def task_1002(self):
+        task_url = "/register"  # NOQA
+        task_id = "1002"  # NOQA
+        task_description = "(UserRegistration) Click 'Register'"  # NOQA
+        task_data_params = "None"  # NOQA
+
         # Logging
-        logger.info((
-            "Run '{}' ...".format(sys._getframe().f_code.co_name)
-        ))
-
-        logger.debug((
-            "Running '{}': ".format(sys._getframe().f_code.co_name) +
-            "locust.client: {}".format(self.locust.client.__dict__)
-        ))
-
-        # HTTP request logic
-        response = self.get(
-            "/register",  # NOQA
-            "1002",  # NOQA
-            "(UserRegistration) Click 'Register'",  # NOQA
+        logger.info(
+            "Run {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            )
         )
 
+        logger.debug(
+            "locust.client: {}".format(self.locust.client.__dict__)
+        )
+
+        # HTTP request logic
+        response = self.get(task_url, task_id, task_description)
+
         # Logging
-        logger.debug((
-            "Response for '{}': ".format(sys._getframe().f_code.co_name) +
+        logger.debug(
+            "Response for {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            ) +
             "HTTP {} ({} {}), ".format(
                 response.status_code,
                 response.request,
@@ -190,32 +208,37 @@ class UserRegistration(CustomTaskSequence):
             ) +
             "Headers: {} ,".format(response.headers) +
             "Cookies: {}".format(response.cookies)
-        ))
+        )
 
     @seq_task(1003)
     @task(1)
     def task_1003(self):
+        task_url = "/register"  # NOQA
+        task_id = "1003"  # NOQA
+        task_description = "(UserRegistration) Register as user test@example.org"  # NOQA
+        task_data_params = "name=Test&company=Test&email=test%40example.org&password=test&password_confirmation=test"  # NOQA
+
         # Logging
-        logger.info((
-            "Run '{}' ...".format(sys._getframe().f_code.co_name)
-        ))
-
-        logger.debug((
-            "Running '{}': ".format(sys._getframe().f_code.co_name) +
-            "locust.client: {}".format(self.locust.client.__dict__)
-        ))
-
-        # HTTP request logic
-        response = self.post(
-            "/register",  # NOQA
-            "1003",  # NOQA
-            "(UserRegistration) Register as user test@example.org",  # NOQA
-            "name=Test&company=Test&email=test%40example.org&password=test&password_confirmation=test"  # NOQA
+        logger.info(
+            "Run {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            )
         )
 
+        logger.debug(
+            "locust.client: {}".format(self.locust.client.__dict__)
+        )
+
+        # HTTP request logic
+        response = self.post(task_url, task_id, task_description, task_data_params)
+
         # Logging
-        logger.debug((
-            "Response for '{}': ".format(sys._getframe().f_code.co_name) +
+        logger.debug(
+            "Response for {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            ) +
             "HTTP {} ({} {}), ".format(
                 response.status_code,
                 response.request,
@@ -223,7 +246,7 @@ class UserRegistration(CustomTaskSequence):
             ) +
             "Headers: {} ,".format(response.headers) +
             "Cookies: {}".format(response.cookies)
-        ))
+        )
 
 
 class UserLogin(CustomTaskSequence):
@@ -231,26 +254,32 @@ class UserLogin(CustomTaskSequence):
     @seq_task(1100)
     @task(1)
     def task_1100(self):
+        task_url = "/"  # NOQA
+        task_id = "1100"  # NOQA
+        task_description = "(UserLogin) Visit /"  # NOQA
+        task_data_params = "None"  # NOQA
+
         # Logging
-        logger.info((
-            "Run '{}' ...".format(sys._getframe().f_code.co_name)
-        ))
-
-        logger.debug((
-            "Running '{}': ".format(sys._getframe().f_code.co_name) +
-            "locust.client: {}".format(self.locust.client.__dict__)
-        ))
-
-        # HTTP request logic
-        response = self.get(
-            "/",  # NOQA
-            "1100",  # NOQA
-            "(UserLogin) Visit /",  # NOQA
+        logger.info(
+            "Run {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            )
         )
 
+        logger.debug(
+            "locust.client: {}".format(self.locust.client.__dict__)
+        )
+
+        # HTTP request logic
+        response = self.get(task_url, task_id, task_description)
+
         # Logging
-        logger.debug((
-            "Response for '{}': ".format(sys._getframe().f_code.co_name) +
+        logger.debug(
+            "Response for {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            ) +
             "HTTP {} ({} {}), ".format(
                 response.status_code,
                 response.request,
@@ -258,31 +287,37 @@ class UserLogin(CustomTaskSequence):
             ) +
             "Headers: {} ,".format(response.headers) +
             "Cookies: {}".format(response.cookies)
-        ))
+        )
 
     @seq_task(1101)
     @task(1)
     def task_1101(self):
+        task_url = "/"  # NOQA
+        task_id = "1101"  # NOQA
+        task_description = "(UserLogin) Click 'home'"  # NOQA
+        task_data_params = "None"  # NOQA
+
         # Logging
-        logger.info((
-            "Run '{}' ...".format(sys._getframe().f_code.co_name)
-        ))
-
-        logger.debug((
-            "Running '{}': ".format(sys._getframe().f_code.co_name) +
-            "locust.client: {}".format(self.locust.client.__dict__)
-        ))
-
-        # HTTP request logic
-        response = self.get(
-            "/",  # NOQA
-            "1101",  # NOQA
-            "(UserLogin) Click 'home'",  # NOQA
+        logger.info(
+            "Run {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            )
         )
 
+        logger.debug(
+            "locust.client: {}".format(self.locust.client.__dict__)
+        )
+
+        # HTTP request logic
+        response = self.get(task_url, task_id, task_description)
+
         # Logging
-        logger.debug((
-            "Response for '{}': ".format(sys._getframe().f_code.co_name) +
+        logger.debug(
+            "Response for {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            ) +
             "HTTP {} ({} {}), ".format(
                 response.status_code,
                 response.request,
@@ -290,31 +325,37 @@ class UserLogin(CustomTaskSequence):
             ) +
             "Headers: {} ,".format(response.headers) +
             "Cookies: {}".format(response.cookies)
-        ))
+        )
 
     @seq_task(1102)
     @task(1)
     def task_1102(self):
+        task_url = "/"  # NOQA
+        task_id = "1102"  # NOQA
+        task_description = "(UserLogin) Click 'Login'"  # NOQA
+        task_data_params = "None"  # NOQA
+
         # Logging
-        logger.info((
-            "Run '{}' ...".format(sys._getframe().f_code.co_name)
-        ))
-
-        logger.debug((
-            "Running '{}': ".format(sys._getframe().f_code.co_name) +
-            "locust.client: {}".format(self.locust.client.__dict__)
-        ))
-
-        # HTTP request logic
-        response = self.get(
-            "/",  # NOQA
-            "1102",  # NOQA
-            "(UserLogin) Click 'Login'",  # NOQA
+        logger.info(
+            "Run {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            )
         )
 
+        logger.debug(
+            "locust.client: {}".format(self.locust.client.__dict__)
+        )
+
+        # HTTP request logic
+        response = self.get(task_url, task_id, task_description)
+
         # Logging
-        logger.debug((
-            "Response for '{}': ".format(sys._getframe().f_code.co_name) +
+        logger.debug(
+            "Response for {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            ) +
             "HTTP {} ({} {}), ".format(
                 response.status_code,
                 response.request,
@@ -322,32 +363,37 @@ class UserLogin(CustomTaskSequence):
             ) +
             "Headers: {} ,".format(response.headers) +
             "Cookies: {}".format(response.cookies)
-        ))
+        )
 
     @seq_task(1103)
     @task(1)
     def task_1103(self):
+        task_url = "/login"  # NOQA
+        task_id = "1103"  # NOQA
+        task_description = "(UserLogin) Log in as user test@example.org"  # NOQA
+        task_data_params = "email=test%40example.org&password=test"  # NOQA
+
         # Logging
-        logger.info((
-            "Run '{}' ...".format(sys._getframe().f_code.co_name)
-        ))
-
-        logger.debug((
-            "Running '{}': ".format(sys._getframe().f_code.co_name) +
-            "locust.client: {}".format(self.locust.client.__dict__)
-        ))
-
-        # HTTP request logic
-        response = self.post(
-            "/login",  # NOQA
-            "1103",  # NOQA
-            "(UserLogin) Log in as user test@example.org",  # NOQA
-            "email=test%40example.org&password=test"  # NOQA
+        logger.info(
+            "Run {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            )
         )
 
+        logger.debug(
+            "locust.client: {}".format(self.locust.client.__dict__)
+        )
+
+        # HTTP request logic
+        response = self.post(task_url, task_id, task_description, task_data_params)
+
         # Logging
-        logger.debug((
-            "Response for '{}': ".format(sys._getframe().f_code.co_name) +
+        logger.debug(
+            "Response for {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            ) +
             "HTTP {} ({} {}), ".format(
                 response.status_code,
                 response.request,
@@ -355,7 +401,7 @@ class UserLogin(CustomTaskSequence):
             ) +
             "Headers: {} ,".format(response.headers) +
             "Cookies: {}".format(response.cookies)
-        ))
+        )
 
 
 class UserPasswordReset(CustomTaskSequence):
@@ -363,26 +409,32 @@ class UserPasswordReset(CustomTaskSequence):
     @seq_task(1200)
     @task(1)
     def task_1200(self):
+        task_url = "/"  # NOQA
+        task_id = "1200"  # NOQA
+        task_description = "(UserPasswordReset) Visit /"  # NOQA
+        task_data_params = "None"  # NOQA
+
         # Logging
-        logger.info((
-            "Run '{}' ...".format(sys._getframe().f_code.co_name)
-        ))
-
-        logger.debug((
-            "Running '{}': ".format(sys._getframe().f_code.co_name) +
-            "locust.client: {}".format(self.locust.client.__dict__)
-        ))
-
-        # HTTP request logic
-        response = self.get(
-            "/",  # NOQA
-            "1200",  # NOQA
-            "(UserPasswordReset) Visit /",  # NOQA
+        logger.info(
+            "Run {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            )
         )
 
+        logger.debug(
+            "locust.client: {}".format(self.locust.client.__dict__)
+        )
+
+        # HTTP request logic
+        response = self.get(task_url, task_id, task_description)
+
         # Logging
-        logger.debug((
-            "Response for '{}': ".format(sys._getframe().f_code.co_name) +
+        logger.debug(
+            "Response for {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            ) +
             "HTTP {} ({} {}), ".format(
                 response.status_code,
                 response.request,
@@ -390,31 +442,37 @@ class UserPasswordReset(CustomTaskSequence):
             ) +
             "Headers: {} ,".format(response.headers) +
             "Cookies: {}".format(response.cookies)
-        ))
+        )
 
     @seq_task(1201)
     @task(1)
     def task_1201(self):
+        task_url = "/home"  # NOQA
+        task_id = "1201"  # NOQA
+        task_description = "(UserPasswordReset) Click 'home'"  # NOQA
+        task_data_params = "None"  # NOQA
+
         # Logging
-        logger.info((
-            "Run '{}' ...".format(sys._getframe().f_code.co_name)
-        ))
-
-        logger.debug((
-            "Running '{}': ".format(sys._getframe().f_code.co_name) +
-            "locust.client: {}".format(self.locust.client.__dict__)
-        ))
-
-        # HTTP request logic
-        response = self.get(
-            "/home",  # NOQA
-            "1201",  # NOQA
-            "(UserPasswordReset) Click 'home'",  # NOQA
+        logger.info(
+            "Run {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            )
         )
 
+        logger.debug(
+            "locust.client: {}".format(self.locust.client.__dict__)
+        )
+
+        # HTTP request logic
+        response = self.get(task_url, task_id, task_description)
+
         # Logging
-        logger.debug((
-            "Response for '{}': ".format(sys._getframe().f_code.co_name) +
+        logger.debug(
+            "Response for {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            ) +
             "HTTP {} ({} {}), ".format(
                 response.status_code,
                 response.request,
@@ -422,31 +480,37 @@ class UserPasswordReset(CustomTaskSequence):
             ) +
             "Headers: {} ,".format(response.headers) +
             "Cookies: {}".format(response.cookies)
-        ))
+        )
 
     @seq_task(1202)
     @task(1)
     def task_1202(self):
+        task_url = "/password/reset"  # NOQA
+        task_id = "1202"  # NOQA
+        task_description = "(UserPasswordReset) Click 'Forgot Your Password?'"  # NOQA
+        task_data_params = "None"  # NOQA
+
         # Logging
-        logger.info((
-            "Run '{}' ...".format(sys._getframe().f_code.co_name)
-        ))
-
-        logger.debug((
-            "Running '{}': ".format(sys._getframe().f_code.co_name) +
-            "locust.client: {}".format(self.locust.client.__dict__)
-        ))
-
-        # HTTP request logic
-        response = self.get(
-            "/password/reset",  # NOQA
-            "1202",  # NOQA
-            "(UserPasswordReset) Click 'Forgot Your Password?'",  # NOQA
+        logger.info(
+            "Run {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            )
         )
 
+        logger.debug(
+            "locust.client: {}".format(self.locust.client.__dict__)
+        )
+
+        # HTTP request logic
+        response = self.get(task_url, task_id, task_description)
+
         # Logging
-        logger.debug((
-            "Response for '{}': ".format(sys._getframe().f_code.co_name) +
+        logger.debug(
+            "Response for {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            ) +
             "HTTP {} ({} {}), ".format(
                 response.status_code,
                 response.request,
@@ -454,32 +518,37 @@ class UserPasswordReset(CustomTaskSequence):
             ) +
             "Headers: {} ,".format(response.headers) +
             "Cookies: {}".format(response.cookies)
-        ))
+        )
 
     @seq_task(1203)
     @task(1)
     def task_1203(self):
+        task_url = "/password/reset"  # NOQA
+        task_id = "1203"  # NOQA
+        task_description = "(UserPasswordReset) Request new password"  # NOQA
+        task_data_params = "email=test%40example.org"  # NOQA
+
         # Logging
-        logger.info((
-            "Run '{}' ...".format(sys._getframe().f_code.co_name)
-        ))
-
-        logger.debug((
-            "Running '{}': ".format(sys._getframe().f_code.co_name) +
-            "locust.client: {}".format(self.locust.client.__dict__)
-        ))
-
-        # HTTP request logic
-        response = self.post(
-            "/password/reset",  # NOQA
-            "1203",  # NOQA
-            "(UserPasswordReset) Request new password",  # NOQA
-            "email=test%40example.org"  # NOQA
+        logger.info(
+            "Run {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            )
         )
 
+        logger.debug(
+            "locust.client: {}".format(self.locust.client.__dict__)
+        )
+
+        # HTTP request logic
+        response = self.post(task_url, task_id, task_description, task_data_params)
+
         # Logging
-        logger.debug((
-            "Response for '{}': ".format(sys._getframe().f_code.co_name) +
+        logger.debug(
+            "Response for {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            ) +
             "HTTP {} ({} {}), ".format(
                 response.status_code,
                 response.request,
@@ -487,7 +556,7 @@ class UserPasswordReset(CustomTaskSequence):
             ) +
             "Headers: {} ,".format(response.headers) +
             "Cookies: {}".format(response.cookies)
-        ))
+        )
 
 
 class TravelTheWorld(CustomTaskSequence):
@@ -495,26 +564,32 @@ class TravelTheWorld(CustomTaskSequence):
     @seq_task(1300)
     @task(1)
     def task_1300(self):
+        task_url = "/"  # NOQA
+        task_id = "1300"  # NOQA
+        task_description = "(TravelTheWorld) Visit /"  # NOQA
+        task_data_params = "None"  # NOQA
+
         # Logging
-        logger.info((
-            "Run '{}' ...".format(sys._getframe().f_code.co_name)
-        ))
-
-        logger.debug((
-            "Running '{}': ".format(sys._getframe().f_code.co_name) +
-            "locust.client: {}".format(self.locust.client.__dict__)
-        ))
-
-        # HTTP request logic
-        response = self.get(
-            "/",  # NOQA
-            "1300",  # NOQA
-            "(TravelTheWorld) Visit /",  # NOQA
+        logger.info(
+            "Run {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            )
         )
 
+        logger.debug(
+            "locust.client: {}".format(self.locust.client.__dict__)
+        )
+
+        # HTTP request logic
+        response = self.get(task_url, task_id, task_description)
+
         # Logging
-        logger.debug((
-            "Response for '{}': ".format(sys._getframe().f_code.co_name) +
+        logger.debug(
+            "Response for {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            ) +
             "HTTP {} ({} {}), ".format(
                 response.status_code,
                 response.request,
@@ -522,31 +597,37 @@ class TravelTheWorld(CustomTaskSequence):
             ) +
             "Headers: {} ,".format(response.headers) +
             "Cookies: {}".format(response.cookies)
-        ))
+        )
 
     @seq_task(1301)
     @task(1)
     def task_1301(self):
+        task_url = "/index.php"  # NOQA
+        task_id = "1301"  # NOQA
+        task_description = "(TravelTheWorld) Click 'Travel The World'"  # NOQA
+        task_data_params = "None"  # NOQA
+
         # Logging
-        logger.info((
-            "Run '{}' ...".format(sys._getframe().f_code.co_name)
-        ))
-
-        logger.debug((
-            "Running '{}': ".format(sys._getframe().f_code.co_name) +
-            "locust.client: {}".format(self.locust.client.__dict__)
-        ))
-
-        # HTTP request logic
-        response = self.get(
-            "/index.php",  # NOQA
-            "1301",  # NOQA
-            "(TravelTheWorld) Click 'Travel The World'",  # NOQA
+        logger.info(
+            "Run {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            )
         )
 
+        logger.debug(
+            "locust.client: {}".format(self.locust.client.__dict__)
+        )
+
+        # HTTP request logic
+        response = self.get(task_url, task_id, task_description)
+
         # Logging
-        logger.debug((
-            "Response for '{}': ".format(sys._getframe().f_code.co_name) +
+        logger.debug(
+            "Response for {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            ) +
             "HTTP {} ({} {}), ".format(
                 response.status_code,
                 response.request,
@@ -554,7 +635,7 @@ class TravelTheWorld(CustomTaskSequence):
             ) +
             "Headers: {} ,".format(response.headers) +
             "Cookies: {}".format(response.cookies)
-        ))
+        )
 
 
 class DestinationOfTheWeek(CustomTaskSequence):
@@ -562,26 +643,32 @@ class DestinationOfTheWeek(CustomTaskSequence):
     @seq_task(1400)
     @task(1)
     def task_1400(self):
+        task_url = "/"  # NOQA
+        task_id = "1400"  # NOQA
+        task_description = "(DestinationOfTheWeek) Visit /"  # NOQA
+        task_data_params = "None"  # NOQA
+
         # Logging
-        logger.info((
-            "Run '{}' ...".format(sys._getframe().f_code.co_name)
-        ))
-
-        logger.debug((
-            "Running '{}': ".format(sys._getframe().f_code.co_name) +
-            "locust.client: {}".format(self.locust.client.__dict__)
-        ))
-
-        # HTTP request logic
-        response = self.get(
-            "/",  # NOQA
-            "1400",  # NOQA
-            "(DestinationOfTheWeek) Visit /",  # NOQA
+        logger.info(
+            "Run {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            )
         )
 
+        logger.debug(
+            "locust.client: {}".format(self.locust.client.__dict__)
+        )
+
+        # HTTP request logic
+        response = self.get(task_url, task_id, task_description)
+
         # Logging
-        logger.debug((
-            "Response for '{}': ".format(sys._getframe().f_code.co_name) +
+        logger.debug(
+            "Response for {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            ) +
             "HTTP {} ({} {}), ".format(
                 response.status_code,
                 response.request,
@@ -589,31 +676,37 @@ class DestinationOfTheWeek(CustomTaskSequence):
             ) +
             "Headers: {} ,".format(response.headers) +
             "Cookies: {}".format(response.cookies)
-        ))
+        )
 
     @seq_task(1401)
     @task(1)
     def task_1401(self):
+        task_url = "/vacation.html"  # NOQA
+        task_id = "1401"  # NOQA
+        task_description = "(DestinationOfTheWeek) Click 'destination of the week!'"  # NOQA
+        task_data_params = "None"  # NOQA
+
         # Logging
-        logger.info((
-            "Run '{}' ...".format(sys._getframe().f_code.co_name)
-        ))
-
-        logger.debug((
-            "Running '{}': ".format(sys._getframe().f_code.co_name) +
-            "locust.client: {}".format(self.locust.client.__dict__)
-        ))
-
-        # HTTP request logic
-        response = self.get(
-            "/vacation.html",  # NOQA
-            "1401",  # NOQA
-            "(DestinationOfTheWeek) Click 'destination of the week!'",  # NOQA
+        logger.info(
+            "Run {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            )
         )
 
+        logger.debug(
+            "locust.client: {}".format(self.locust.client.__dict__)
+        )
+
+        # HTTP request logic
+        response = self.get(task_url, task_id, task_description)
+
         # Logging
-        logger.debug((
-            "Response for '{}': ".format(sys._getframe().f_code.co_name) +
+        logger.debug(
+            "Response for {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            ) +
             "HTTP {} ({} {}), ".format(
                 response.status_code,
                 response.request,
@@ -621,7 +714,7 @@ class DestinationOfTheWeek(CustomTaskSequence):
             ) +
             "Headers: {} ,".format(response.headers) +
             "Cookies: {}".format(response.cookies)
-        ))
+        )
 
 
 class BookFlight(CustomTaskSequence):
@@ -629,26 +722,32 @@ class BookFlight(CustomTaskSequence):
     @seq_task(1500)
     @task(1)
     def task_1500(self):
+        task_url = "/"  # NOQA
+        task_id = "1500"  # NOQA
+        task_description = "(BookFlight) Visit /"  # NOQA
+        task_data_params = "None"  # NOQA
+
         # Logging
-        logger.info((
-            "Run '{}' ...".format(sys._getframe().f_code.co_name)
-        ))
-
-        logger.debug((
-            "Running '{}': ".format(sys._getframe().f_code.co_name) +
-            "locust.client: {}".format(self.locust.client.__dict__)
-        ))
-
-        # HTTP request logic
-        response = self.get(
-            "/",  # NOQA
-            "1500",  # NOQA
-            "(BookFlight) Visit /",  # NOQA
+        logger.info(
+            "Run {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            )
         )
 
+        logger.debug(
+            "locust.client: {}".format(self.locust.client.__dict__)
+        )
+
+        # HTTP request logic
+        response = self.get(task_url, task_id, task_description)
+
         # Logging
-        logger.debug((
-            "Response for '{}': ".format(sys._getframe().f_code.co_name) +
+        logger.debug(
+            "Response for {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            ) +
             "HTTP {} ({} {}), ".format(
                 response.status_code,
                 response.request,
@@ -656,32 +755,37 @@ class BookFlight(CustomTaskSequence):
             ) +
             "Headers: {} ,".format(response.headers) +
             "Cookies: {}".format(response.cookies)
-        ))
+        )
 
     @seq_task(1501)
     @task(1)
     def task_1501(self):
+        task_url = "/reserve.php"  # NOQA
+        task_id = "1501"  # NOQA
+        task_description = "(BookFlight) Click 'Find Flights' for BOS to DUB"  # NOQA
+        task_data_params = "fromPort=Boston&toPort=Dublin"  # NOQA
+
         # Logging
-        logger.info((
-            "Run '{}' ...".format(sys._getframe().f_code.co_name)
-        ))
-
-        logger.debug((
-            "Running '{}': ".format(sys._getframe().f_code.co_name) +
-            "locust.client: {}".format(self.locust.client.__dict__)
-        ))
-
-        # HTTP request logic
-        response = self.post(
-            "/reserve.php",  # NOQA
-            "1501",  # NOQA
-            "(BookFlight) Click 'Find Flights' for BOS to DUB",  # NOQA
-            "fromPort=Boston&toPort=Dublin"  # NOQA
+        logger.info(
+            "Run {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            )
         )
 
+        logger.debug(
+            "locust.client: {}".format(self.locust.client.__dict__)
+        )
+
+        # HTTP request logic
+        response = self.post(task_url, task_id, task_description, task_data_params)
+
         # Logging
-        logger.debug((
-            "Response for '{}': ".format(sys._getframe().f_code.co_name) +
+        logger.debug(
+            "Response for {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            ) +
             "HTTP {} ({} {}), ".format(
                 response.status_code,
                 response.request,
@@ -689,32 +793,37 @@ class BookFlight(CustomTaskSequence):
             ) +
             "Headers: {} ,".format(response.headers) +
             "Cookies: {}".format(response.cookies)
-        ))
+        )
 
     @seq_task(1502)
     @task(1)
     def task_1502(self):
+        task_url = "/purchase.php"  # NOQA
+        task_id = "1502"  # NOQA
+        task_description = "(BookFlight) Click 'Choose This Flight' for flight nr. 9696"  # NOQA
+        task_data_params = "flight=9696&price=200.98&airline=Aer+Lingus&fromPort=Boston&toPort=Dublin"  # NOQA
+
         # Logging
-        logger.info((
-            "Run '{}' ...".format(sys._getframe().f_code.co_name)
-        ))
-
-        logger.debug((
-            "Running '{}': ".format(sys._getframe().f_code.co_name) +
-            "locust.client: {}".format(self.locust.client.__dict__)
-        ))
-
-        # HTTP request logic
-        response = self.post(
-            "/purchase.php",  # NOQA
-            "1502",  # NOQA
-            "(BookFlight) Click 'Choose This Flight' for flight nr. 9696",  # NOQA
-            "flight=9696&price=200.98&airline=Aer+Lingus&fromPort=Boston&toPort=Dublin"  # NOQA
+        logger.info(
+            "Run {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            )
         )
 
+        logger.debug(
+            "locust.client: {}".format(self.locust.client.__dict__)
+        )
+
+        # HTTP request logic
+        response = self.post(task_url, task_id, task_description, task_data_params)
+
         # Logging
-        logger.debug((
-            "Response for '{}': ".format(sys._getframe().f_code.co_name) +
+        logger.debug(
+            "Response for {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            ) +
             "HTTP {} ({} {}), ".format(
                 response.status_code,
                 response.request,
@@ -722,32 +831,37 @@ class BookFlight(CustomTaskSequence):
             ) +
             "Headers: {} ,".format(response.headers) +
             "Cookies: {}".format(response.cookies)
-        ))
+        )
 
     @seq_task(1503)
     @task(1)
     def task_1503(self):
+        task_url = "/purchase.php"  # NOQA
+        task_id = "1503"  # NOQA
+        task_description = "(BookFlight) Click 'Purchase Flight'"  # NOQA
+        task_data_params = "inputName=John+Smith&address=123+Main+St.&city=Anytown&state=State&zipCode=12345&cardType=visa&creditCardNumber=0000000000000000&creditCardMonth=11&creditCardYear=2017&nameOnCard=John+Smith"  # NOQA
+
         # Logging
-        logger.info((
-            "Run '{}' ...".format(sys._getframe().f_code.co_name)
-        ))
-
-        logger.debug((
-            "Running '{}': ".format(sys._getframe().f_code.co_name) +
-            "locust.client: {}".format(self.locust.client.__dict__)
-        ))
-
-        # HTTP request logic
-        response = self.post(
-            "/purchase.php",  # NOQA
-            "1503",  # NOQA
-            "(BookFlight) Click 'Purchase Flight'",  # NOQA
-            "inputName=John+Smith&address=123+Main+St.&city=Anytown&state=State&zipCode=12345&cardType=visa&creditCardNumber=0000000000000000&creditCardMonth=11&creditCardYear=2017&nameOnCard=John+Smith"  # NOQA
+        logger.info(
+            "Run {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            )
         )
 
+        logger.debug(
+            "locust.client: {}".format(self.locust.client.__dict__)
+        )
+
+        # HTTP request logic
+        response = self.post(task_url, task_id, task_description, task_data_params)
+
         # Logging
-        logger.debug((
-            "Response for '{}': ".format(sys._getframe().f_code.co_name) +
+        logger.debug(
+            "Response for {} '{}' ...".format(
+                sys._getframe().f_code.co_name,
+                task_description
+            ) +
             "HTTP {} ({} {}), ".format(
                 response.status_code,
                 response.request,
@@ -755,7 +869,7 @@ class BookFlight(CustomTaskSequence):
             ) +
             "Headers: {} ,".format(response.headers) +
             "Cookies: {}".format(response.cookies)
-        ))
+        )
 
 
 class UserBehavior(TaskSet):
