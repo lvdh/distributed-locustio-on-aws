@@ -4,7 +4,7 @@
 all: smoketest install apply status uninstall ## Run integration test
 
 test: ## Verify the local Locust test suite
-	@$(MAKE) -s -C ./eb/ smoketest
+	@$(MAKE) -s -C ./eb/ test
 
 install: ## Create the CloudFormation templates and deploy the Locust test suite
 	@$(MAKE) -s -C ./cfn/ install
@@ -14,9 +14,9 @@ apply: ## Deploy modifications to the Locust test suite and/or CloudFormation te
 	@$(MAKE) -s -C ./cfn/ apply
 	@$(MAKE) -s -C ./eb/ apply
 
-status: ## Show status of the CloudFormation Stacks and Locust deployment
-	@$(MAKE) -s -C ./cfn/ status
-	@$(MAKE) -s -C ./eb/ status
+show: ## Show status of the CloudFormation Stacks and Locust deployment
+	@$(MAKE) -s -C ./cfn/ show
+	@$(MAKE) -s -C ./eb/ show
 
 uninstall: ## Delete the CloudFormation Stacks and clean up
 	@$(MAKE) -s -C ./eb/ uninstall
