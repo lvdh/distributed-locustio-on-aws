@@ -1,7 +1,7 @@
 .PHONY: smoketest install apply status uninstall help
 .DEFAULT_GOAL := help
 
-all: smoketest install apply status uninstall
+all: smoketest install apply status uninstall ## Run integration test
 
 smoketest: ## Verify the local Locust test suite
 	@$(MAKE) -s -C ./eb/ smoketest

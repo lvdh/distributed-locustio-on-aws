@@ -119,8 +119,9 @@ Deploy a new test suite, or changes to CloudFormation templates.
 
 ```bash
 $ make                                                        
-smoketest          Smoke test the local Locust test suite
-install            Create the Locust environment and deploy a test suite for blazedemo.com
+all                Run integration test
+smoketest          Verify the local Locust test suite
+install            Create the CloudFormation templates and deploy the Locust test suite
 apply              Deploy modifications to the Locust test suite and/or CloudFormation templates
 status             Show status of the CloudFormation Stacks and Locust deployment
 uninstall          Delete the CloudFormation Stacks and clean up

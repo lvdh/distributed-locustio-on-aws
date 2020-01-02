@@ -4,7 +4,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Locust Test Run",
+      "label": "0. Run Smoke Test",
       "type": "shell",
       "command": "make -C app/ smoketest",
       "detail": "make -C app/ smoketest",
@@ -12,6 +12,56 @@
         "kind": "build",
         "isDefault": true
       }
-    }
+    },
+    {
+      "label": "1. Run Integration Test",
+      "type": "shell",
+      "command": "make all",
+      "detail": "make all",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "2. Install Cluster",
+      "type": "shell",
+      "command": "make install",
+      "detail": "make install",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "3. Apply Updates to Cluster",
+      "type": "shell",
+      "command": "make apply",
+      "detail": "make apply",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "4. Show Cluster Status",
+      "type": "shell",
+      "command": "make status",
+      "detail": "make status",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "5. Uninstall Cluster",
+      "type": "shell",
+      "command": "make uninstall",
+      "detail": "make uninstall",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
   ]
 }
