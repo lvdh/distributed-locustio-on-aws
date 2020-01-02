@@ -130,7 +130,7 @@ Deploy a new test suite, or changes to CloudFormation templates.
 ```
 $ make                                                        
 all                Run integration test
-smoketest          Verify the local Locust test suite
+test               Verify the local Locust test suite
 install            Create the CloudFormation templates and deploy the Locust test suite
 apply              Deploy modifications to the Locust test suite and/or CloudFormation templates
 status             Show status of the CloudFormation Stacks and Locust deployment
@@ -149,8 +149,8 @@ See Makefiles below for a list of sub-targets which may be useful during develop
 $ make -s -C cfn/
 install            Deploy CloudFormation Stack(s)
 apply              Update CloudFormation Stack(s)
+show               Show  CloudFormation Stack(s) status
 uninstall          Terminate CloudFormation Stack(s) and clean up local files
-status             Show deployment status of the CloudFormation Stack(s)
 ```
 
 #### Elastic Beanstalk
@@ -159,9 +159,9 @@ status             Show deployment status of the CloudFormation Stack(s)
 
 ```
 $ make -s -C eb/
+test               Run a smoke test on the local Locust test suite
 install            Initialize Elastic Beanstalk and deploy the Locust test suite
 apply              Deploy an updated Locust test suite to Elastic Beanstalk
+show               Show Elastic Beanstalk deployment status
 uninstall          Delete the local virtual environment and temporary files
-smoketest          Run a smoke test on the local Locust test suite
-status             Show deployment status of the Locust application
 ```

@@ -12,9 +12,13 @@ CLUSTER_CFN_STACK_NAME := $(project_code)-$(stack)-cluster
 # Load Elastic Beanstalk "Solution Stack Name" (used by awsebcli)
 CLUSTER_EB_SOLUTION_STACK_NAME := $(shell sed -n -e 's/^.*SolutionStackName: //p' ../cfn/config/locust/cluster.yaml)
 
-install: smoketest init deploy status open ## Initialize Elastic Beanstalk and deploy the Locust test suite
+test: dependencies smoketest ## Run a smoke test on the local Locust test suite
 
-apply:  deploy status open ## Deploy an updated Locust test suite to Elastic Beanstalk
+install: dependencies smoketest init deploy status open ## Initialize Elastic Beanstalk and deploy the Locust test suite
+
+apply: dependencies deploy status open ## Deploy an updated Locust test suite to Elastic Beanstalk
+
+show: dependencies status ## Show Elastic Beanstalk deployment status
 
 uninstall: clean ## Delete the local virtual environment and temporary files
 
@@ -22,13 +26,13 @@ dependencies: # Install local dependencies in a local virtual environment
 	$(call cyan, "make eb/$@ ...")
 	pipenv --bare install
 
-smoketest: dependencies ## Run a smoke test on the local Locust test suite
+smoketest: # Run a smoke test on the local Locust test suite
 	$(call cyan, "make eb/$@ ...")
 	pipenv run locust --no-web --only-summary \
 		--locustfile=./locustfile.py \
 		--clients=100 --hatch-rate=20 --run-time=10s
 
-init: dependencies # (Re)initialize the EB CLI to target the Elastic Beanstalk environment
+init: # (Re)initialize the EB CLI to target the Elastic Beanstalk environment
 	$(call cyan, "make eb/$@ ...")
 	# (Re)initialize the EB CLI to target the Elastic Beanstalk environment
 	rm -vrf ./.elasticbeanstalk/
@@ -36,17 +40,17 @@ init: dependencies # (Re)initialize the EB CLI to target the Elastic Beanstalk e
 		--platform $(CLUSTER_EB_SOLUTION_STACK_NAME) \
 		$(CLUSTER_CFN_STACK_NAME)
 
-deploy: dependencies # (Re)deploy the Locust application
+deploy: # (Re)deploy the Locust application
 	$(call cyan, "make eb/$@ ...")
 	pipenv run eb deploy --profile $(profile) --region $(region) \
 		--staged $(CLUSTER_CFN_STACK_NAME)
 
-status: dependencies ## Show deployment status of the Locust application
+status: # Show deployment status of the Locust application
 	$(call cyan, "make eb/$@ ...")
 	pipenv run eb status --profile $(profile) --region $(region) \
 		$(CLUSTER_CFN_STACK_NAME)
 
-open: dependencies # Open the Locust web GUI in a web browser
+open: # Open the Locust web GUI in a web browser
 	$(call cyan, "make eb/$@ ...")
 	$(call cyan, "Opening Locust UI in a web browser ...")
 	pipenv run eb open --profile $(profile) --region $(region) \

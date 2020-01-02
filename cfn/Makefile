@@ -5,41 +5,43 @@
 # Load cluster stack name
 stack := $(shell find ./config/ -mindepth 1 -maxdepth 1 -type d -printf '%f' | tr -d '/')
 
-install: launch ## Deploy CloudFormation Stack(s)
+install: dependencies launch ## Deploy CloudFormation Stack(s)
 
-apply: update ## Update CloudFormation Stack(s)
+apply: dependencies update ## Update CloudFormation Stack(s)
 
-uninstall: delete clean ## Terminate CloudFormation Stack(s) and clean up local files
+show: dependencies status ## Show  CloudFormation Stack(s) status
+
+uninstall: dependencies delete clean ## Terminate CloudFormation Stack(s) and clean up local files
 
 dependencies: # Install local dependencies in a local virtual environment
 	$(call cyan, "make cfn/$@ ...")
 	pipenv --bare install
 
-validate: dependencies # Validate CloudFormation Template(s)
+validate: # Validate CloudFormation Template(s)
 	$(call cyan, "make cfn/$@ ...")
 	pipenv run sceptre validate $(stack)
 
-launch: dependencies validate # Deploy CloudFormation Stack(s)
+launch: validate # Deploy CloudFormation Stack(s)
 	$(call cyan, "make cfn/$@ ...")
 	pipenv run sceptre launch --yes $(stack)
 
-update: dependencies validate # Update CloudFormation Stack(s)
+update: validate # Update CloudFormation Stack(s)
 	$(call cyan, "make cfn/$@ ...")
 	pipenv run sceptre update --yes $(stack)
 
-delete: dependencies # Terminate CloudFormation Stack(s)
+delete: # Terminate CloudFormation Stack(s)
 	$(call cyan, "make cfn/$@ ...")
 	pipenv run sceptre delete --yes $(stack)
 
-status: dependencies ## Show deployment status of the CloudFormation Stack(s)
+status: # Show deployment status of the CloudFormation Stack(s)
 	$(call cyan, "make cfn/$@ ...")
 	pipenv run sceptre status $(stack)
 
-list-outputs: dependencies # List CloudFormation Outputs of the Stack(s)
+list-outputs: # List CloudFormation Outputs of the Stack(s)
 	$(call cyan, "make cfn/$@ ...")
 	pipenv run sceptre list outputs $(stack)
 
-list-resources: dependencies # List CloudFormation Resources of the Stack(s)
+list-resources: # List CloudFormation Resources of the Stack(s)
 	$(call cyan, "make cfn/$@ ...")
 	pipenv run sceptre list resources $(stack)
 

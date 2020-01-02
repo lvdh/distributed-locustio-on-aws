@@ -3,7 +3,7 @@
 
 all: smoketest install apply status uninstall ## Run integration test
 
-smoketest: ## Verify the local Locust test suite
+test: ## Verify the local Locust test suite
 	@$(MAKE) -s -C ./eb/ smoketest
 
 install: ## Create the CloudFormation templates and deploy the Locust test suite
