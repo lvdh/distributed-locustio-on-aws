@@ -31,7 +31,7 @@ smoketest: dependencies ## Run a smoke test on the local Locust test suite
 init: dependencies # (Re)initialize the EB CLI to target the Elastic Beanstalk environment
 	$(call cyan, "make eb/$@ ...")
 	# (Re)initialize the EB CLI to target the Elastic Beanstalk environment
-	rm -rf ./.elasticbeanstalk/
+	rm -vrf ./.elasticbeanstalk/
 	pipenv run eb init --profile $(profile) --region $(region) \
 		--platform $(CLUSTER_EB_SOLUTION_STACK_NAME) \
 		$(CLUSTER_CFN_STACK_NAME)
