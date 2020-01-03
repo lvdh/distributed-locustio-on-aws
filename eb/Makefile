@@ -1,4 +1,4 @@
-.PHONY: smoketest install apply uninstall dependencies smoketest init deploy status open clean help
+.PHONY: test install apply show uninstall dependencies smoketest init deploy status open clean help
 .DEFAULT_GOAL := help
 
 # Load Sceptre deployment configuration (used by awsebcli)

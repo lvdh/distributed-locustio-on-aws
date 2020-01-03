@@ -1,4 +1,4 @@
-.PHONY: install apply uninstall dependencies validate launch update delete status
+.PHONY: install apply show uninstall dependencies validate launch update delete status
 .PHONY: list-outputs list-resources clean help
 .DEFAULT_GOAL := help
 
