@@ -1,4 +1,4 @@
-.PHONY: all smoketest install apply show uninstall help
+.PHONY: all configure test install apply show uninstall help
 .DEFAULT_GOAL := help
 
 all: smoketest install apply status uninstall ## Run integration test
