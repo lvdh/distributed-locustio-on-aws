@@ -464,3 +464,9 @@ Outputs:
     Value: !GetAtt ApplicationSecurityGroup.GroupId
     Export:
       Name: !Sub "${AWS::StackName}-ApplicationSecurityGroupID"
+
+  SolutionStackName:
+    Description: Elastic Beanstalk Solution Stack Name
+    Value: !Ref SolutionStackName
+    Export:
+      Name: !Sub "${AWS::StackName}-SolutionStackName"
