@@ -1,0 +1,8 @@
+kind: pipeline
+name: docker
+
+steps:
+- name: Locust smoke test
+  image: ubuntu:18.04
+  commands:
+  - make -C ./eb/ verify
