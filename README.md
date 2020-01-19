@@ -147,13 +147,12 @@ Deploy a new test suite, or changes to CloudFormation templates.
 
 ```
 $ make
-all                Run integration test
-configure          Generate Sceptre's main configuration file
-test               Verify the CloudFormation templates and Locust test suite
-install            Create the CloudFormation templates and deploy the Locust test suite
-update             Deploy modifications to the Locust test suite and/or CloudFormation templates
-status             Show status of the CloudFormation Stacks and Locust deployment
+all                Deploy and destroy (integration test)
+verify             Verify the CloudFormation templates and Locust test suite
+install            Deploy/update the CloudFormation templates and Locust test suite
 uninstall          Delete the CloudFormation Stacks and clean up
+status             Show status of the CloudFormation Stacks and Locust deployment
+clean              Delete virtual environments and temporary files
 ```
 
 ### Sub Makefiles
@@ -167,10 +166,9 @@ See Makefiles below for a list of sub-targets which may be useful during develop
 ```
 $ make -s -C cfn/
 all                Integration test
-test               Validate CloudFormation Template(s)
+verify             Validate CloudFormation Template(s)
 install            Deploy CloudFormation Stack(s)
 uninstall          Terminate CloudFormation Stack(s) and clean up local files
-update             Update CloudFormation Stack(s)
 status             Show deployment status of the CloudFormation Stack(s)
 ```
 
@@ -181,7 +179,7 @@ status             Show deployment status of the CloudFormation Stack(s)
 ```
 $ make -C eb/
 all                Integration test
-test               Run a smoke test on the local Locust test suite
+verify             Run a smoke test on the local Locust test suite
 install            (Re)deploy the Locust test suite to Elastic Beanstalk
 uninstall          Delete the local virtual environment and temporary files
 status             Show deployment status of the Locust application
