@@ -1,9 +1,0 @@
-kind: pipeline
-name: docker
-
-steps:
-- name: Locust smoke test
-  image: alpine:3.11.3
-  commands:
-  - apk add --update build-base ncurses
-  - make -C ./eb/ verify
