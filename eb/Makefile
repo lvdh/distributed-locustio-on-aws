@@ -1,11 +1,10 @@
 .PHONY: test install apply show uninstall dependencies smoketest init deploy status open clean help
 .DEFAULT_GOAL := help
 
-export PROJECT_CODE
-export STACK_NAME
+include ../Makefile.cfg
+include ../cfn/outputs.cfg
 
-$(eval VARS := $(shell $(MAKE) -s -C ../cfn/ export-outputs))
-$(foreach v,$(VARS),$(eval $(shell echo export $(v))))
+all: install uninstall ## Integration test
 
 test: dependencies smoketest ## Run a smoke test on the local Locust test suite
 

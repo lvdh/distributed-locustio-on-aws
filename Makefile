@@ -1,18 +1,16 @@
 .PHONY: all configure test install update show uninstall help
 .DEFAULT_GOAL := help
 
-export AWS_REGION ?= eu-west-1
-export PROJECT_CODE := blazedemo
-export STACK_NAME := locust
+include Makefile.cfg
 
 all: configure test install update status uninstall ## Run integration test
 
 configure: ## Generate Sceptre's main configuration file
 	# This target is intentionally PHONY
 	$(call cyan, "make $@ ...")
-	@echo "region: $(AWS_REGION)" > ./cfn/config/config.yaml
-	@echo "profile: $(AWS_PROFILE)" >> ./cfn/config/config.yaml
-	@echo "project_code: $(PROJECT_CODE)" >> ./cfn/config/config.yaml
+	echo "region: $(AWS_REGION)" > ./cfn/config/config.yaml
+	echo "profile: $(AWS_PROFILE)" >> ./cfn/config/config.yaml
+	echo "project_code: $(PROJECT_CODE)" >> ./cfn/config/config.yaml
 
 test: configure ## Verify the CloudFormation templates and Locust test suite
 	@$(MAKE) -s -C ./cfn/ validate
