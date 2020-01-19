@@ -3,7 +3,7 @@
 
 export AWS_REGION ?= eu-west-1
 export PROJECT_CODE := blazedemo
-export STACK_NAME := locust # Keep this in line with the Stack dir: ./cfn/config/locust
+export STACK_NAME := locust
 
 all: configure test install apply status uninstall ## Run integration test
 
