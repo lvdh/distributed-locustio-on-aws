@@ -2,8 +2,8 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
 Description: >
-  This template deploys an Elastic Beanstalk environment for an
-  HTTP(S) load-testing stack based on Locust (https://locust.io/).
+  Deploy an Elastic Beanstalk Environment for an HTTP(S) load-testing stack
+  based on Locust (https://locust.io/).
 
 Metadata:
 
@@ -15,7 +15,9 @@ Metadata:
           default: Cluster Configuration
         Parameters:
           - InstanceCount
-          - EC2KeyPair
+          - InstanceType
+          - EC2KeyName
+          - SolutionStackName
 
       - Label:
           default: Network Configuration
@@ -29,8 +31,12 @@ Metadata:
 
       InstanceCount:
         default: Number of EC2 instances in the cluster
-      EC2KeyPair:
+      InstanceType:
+        default: Instance Type of the EC2 instances in the cluster
+      EC2KeyName:
         default: Key Pair Name
+      SolutionStackName:
+        default: Elastic Beanstalk Platform ("Solution Stack") name
       VPCID:
         default: VPC ID
       VPCCIDR:
@@ -50,41 +56,37 @@ Parameters:
     Default: 3
     ConstraintDescription: Specify a number between 1 - 20
 
-  EC2KeyPair:
-    Description: Name of an existing EC2 Key Pair
-    Type: AWS::EC2::KeyPair::KeyName
-    MinLength: 1
-    MaxLength: 255
-    ConstraintDescription: EC2KeyPair must be specified
-
-  VPCID:
-    Description: ID of the existing VPC
-    Type: AWS::EC2::VPC::Id
-    ConstraintDescription: VPCID must be specified
-
-  VPCCIDR:
-    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
-    Description: CIDR block for the VPC
-    Type: String
-
-  PrivateSubnets:
-    Description: IDs of Private Subnets
-    Type: List<AWS::EC2::Subnet::Id>
-    ConstraintDescription: PrivateSubnets must be specified
-
-  PublicSubnets:
-    Description: IDs of Public Subnets
-    Type: List<AWS::EC2::Subnet::Id>
-    ConstraintDescription: PublicSubnets must be specified
-
   InstanceType:
     Description: Cluster Instance Type
     Type: String
+    Default: 'c5.large'
+
+  EC2KeyName:
+    Description: Name of an existing EC2 Key Pair
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: ''
 
   SolutionStackName:
     Description: Cluster Solution Stack Name
     Type: String
+
+  VPCID:
+    Description: ID of the existing VPC
+    Type: AWS::EC2::VPC::Id
+
+  VPCCIDR:
+    Description: CIDR block for the VPC
+    Type: String
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+
+  PrivateSubnets:
+    Description: IDs of Private Subnets
+    Type: List<AWS::EC2::Subnet::Id>
+
+  PublicSubnets:
+    Description: IDs of Public Subnets
+    Type: List<AWS::EC2::Subnet::Id>
 
 Resources:
 
@@ -221,7 +223,8 @@ Resources:
 
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: EC2KeyName
-        Value: !Ref EC2KeyPair
+        # Value: !Ref EC2KeyName
+        Value: ''
 
       # Allow SSH access from within the VPC
       - Namespace: aws:autoscaling:launchconfiguration
