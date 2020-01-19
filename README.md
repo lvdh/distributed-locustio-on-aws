@@ -65,11 +65,11 @@ Review and update [Makefile.cfg](Makefile.cfg):
 
     **Default:** `<empty>`
 
-6. `AWS_PROFILE` (set only when not using `aws-vault`)
+6. `AWS_PROFILE` (set only when using AWS profiles directly vs. using `aws-vault`)
 
     Provide the name of your [AWS CLI Named Profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html).
 
-7. `AWS_REGION` (set only when not using `aws-vault`)
+7. `AWS_REGION` (set only when using AWS profiles directly vs. using `aws-vault`)
 
     Configure your preferred AWS Region to deploy to.
 
@@ -80,6 +80,8 @@ Review and update [Makefile.cfg](Makefile.cfg):
 ```
 $ make test
 ```
+
+**Note:** `make all` might time out when using `aws-vault` due to the [maximum session duration of 1h](https://github.com/99designs/aws-vault/blob/master/USAGE.md#assuming-a-role-for-more-than-1h).
 
 #### Verify the Templates and Test Suite
 
