@@ -1,10 +1,17 @@
+#!/usr/bin/env make
+
 .PHONY: install uninstall dependencies validate launch update delete status
 .PHONY: list-outputs export-outputs list-resources clean help
 .DEFAULT_GOAL := help
+MAKEFLAGS=s
 
-export STACK_NAME
+include ../Makefile.cfg
 
-install: dependencies launch ## Deploy CloudFormation Stack(s)
+all: install uninstall ## Integration test
+
+test: dependencies validate ## Validate CloudFormation Template(s)
+
+install: dependencies launch export-outputs status ## Deploy CloudFormation Stack(s)
 
 uninstall: dependencies delete clean ## Terminate CloudFormation Stack(s) and clean up local files
 
@@ -33,15 +40,15 @@ status: dependencies ## Show deployment status of the CloudFormation Stack(s)
 	pipenv run sceptre status $(STACK_NAME)
 
 list-outputs: # List CloudFormation Outputs of the Stack(s)
-	$(call cyan, "make cfn/$@ ...")
 	pipenv run sceptre list outputs $(STACK_NAME)
-
-export-outputs: # Generate export commands for CloudFormation Stack Outputs
-	pipenv run sceptre --ignore-dependencies list outputs $(STACK_NAME) --export=envvar
 
 list-resources: # List CloudFormation Resources of the Stack(s)
 	$(call cyan, "make cfn/$@ ...")
 	pipenv run sceptre list resources $(STACK_NAME)
+
+export-outputs: # Generate export commands for CloudFormation Stack Outputs
+	$(call cyan, "make cfn/$@ ...")
+	pipenv run sceptre --ignore-dependencies list outputs $(STACK_NAME) --export=envvar > outputs.cfg
 
 clean: # Delete virtual environment
 	$(call cyan, "make cfn/$@ ...")

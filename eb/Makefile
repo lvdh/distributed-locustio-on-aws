@@ -1,5 +1,8 @@
-.PHONY: test install apply show uninstall dependencies smoketest init deploy status open clean help
+#!/usr/bin/env make
+
+.PHONY: test install uninstall dependencies smoketest init deploy status open clean help
 .DEFAULT_GOAL := help
+MAKEFLAGS=s
 
 include ../Makefile.cfg
 include ../cfn/outputs.cfg
@@ -24,22 +27,25 @@ smoketest: # Run a smoke test on the local Locust test suite
 init: # (Re)initialize the EB CLI to target the Elastic Beanstalk environment
 	$(call cyan, "make eb/$@ ...")
 	# (Re)initialize the EB CLI to target the Elastic Beanstalk environment
-	rm -vrf ./.elasticbeanstalk/
-	env | grep SCEPTRE
-	pipenv run eb init --platform $(SCEPTRE_SolutionStackName) $(PROJECT_CODE)-$(STACK_NAME)-cluster
+	rm -rf ./.elasticbeanstalk/
+	pipenv run eb init --region $(AWS_REGION) \
+    --platform $(SCEPTRE_SolutionStackName) $(PROJECT_CODE)-$(STACK_NAME)-cluster
 
 deploy: init # (Re)deploy the Locust application
 	$(call cyan, "make eb/$@ ...")
-	pipenv run eb deploy --staged $(PROJECT_CODE)-$(STACK_NAME)-cluster
+	pipenv run eb deploy --region $(AWS_REGION) \
+    --staged $(PROJECT_CODE)-$(STACK_NAME)-cluster
 
 status: init ## Show deployment status of the Locust application
 	$(call cyan, "make eb/$@ ...")
-	pipenv run eb status $(PROJECT_CODE)-$(STACK_NAME)-cluster
+	pipenv run eb status --region $(AWS_REGION) \
+    $(PROJECT_CODE)-$(STACK_NAME)-cluster
 
 open: init # Open the Locust web GUI in a web browser
 	$(call cyan, "make eb/$@ ...")
 	$(call cyan, "Opening Locust UI in a web browser ...")
-	pipenv run eb open $(PROJECT_CODE)-$(STACK_NAME)-cluster
+	pipenv run eb open --region $(AWS_REGION) \
+    $(PROJECT_CODE)-$(STACK_NAME)-cluster
 
 clean: # Delete virtual environment and temporary files
 	$(call cyan, "make eb/$@ ...")
