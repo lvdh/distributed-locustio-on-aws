@@ -35,7 +35,7 @@ Additional dependencies will be installed in [Python 3 Virtual Environments](htt
 
         Custom name/ID for your project. (Lower case, alpha-numeric.)
 
-    2. `STACK_NAME` (required - recommended to keep as-is)
+    2. `SCEPTRE_STACK_NAME` (required - recommended to keep as-is)
 
         The Sceptre Stack Name. Defaults to `locust`, as determined by [`cfn/config/locust`](cfn/config/locust).
         See Sceptre's [Cascading Config](https://sceptre.cloudreach.com/2.2.1/docs/stack_group_config.html#cascading-config) documentation for more details.

@@ -21,34 +21,35 @@ dependencies: # Install local dependencies in a local virtual environment
 
 validate: # Validate CloudFormation Template(s)
 	$(call cyan, "make cfn/$@ ...")
-	pipenv run sceptre validate $(STACK_NAME)
+	pipenv run sceptre validate $(SCEPTRE_STACK_NAME)
 
 launch: validate # Deploy CloudFormation Stack(s)
 	$(call cyan, "make cfn/$@ ...")
-	pipenv run sceptre launch --yes $(STACK_NAME)
+	pipenv run sceptre launch --yes $(SCEPTRE_STACK_NAME)
 
 update: dependencies validate ## Update CloudFormation Stack(s)
 	$(call cyan, "make cfn/$@ ...")
-	pipenv run sceptre update --yes $(STACK_NAME)
+	pipenv run sceptre update --yes $(SCEPTRE_STACK_NAME)
 
 delete: # Terminate CloudFormation Stack(s)
 	$(call cyan, "make cfn/$@ ...")
-	pipenv run sceptre delete --yes $(STACK_NAME)
+	pipenv run sceptre delete --yes $(SCEPTRE_STACK_NAME)
 
 status: dependencies ## Show deployment status of the CloudFormation Stack(s)
 	$(call cyan, "make cfn/$@ ...")
-	pipenv run sceptre status $(STACK_NAME)
+	pipenv run sceptre status $(SCEPTRE_STACK_NAME)
 
 list-outputs: # List CloudFormation Outputs of the Stack(s)
-	pipenv run sceptre list outputs $(STACK_NAME)
+	pipenv run sceptre list outputs $(SCEPTRE_STACK_NAME)
 
 list-resources: # List CloudFormation Resources of the Stack(s)
 	$(call cyan, "make cfn/$@ ...")
-	pipenv run sceptre list resources $(STACK_NAME)
+	pipenv run sceptre list resources $(SCEPTRE_STACK_NAME)
 
 export-outputs: # Generate export commands for CloudFormation Stack Outputs
+	# This target is intentionally PHONY
 	$(call cyan, "make cfn/$@ ...")
-	pipenv run sceptre --ignore-dependencies list outputs $(STACK_NAME) --export=envvar > outputs.cfg
+	pipenv run sceptre --ignore-dependencies list outputs $(SCEPTRE_STACK_NAME) --export=envvar > outputs.cfg
 
 clean: # Delete virtual environment
 	$(call cyan, "make cfn/$@ ...")
