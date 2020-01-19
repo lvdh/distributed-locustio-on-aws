@@ -81,7 +81,11 @@ Review and update [Makefile.cfg](Makefile.cfg):
 $ make test
 ```
 
-**Note:** `make all` might time out when using `aws-vault` due to the [maximum session duration of 1h](https://github.com/99designs/aws-vault/blob/master/USAGE.md#assuming-a-role-for-more-than-1h).
+**Note:** When using `aws-vault`, `make all` might fail due to the default AWS session duration of 15 minutes. Use the `--assume-role-ttl 1h` to increase the session duration to the [maximum session duration of 1h](https://docs.aws.amazon.com/STS/latest/APIReference/API_GetSessionToken.html).
+
+```
+aws-vault exec --assume-role-ttl 1h <profile> -- make all
+```
 
 #### Verify the Templates and Test Suite
 
