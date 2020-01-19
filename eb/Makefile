@@ -43,7 +43,6 @@ status: init ## Show deployment status of the Locust application
 
 open: init # Open the Locust web GUI in a web browser
 	$(call cyan, "make eb/$@ ...")
-	$(call cyan, "Opening Locust UI in a web browser ...")
 	pipenv run eb open --region $(AWS_REGION) \
 		$(SCEPTRE_PROJECT_CODE)-$(SCEPTRE_STACK_NAME)-cluster
 
