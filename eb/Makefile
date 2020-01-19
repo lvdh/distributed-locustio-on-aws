@@ -1,6 +1,12 @@
 .PHONY: test install apply show uninstall dependencies smoketest init deploy status open clean help
 .DEFAULT_GOAL := help
 
+export PROJECT_CODE
+export STACK_NAME
+
+$(eval VARS := $(shell $(MAKE) -s -C ../cfn/ export-outputs))
+$(foreach v,$(VARS),$(eval $(shell echo export $(v))))
+
 sort:
 	env | sort
 
@@ -25,19 +31,22 @@ init: # (Re)initialize the EB CLI to target the Elastic Beanstalk environment
 	$(call cyan, "make eb/$@ ...")
 	# (Re)initialize the EB CLI to target the Elastic Beanstalk environment
 	rm -vrf ./.elasticbeanstalk/
-	$(MAKE) -s -C ../cfn/ export-outputs
-	env
-	#pipenv run eb init --platform $(CLUSTER_EB_SOLUTION_STACK_NAME) $(PROJECT_CODE)-$(STACK_NAME)-cluster
+	env | grep SCEPTRE
+	# cd ../cfn/ && pipenv run sceptre --ignore-dependencies list outputs locust --export=envvar
+	# $(MAKE) -s -C ../cfn/ export-outputs | eval && env | grep SCEP
+	# cd ../cfn/ && pipenv run sceptre --ignore-dependencies list outputs locust --export=envvar
+	# eval `$(MAKE) -s -C ../cfn/ export-outputs` && env | grep SCEPTRE
+	pipenv run eb init --platform $(CLUSTER_EB_SOLUTION_STACK_NAME) $(PROJECT_CODE)-$(STACK_NAME)-cluster
 
-deploy: # (Re)deploy the Locust application
+deploy: init # (Re)deploy the Locust application
 	$(call cyan, "make eb/$@ ...")
 	pipenv run eb deploy --staged $(PROJECT_CODE)-$(STACK_NAME)-cluster
 
-status: ## Show deployment status of the Locust application
+status: init ## Show deployment status of the Locust application
 	$(call cyan, "make eb/$@ ...")
 	pipenv run eb status $(PROJECT_CODE)-$(STACK_NAME)-cluster
 
-open: # Open the Locust web GUI in a web browser
+open: init # Open the Locust web GUI in a web browser
 	$(call cyan, "make eb/$@ ...")
 	$(call cyan, "Opening Locust UI in a web browser ...")
 	pipenv run eb open $(PROJECT_CODE)-$(STACK_NAME)-cluster

@@ -2,6 +2,8 @@
 .PHONY: list-outputs export-outputs list-resources clean help
 .DEFAULT_GOAL := help
 
+export STACK_NAME
+
 sort:
 	env | sort
 
@@ -40,7 +42,6 @@ list-outputs: # List CloudFormation Outputs of the Stack(s)
 	pipenv run sceptre list outputs $(STACK_NAME)
 
 export-outputs: # List CloudFormation Outputs of the Stack(s)
-	$(call cyan, "make cfn/$@ ...")
 	pipenv run sceptre --ignore-dependencies list outputs $(STACK_NAME) --export=envvar
 
 list-resources: # List CloudFormation Resources of the Stack(s)
