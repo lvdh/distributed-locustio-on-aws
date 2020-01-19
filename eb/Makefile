@@ -5,6 +5,7 @@
 MAKEFLAGS=s
 
 include ../Makefile.cfg
+include ../cfn/outputs.cfg
 
 all: install uninstall ## Integration test
 
@@ -27,7 +28,6 @@ init: # (Re)initialize the EB CLI to target the Elastic Beanstalk environment
 	$(call cyan, "make eb/$@ ...")
 	# (Re)initialize the EB CLI to target the Elastic Beanstalk environment
 	rm -rf ./.elasticbeanstalk/
-	source ../cfn/outputs.cfg
 	pipenv run eb init --region $(AWS_REGION) --platform $(SCEPTRE_ElasticBeanstalkPlatform) \
 		$(SCEPTRE_PROJECT_CODE)-$(SCEPTRE_STACK_NAME)-cluster
 
