@@ -1,12 +1,10 @@
-.PHONY: install apply show uninstall dependencies validate launch update delete status
+.PHONY: install uninstall dependencies validate launch update delete status
 .PHONY: list-outputs export-outputs list-resources clean help
 .DEFAULT_GOAL := help
 
 export STACK_NAME
 
 install: dependencies launch ## Deploy CloudFormation Stack(s)
-
-apply: dependencies update ## Update CloudFormation Stack(s)
 
 uninstall: dependencies delete clean ## Terminate CloudFormation Stack(s) and clean up local files
 
@@ -22,7 +20,7 @@ launch: validate # Deploy CloudFormation Stack(s)
 	$(call cyan, "make cfn/$@ ...")
 	pipenv run sceptre launch --yes $(STACK_NAME)
 
-update: validate # Update CloudFormation Stack(s)
+update: dependencies validate ## Update CloudFormation Stack(s)
 	$(call cyan, "make cfn/$@ ...")
 	pipenv run sceptre update --yes $(STACK_NAME)
 
@@ -30,7 +28,7 @@ delete: # Terminate CloudFormation Stack(s)
 	$(call cyan, "make cfn/$@ ...")
 	pipenv run sceptre delete --yes $(STACK_NAME)
 
-status: ## Show deployment status of the CloudFormation Stack(s)
+status: dependencies ## Show deployment status of the CloudFormation Stack(s)
 	$(call cyan, "make cfn/$@ ...")
 	pipenv run sceptre status $(STACK_NAME)
 

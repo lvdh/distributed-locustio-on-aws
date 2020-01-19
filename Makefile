@@ -1,11 +1,11 @@
-.PHONY: all configure test install apply show uninstall help
+.PHONY: all configure test install update show uninstall help
 .DEFAULT_GOAL := help
 
 export AWS_REGION ?= eu-west-1
 export PROJECT_CODE := blazedemo
 export STACK_NAME := locust
 
-all: configure test install apply status uninstall ## Run integration test
+all: configure test install update status uninstall ## Run integration test
 
 configure: ## Generate Sceptre's main configuration file
 	# This target is intentionally PHONY

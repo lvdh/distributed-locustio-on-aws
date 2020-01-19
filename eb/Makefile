@@ -9,9 +9,7 @@ $(foreach v,$(VARS),$(eval $(shell echo export $(v))))
 
 test: dependencies smoketest ## Run a smoke test on the local Locust test suite
 
-install: dependencies smoketest init deploy status open ## Initialize Elastic Beanstalk and deploy the Locust test suite
-
-apply: dependencies deploy status open ## Deploy an updated Locust test suite to Elastic Beanstalk
+install: dependencies smoketest init deploy status open ## (Re)deploy the Locust test suite to Elastic Beanstalk
 
 uninstall: clean ## Delete the local virtual environment and temporary files
 
@@ -29,11 +27,7 @@ init: # (Re)initialize the EB CLI to target the Elastic Beanstalk environment
 	# (Re)initialize the EB CLI to target the Elastic Beanstalk environment
 	rm -vrf ./.elasticbeanstalk/
 	env | grep SCEPTRE
-	# cd ../cfn/ && pipenv run sceptre --ignore-dependencies list outputs locust --export=envvar
-	# $(MAKE) -s -C ../cfn/ export-outputs | eval && env | grep SCEP
-	# cd ../cfn/ && pipenv run sceptre --ignore-dependencies list outputs locust --export=envvar
-	# eval `$(MAKE) -s -C ../cfn/ export-outputs` && env | grep SCEPTRE
-	pipenv run eb init --platform $(CLUSTER_EB_SOLUTION_STACK_NAME) $(PROJECT_CODE)-$(STACK_NAME)-cluster
+	pipenv run eb init --platform $(SCEPTRE_SolutionStackName) $(PROJECT_CODE)-$(STACK_NAME)-cluster
 
 deploy: init # (Re)deploy the Locust application
 	$(call cyan, "make eb/$@ ...")
