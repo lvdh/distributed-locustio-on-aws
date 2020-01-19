@@ -5,4 +5,5 @@ steps:
 - name: Locust smoke test
   image: ubuntu:18.04
   commands:
+  - apt-get --yes install build-essential
   - make -C ./eb/ verify
