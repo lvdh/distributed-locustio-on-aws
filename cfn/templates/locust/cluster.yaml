@@ -2,43 +2,46 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
 Description: >
-  This template deploys an Elastic Beanstalk environment for an
-  HTTP(S) load-testing stack based on Locust (https://locust.io/).
+  Load Test Cluster, Elastic Beanstalk
 
 Metadata:
 
   AWS::CloudFormation::Interface:
 
     ParameterGroups:
-
       - Label:
           default: Cluster Configuration
         Parameters:
           - InstanceCount
-          - EC2KeyPair
+          - InstanceTypes
+          - EC2KeyName
+          - ElasticBeanstalkPlatform
 
       - Label:
           default: Network Configuration
         Parameters:
-          - VPCID
-          - VPCCIDR
-          - PrivateSubnets
-          - PublicSubnets
+          - VpcId
+          - VpcCidr
+          - PrivateSubnetIds
+          - PublicSubnetIds
 
     ParameterLabels:
-
       InstanceCount:
         default: Number of EC2 instances in the cluster
-      EC2KeyPair:
+      InstanceTypes:
+        default: Instance Type of the EC2 instances in the cluster
+      EC2KeyName:
         default: Key Pair Name
-      VPCID:
+      ElasticBeanstalkPlatform:
+        default: Elastic Beanstalk Platform ("Solution Stack Name")
+      VpcId:
         default: VPC ID
-      VPCCIDR:
+      VpcCidr:
         default: VPC CIDR block
-      PrivateSubnets:
-        default: Private Subnets
-      PublicSubnets:
-        default: Public Subnets
+      PrivateSubnetIds:
+        default: Private Subnet IDs
+      PublicSubnetIds:
+        default: Public Subnet IDs
 
 Parameters:
 
@@ -50,41 +53,37 @@ Parameters:
     Default: 3
     ConstraintDescription: Specify a number between 1 - 20
 
-  EC2KeyPair:
-    Description: Name of an existing EC2 Key Pair
-    Type: AWS::EC2::KeyPair::KeyName
-    MinLength: 1
-    MaxLength: 255
-    ConstraintDescription: EC2KeyPair must be specified
+  InstanceTypes:
+    Description: Cluster Instance Types for Elastic Beanstalk to choose from
+    Type: String
+    Default: 'c5.large,c4.large'
 
-  VPCID:
+  EC2KeyName:
+    Description: Name of an existing EC2 Key Pair
+    Type: String # 'String' allows an empty key name, while 'AWS::EC2::KeyPair::KeyName' does not
+    Default: ''
+
+  ElasticBeanstalkPlatform:
+    Description: Elastic Beanstalk Platform ("Solution Stack Name")
+    Type: String
+
+  VpcId:
     Description: ID of the existing VPC
     Type: AWS::EC2::VPC::Id
-    ConstraintDescription: VPCID must be specified
 
-  VPCCIDR:
-    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+  VpcCidr:
     Description: CIDR block for the VPC
     Type: String
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
 
-  PrivateSubnets:
+  PrivateSubnetIds:
     Description: IDs of Private Subnets
     Type: List<AWS::EC2::Subnet::Id>
-    ConstraintDescription: PrivateSubnets must be specified
 
-  PublicSubnets:
+  PublicSubnetIds:
     Description: IDs of Public Subnets
     Type: List<AWS::EC2::Subnet::Id>
-    ConstraintDescription: PublicSubnets must be specified
-
-  InstanceType:
-    Description: Cluster Instance Type
-    Type: String
-
-  SolutionStackName:
-    Description: Cluster Solution Stack Name
-    Type: String
 
 Resources:
 
@@ -94,10 +93,10 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Load Balancer Security Group
-      VpcId: !Ref VPCID
+      VpcId: !Ref VpcId
       Tags:
       - Key: Name
-        Value: !Sub "${AWS::StackName}-LoadBalancerSecurityGroup"
+        Value: !Sub "${AWS::StackName}:LoadBalancerSecurityGroup"
 
   LoadBalancerSecurityGroupIngress:
     Type: AWS::EC2::SecurityGroupIngress
@@ -115,30 +114,30 @@ Resources:
       IpProtocol: tcp
       FromPort: 80
       ToPort: 80
-      DestinationSecurityGroupId: !Ref ApplicationSecurityGroup
+      DestinationSecurityGroupId: !Ref TargetSecurityGroup
 
-  ApplicationSecurityGroup:
+  TargetSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Application Security Group
-      VpcId: !Ref VPCID
+      VpcId: !Ref VpcId
       Tags:
       - Key: Name
-        Value: !Sub "${AWS::StackName}-ApplicationSecurityGroup"
+        Value: !Sub "${AWS::StackName}:TargetSecurityGroup"
 
-  ApplicationSecurityGroupIngress:
+  TargetSecurityGroupIngress:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
-      GroupId: !Ref ApplicationSecurityGroup
+      GroupId: !Ref TargetSecurityGroup
       IpProtocol: tcp
       FromPort: 80
       ToPort: 80
       SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
 
-  ApplicationSecurityGroupEgress:
+  TargetSecurityGroupEgress:
     Type: AWS::EC2::SecurityGroupEgress
     Properties:
-      GroupId: !Ref ApplicationSecurityGroup
+      GroupId: !Ref TargetSecurityGroup
       IpProtocol: tcp
       FromPort: 80
       ToPort: 80
@@ -180,7 +179,7 @@ Resources:
     Type: AWS::ElasticBeanstalk::ConfigurationTemplate
     Properties:
       ApplicationName: !Ref ElasticBeanstalkApplication
-      SolutionStackName: !Ref SolutionStackName
+      SolutionStackName: !Ref ElasticBeanstalkPlatform
       OptionSettings:
 
       # Elastic Beanstalk Options, Environment
@@ -197,6 +196,12 @@ Resources:
         OptionName: ServiceRole
         Value: !Ref ElasticBeanstalkServiceRole
 
+      # Elastic Beanstalk Options, EC2 Instance Types
+
+      - Namespace: aws:ec2:instances
+        OptionName: InstanceTypes
+        Value: !Ref InstanceTypes
+
       # Elastic Beanstalk Options, Auto Scaling
 
       - Namespace: aws:autoscaling:asg
@@ -209,11 +214,7 @@ Resources:
 
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: SecurityGroups
-        Value: !Ref ApplicationSecurityGroup
-
-      - Namespace: aws:autoscaling:launchconfiguration
-        OptionName: InstanceType
-        Value: !Ref InstanceType
+        Value: !Ref TargetSecurityGroup
 
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: IamInstanceProfile
@@ -221,15 +222,14 @@ Resources:
 
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: EC2KeyName
-        Value: !Ref EC2KeyPair
+        Value: !Ref EC2KeyName
 
-      # Allow SSH access from within the VPC
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: SSHSourceRestriction
         Value:
           Fn::Sub:
-            - tcp, 22, 22, ${SourceCIDR}
-            - { SourceCIDR: !Ref VPCCIDR }
+            - tcp, 22, 22, ${SourceCidr}
+            - { SourceCidr: !Ref VpcCidr } # !Ref VpcCidr = Allow SSH access from within the VPC
 
       - Namespace: aws:autoscaling:updatepolicy:rollingupdate
         OptionName: RollingUpdateEnabled
@@ -247,10 +247,9 @@ Resources:
         OptionName: Unit
         Value: Percent
 
-      # Prevent Auto-Scaling
       - Namespace: aws:autoscaling:trigger
         OptionName: UpperThreshold
-        Value: "100"
+        Value: "100" # 100 = Prevent Auto-Scaling
 
       - Namespace: aws:autoscaling:trigger
         OptionName: LowerThreshold
@@ -274,11 +273,11 @@ Resources:
         OptionName: SystemType
         Value: "enhanced"
 
-        # Note:
-        #  * '60' = enable metric ("check every 60s")
-        #  * 'null' = disable metric
       - Namespace: aws:elasticbeanstalk:healthreporting:system
         OptionName: ConfigDocument
+        # Note on Value format:
+        #  * '60' = enable metric ("check every 60s")
+        #  * 'null' = disable metric
         Value:  '{
                   "Version": 1,
                   "CloudWatchMetrics": {
@@ -346,8 +345,8 @@ Resources:
         # Elastic Beanstalk Options, VPC
 
       - Namespace: aws:ec2:vpc
-        OptionName: VPCID
-        Value: !Ref VPCID
+        OptionName: VPCId
+        Value: !Ref VpcId
 
       - Namespace: aws:ec2:vpc
         OptionName: Subnets
@@ -355,9 +354,9 @@ Resources:
         Value:
           "Fn::Join":
             - ','
-            - - !Select [0, !Ref PrivateSubnets]
-              - !Select [1, !Ref PrivateSubnets]
-              - !Select [2, !Ref PrivateSubnets]
+            - - !Select [0, !Ref PrivateSubnetIds]
+              - !Select [1, !Ref PrivateSubnetIds]
+              - !Select [2, !Ref PrivateSubnetIds]
 
       - Namespace: aws:ec2:vpc
         OptionName: ELBSubnets
@@ -365,9 +364,9 @@ Resources:
         Value:
           "Fn::Join":
             - ','
-            - - !Select [0, !Ref PublicSubnets]
-              - !Select [1, !Ref PublicSubnets]
-              - !Select [2, !Ref PublicSubnets]
+            - - !Select [0, !Ref PublicSubnetIds]
+              - !Select [1, !Ref PublicSubnetIds]
+              - !Select [2, !Ref PublicSubnetIds]
 
       - Namespace: aws:elbv2:listener:default
         OptionName: ListenerEnabled
@@ -398,8 +397,9 @@ Resources:
         # Elastic Beanstalk Options, Environment Variables
 
       - Namespace: aws:elasticbeanstalk:application:environment
-        OptionName: AWS_REGION
-        Value: !Ref AWS::Region
+        # Example
+        OptionName: EXAMPLE
+        Value: 'example'
 
   # IAM
 
@@ -445,22 +445,28 @@ Outputs:
     Description: Stack Name
     Value: !Ref AWS::StackName
     Export:
-      Name: !Sub ${AWS::StackName}-Name
+      Name: !Sub ${AWS::StackName}:Name
 
-  EnvironmentURL:
+  EnvironmentUrl:
     Description: Environment URL
     Value: !GetAtt ElasticBeanstalkEnvironment.EndpointURL
     Export:
-      Name: !Sub "${AWS::StackName}-EnvironmentURL"
+      Name: !Sub "${AWS::StackName}:EnvironmentUrl"
 
-  LoadBalancerSecurityGroup:
-    Description: Security Group ID for Internet-facing ELB
+  LoadBalancerSecurityGroupId:
+    Description: Security Group ID applied to Internet-facing Load Balancer
     Value: !GetAtt LoadBalancerSecurityGroup.GroupId
     Export:
-      Name: !Sub "${AWS::StackName}-LoadBalancerSecurityGroupID"
+      Name: !Sub "${AWS::StackName}:LoadBalancerSecurityGroupId"
 
-  ApplicationSecurityGroup:
-    Description: Security Group ID for app behind ELB
-    Value: !GetAtt ApplicationSecurityGroup.GroupId
+  TargetSecurityGroupId:
+    Description: Security Group ID applied to Targets of the Load Balancer
+    Value: !GetAtt TargetSecurityGroup.GroupId
     Export:
-      Name: !Sub "${AWS::StackName}-ApplicationSecurityGroupID"
+      Name: !Sub "${AWS::StackName}:TargetSecurityGroupId"
+
+  ElasticBeanstalkPlatform:
+    Description: Elastic Beanstalk Platform ("Solution Stack Name")
+    Value: !Ref ElasticBeanstalkPlatform
+    Export:
+      Name: !Sub "${AWS::StackName}:ElasticBeanstalkPlatform"

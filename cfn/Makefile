@@ -1,49 +1,51 @@
-.PHONY: install apply show uninstall dependencies validate launch update delete status
-.PHONY: list-outputs list-resources clean help
+#!/usr/bin/env make
+
+.PHONY: all verify install uninstall dependencies validate launch delete status
+.PHONY: list-outputs list-resources export-outputs clean help
 .DEFAULT_GOAL := help
+MAKEFLAGS=s
 
-# Load cluster stack name
-stack := $(shell find ./config/ -mindepth 1 -maxdepth 1 -type d -printf '%f' | tr -d '/')
+include ../Makefile.cfg
 
-install: dependencies launch ## Deploy CloudFormation Stack(s)
+all: install uninstall ## Integration test
 
-apply: dependencies update ## Update CloudFormation Stack(s)
+verify: dependencies validate ## Validate CloudFormation Template(s)
 
-show: dependencies status ## Show  CloudFormation Stack(s) status
+install: dependencies launch export-outputs status ## Deploy CloudFormation Stack(s)
 
 uninstall: dependencies delete clean ## Terminate CloudFormation Stack(s) and clean up local files
 
 dependencies: # Install local dependencies in a local virtual environment
 	$(call cyan, "make cfn/$@ ...")
-	pipenv --bare install
+	pipenv install
 
 validate: # Validate CloudFormation Template(s)
 	$(call cyan, "make cfn/$@ ...")
-	pipenv run sceptre validate $(stack)
+	pipenv run sceptre validate $(SCEPTRE_STACK_NAME)
 
 launch: validate # Deploy CloudFormation Stack(s)
 	$(call cyan, "make cfn/$@ ...")
-	pipenv run sceptre launch --yes $(stack)
-
-update: validate # Update CloudFormation Stack(s)
-	$(call cyan, "make cfn/$@ ...")
-	pipenv run sceptre update --yes $(stack)
+	pipenv run sceptre launch --yes $(SCEPTRE_STACK_NAME)
 
 delete: # Terminate CloudFormation Stack(s)
 	$(call cyan, "make cfn/$@ ...")
-	pipenv run sceptre delete --yes $(stack)
+	pipenv run sceptre delete --yes $(SCEPTRE_STACK_NAME)
 
-status: # Show deployment status of the CloudFormation Stack(s)
+status: dependencies ## Show deployment status of the CloudFormation Stack(s)
 	$(call cyan, "make cfn/$@ ...")
-	pipenv run sceptre status $(stack)
+	pipenv run sceptre status $(SCEPTRE_STACK_NAME)
 
 list-outputs: # List CloudFormation Outputs of the Stack(s)
-	$(call cyan, "make cfn/$@ ...")
-	pipenv run sceptre list outputs $(stack)
+	pipenv run sceptre list outputs $(SCEPTRE_STACK_NAME)
 
 list-resources: # List CloudFormation Resources of the Stack(s)
 	$(call cyan, "make cfn/$@ ...")
-	pipenv run sceptre list resources $(stack)
+	pipenv run sceptre list resources $(SCEPTRE_STACK_NAME)
+
+export-outputs: # Generate export commands for CloudFormation Stack Outputs
+	# This target is intentionally PHONY
+	$(call cyan, "make cfn/$@ ...")
+	pipenv run sceptre --ignore-dependencies list outputs $(SCEPTRE_STACK_NAME) --export=envvar > outputs.cfg
 
 clean: # Delete virtual environment
 	$(call cyan, "make cfn/$@ ...")
