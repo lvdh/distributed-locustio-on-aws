@@ -84,7 +84,7 @@ $ make test
 **Note:** When using `aws-vault`, `make all` might fail due to the default AWS session duration of 15 minutes. Use the `--assume-role-ttl 1h` to increase the session duration to the [maximum session duration of 1h](https://docs.aws.amazon.com/STS/latest/APIReference/API_GetSessionToken.html).
 
 ```
-aws-vault exec --assume-role-ttl 1h <profile> -- make all
+$ aws-vault exec --assume-role-ttl 1h <profile> -- make all
 ```
 
 #### Verify the Templates and Test Suite
@@ -102,7 +102,7 @@ aws-vault exec --assume-role-ttl 1h <profile> -- make all
 1. Create the load testing infrastructure and deploy a [sample Locust test suite](eb/locustfile.py):
 
     ```
-    aws-vault exec <profile> -- make install
+    $ aws-vault exec <profile> -- make install
     ```
 
     **Note:** Initializing the environment takes roughly 15 minutes, usually.
@@ -120,7 +120,7 @@ Deploy a new test suite, or changes to CloudFormation templates.
 2. Deploy the updated [Locustfile](eb/locustfile.py):
 
     ```
-    aws-vault exec <profile> -- make update
+    $ aws-vault exec <profile> -- make update
     ```
 
 3. The Locust web UI opens in your browser automatically once the update is complete.
@@ -130,7 +130,7 @@ Deploy a new test suite, or changes to CloudFormation templates.
 1. View the status of the CloudFormation stacks and the Elastic Beanstalk deployment:
 
     ```
-    aws-vault exec <profile> -- make status
+    $ aws-vault exec <profile> -- make status
     ```
 
 #### Terminate Cluster
@@ -138,7 +138,7 @@ Deploy a new test suite, or changes to CloudFormation templates.
 1. Destroy all CloudFormation stacks and clean up temporary files:
 
     ```
-    aws-vault exec <profile> -- make uninstall
+    $ aws-vault exec <profile> -- make uninstall
     ```
 
 #### Run Integration Test
@@ -146,7 +146,7 @@ Deploy a new test suite, or changes to CloudFormation templates.
 1. Run a full cycle: test, install, deploy, status, uninstall:
 
     ```
-    aws-vault exec <profile> -- make all
+    $ aws-vault exec <profile> -- make all
     ```
 
 ## Overview of CLI Commands
