@@ -6,7 +6,7 @@ MAKEFLAGS=s
 
 include Makefile.cfg
 
-all: configure verify install update status uninstall ## Deploy and destroy (integration test)
+all: configure verify install install status uninstall ## Deploy, 'update' and destroy (integration test)
 
 configure: # Generate Sceptre's main configuration file
 	# This target is intentionally PHONY
