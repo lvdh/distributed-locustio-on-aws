@@ -31,7 +31,7 @@ Additional dependencies will be installed in [Python 3 Virtual Environments](htt
 
 1. Review and update [Makefile.cfg](Makefile.cfg):
 
-    1. `PROJECT_CODE` (required)
+    1. `SCEPTRE_PROJECT_CODE` (required)
 
         Custom name/ID for your project. (Lower case, alpha-numeric.)
 

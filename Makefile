@@ -13,7 +13,7 @@ configure: ## Generate Sceptre's main configuration file
 	$(call cyan, "make $@ ...")
 	echo "region: $(AWS_REGION)" > ./cfn/config/config.yaml
 	echo "profile: $(AWS_PROFILE)" >> ./cfn/config/config.yaml
-	echo "project_code: $(PROJECT_CODE)" >> ./cfn/config/config.yaml
+	echo "project_code: $(SCEPTRE_PROJECT_CODE)" >> ./cfn/config/config.yaml
 
 test: configure ## Verify the CloudFormation templates and Locust test suite
 	$(MAKE) -C ./cfn/ validate
