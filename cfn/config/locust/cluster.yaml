@@ -10,7 +10,7 @@ parameters:
   EC2KeyName: !environment_variable CLUSTER_EC2_KEY_NAME
 
   SolutionStackName: "64bit Amazon Linux 2018.03 v2.14.1 running Go 1.13.2"
-  VPCID: !stack_output locust/network.yaml::VPCID
-  VPCCIDR: !stack_output locust/network.yaml::VPCCIDR
-  PrivateSubnets: !stack_output locust/network.yaml::PrivateSubnets
-  PublicSubnets: !stack_output locust/network.yaml::PublicSubnets
+  VpcId: !stack_output locust/network.yaml::VpcId
+  VpcCidr: !stack_output locust/network.yaml::VpcCidr
+  PrivateSubnetIds: !stack_output locust/network.yaml::PrivateSubnetIds
+  PublicSubnetIds: !stack_output locust/network.yaml::PublicSubnetIds

@@ -16,15 +16,15 @@ Metadata:
           - InstanceCount
           - InstanceTypes
           - EC2KeyName
-          - SolutionStackName
+          - ElasticBeanstalkSolutionStackName
 
       - Label:
           default: Network Configuration
         Parameters:
           - VpcId
           - VpcCidr
-          - PrivateSubnets
-          - PublicSubnets
+          - PrivateSubnetIds
+          - PublicSubnetIds
 
     ParameterLabels:
       InstanceCount:
@@ -33,16 +33,16 @@ Metadata:
         default: Instance Type of the EC2 instances in the cluster
       EC2KeyName:
         default: Key Pair Name
-      SolutionStackName:
-        default: Elastic Beanstalk Platform ("Solution Stack") name
+      ElasticBeanstalkSolutionStackName:
+        default: Elastic Beanstalk Platform ("Solution Stack Name")
       VpcId:
         default: VPC ID
       VpcCidr:
         default: VPC CIDR block
-      PrivateSubnets:
-        default: Private Subnets
-      PublicSubnets:
-        default: Public Subnets
+      PrivateSubnetIds:
+        default: Private Subnet IDs
+      PublicSubnetIds:
+        default: Public Subnet IDs
 
 Parameters:
 
@@ -64,8 +64,8 @@ Parameters:
     Type: String # 'String' allows an empty key name, while 'AWS::EC2::KeyPair::KeyName' does not
     Default: ''
 
-  SolutionStackName:
-    Description: Cluster Solution Stack Name
+  ElasticBeanstalkSolutionStackName:
+    Description: Elastic Beanstalk Platform ("Solution Stack Name")
     Type: String
 
   VpcId:
@@ -78,11 +78,11 @@ Parameters:
     AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
     ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
 
-  PrivateSubnets:
+  PrivateSubnetIds:
     Description: IDs of Private Subnets
     Type: List<AWS::EC2::Subnet::Id>
 
-  PublicSubnets:
+  PublicSubnetIds:
     Description: IDs of Public Subnets
     Type: List<AWS::EC2::Subnet::Id>
 
@@ -115,30 +115,30 @@ Resources:
       IpProtocol: tcp
       FromPort: 80
       ToPort: 80
-      DestinationSecurityGroupId: !Ref ApplicationSecurityGroup
+      DestinationSecurityGroupId: !Ref TargetSecurityGroup
 
-  ApplicationSecurityGroup:
+  TargetSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Application Security Group
       VpcId: !Ref VpcId
       Tags:
       - Key: Name
-        Value: !Sub "${AWS::StackName}:ApplicationSecurityGroup"
+        Value: !Sub "${AWS::StackName}:TargetSecurityGroup"
 
-  ApplicationSecurityGroupIngress:
+  TargetSecurityGroupIngress:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
-      GroupId: !Ref ApplicationSecurityGroup
+      GroupId: !Ref TargetSecurityGroup
       IpProtocol: tcp
       FromPort: 80
       ToPort: 80
       SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
 
-  ApplicationSecurityGroupEgress:
+  TargetSecurityGroupEgress:
     Type: AWS::EC2::SecurityGroupEgress
     Properties:
-      GroupId: !Ref ApplicationSecurityGroup
+      GroupId: !Ref TargetSecurityGroup
       IpProtocol: tcp
       FromPort: 80
       ToPort: 80
@@ -180,7 +180,7 @@ Resources:
     Type: AWS::ElasticBeanstalk::ConfigurationTemplate
     Properties:
       ApplicationName: !Ref ElasticBeanstalkApplication
-      SolutionStackName: !Ref SolutionStackName
+      SolutionStackName: !Ref ElasticBeanstalkSolutionStackName
       OptionSettings:
 
       # Elastic Beanstalk Options, Environment
@@ -209,7 +209,7 @@ Resources:
 
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: SecurityGroups
-        Value: !Ref ApplicationSecurityGroup
+        Value: !Ref TargetSecurityGroup
 
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: IamInstanceProfile
@@ -355,9 +355,9 @@ Resources:
         Value:
           "Fn::Join":
             - ','
-            - - !Select [0, !Ref PrivateSubnets]
-              - !Select [1, !Ref PrivateSubnets]
-              - !Select [2, !Ref PrivateSubnets]
+            - - !Select [0, !Ref PrivateSubnetIds]
+              - !Select [1, !Ref PrivateSubnetIds]
+              - !Select [2, !Ref PrivateSubnetIds]
 
       - Namespace: aws:ec2:vpc
         OptionName: ELBSubnets
@@ -365,9 +365,9 @@ Resources:
         Value:
           "Fn::Join":
             - ','
-            - - !Select [0, !Ref PublicSubnets]
-              - !Select [1, !Ref PublicSubnets]
-              - !Select [2, !Ref PublicSubnets]
+            - - !Select [0, !Ref PublicSubnetIds]
+              - !Select [1, !Ref PublicSubnetIds]
+              - !Select [2, !Ref PublicSubnetIds]
 
       - Namespace: aws:elbv2:listener:default
         OptionName: ListenerEnabled
@@ -447,26 +447,26 @@ Outputs:
     Export:
       Name: !Sub ${AWS::StackName}:Name
 
-  EnvironmentURL:
+  EnvironmentUrl:
     Description: Environment URL
     Value: !GetAtt ElasticBeanstalkEnvironment.EndpointURL
     Export:
-      Name: !Sub "${AWS::StackName}:EnvironmentURL"
+      Name: !Sub "${AWS::StackName}:EnvironmentUrl"
 
-  LoadBalancerSecurityGroup:
-    Description: Security Group ID for Internet-facing ELB
+  LoadBalancerSecurityGroupId:
+    Description: Security Group ID applied to Internet-facing Load Balancer
     Value: !GetAtt LoadBalancerSecurityGroup.GroupId
     Export:
-      Name: !Sub "${AWS::StackName}:LoadBalancerSecurityGroupID"
+      Name: !Sub "${AWS::StackName}:LoadBalancerSecurityGroupId"
 
-  ApplicationSecurityGroup:
-    Description: Security Group ID for app behind ELB
-    Value: !GetAtt ApplicationSecurityGroup.GroupId
+  TargetSecurityGroupId:
+    Description: Security Group ID applied to Targets of the Load Balancer
+    Value: !GetAtt TargetSecurityGroup.GroupId
     Export:
-      Name: !Sub "${AWS::StackName}:ApplicationSecurityGroupID"
+      Name: !Sub "${AWS::StackName}:TargetSecurityGroupId"
 
-  SolutionStackName:
-    Description: Elastic Beanstalk Solution Stack Name
-    Value: !Ref SolutionStackName
+  ElasticBeanstalkSolutionStackName:
+    Description: Elastic Beanstalk Platform ("Solution Stack Name")
+    Value: !Ref ElasticBeanstalkSolutionStackName
     Export:
-      Name: !Sub "${AWS::StackName}:SolutionStackName"
+      Name: !Sub "${AWS::StackName}:ElasticBeanstalkSolutionStackName"

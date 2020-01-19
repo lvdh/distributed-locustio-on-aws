@@ -409,7 +409,7 @@ Outputs:
     Export:
       Name: !Sub "${AWS::StackName}:VpcCidr"
 
-  PublicSubnets:
+  PublicSubnetIds:
     Description: Public Subnet IDs
     Value:
       "Fn::Join":
@@ -418,9 +418,9 @@ Outputs:
           - !Ref PublicSubnetB
           - !Ref PublicSubnetC
     Export:
-      Name: !Sub "${AWS::StackName}:PublicSubnets"
+      Name: !Sub "${AWS::StackName}:PublicSubnetIds"
 
-  PrivateSubnets:
+  PrivateSubnetIds:
     Description: Private Subnet IDs
     Value:
       "Fn::Join":
@@ -429,4 +429,4 @@ Outputs:
           - !Ref PrivateSubnetB
           - !Ref PrivateSubnetC
     Export:
-      Name: !Sub "${AWS::StackName}:PrivateSubnets"
+      Name: !Sub "${AWS::StackName}:PrivateSubnetIds"
