@@ -6,7 +6,7 @@ stack_tags:
 
 parameters:
   InstanceCount: !environment_variable CLUSTER_INSTANCE_COUNT
-  InstanceType: !environment_variable CLUSTER_INSTANCE_TYPE
+  InstanceTypes: !environment_variable CLUSTER_INSTANCE_TYPES
   EC2KeyName: !environment_variable CLUSTER_EC2_KEY_NAME
 
   SolutionStackName: "64bit Amazon Linux 2018.03 v2.14.1 running Go 1.13.2"

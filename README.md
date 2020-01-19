@@ -51,17 +51,19 @@ Review and update [Makefile.cfg](Makefile.cfg):
 
     **Default:** `3`
 
-4. `CLUSTER_INSTANCE_TYPE` (required)
+4. `CLUSTER_INSTANCE_TYPES` (required)
 
     Type of EC2 instances to run Locust on.
 
-    **Default:** `c5.large`
+    **Default:** `c5.large,c4.large`
 
-5. `CLUSTER_EC2_KEY_NAME` (required)
+    **Note:** Accepts a comma-separated list of 1 (min.) to 10 (max.) instance types. [AWS recommends providing at least two instance types.](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options-general.html#command-options-general-ec2instances)
+
+5. `CLUSTER_EC2_KEY_NAME` (optional)
 
     Name of an existing [AWS EC2 SSH Key Pair](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html).
 
-    **Default:** `<none>`
+    **Default:** `<empty>`
 
 6. `AWS_PROFILE` (set only when not using `aws-vault`)
 

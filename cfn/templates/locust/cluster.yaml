@@ -15,7 +15,7 @@ Metadata:
           default: Cluster Configuration
         Parameters:
           - InstanceCount
-          - InstanceType
+          - InstanceTypes
           - EC2KeyName
           - SolutionStackName
 
@@ -31,7 +31,7 @@ Metadata:
 
       InstanceCount:
         default: Number of EC2 instances in the cluster
-      InstanceType:
+      InstanceTypes:
         default: Instance Type of the EC2 instances in the cluster
       EC2KeyName:
         default: Key Pair Name
@@ -56,10 +56,10 @@ Parameters:
     Default: 3
     ConstraintDescription: Specify a number between 1 - 20
 
-  InstanceType:
-    Description: Cluster Instance Type
+  InstanceTypes:
+    Description: Cluster Instance Types for Elastic Beanstalk to choose from
     Type: String
-    Default: 'c5.large'
+    Default: 'c5.large,c4.large'
 
   EC2KeyName:
     Description: Name of an existing EC2 Key Pair
@@ -214,10 +214,6 @@ Resources:
         Value: !Ref ApplicationSecurityGroup
 
       - Namespace: aws:autoscaling:launchconfiguration
-        OptionName: InstanceType
-        Value: !Ref InstanceType
-
-      - Namespace: aws:autoscaling:launchconfiguration
         OptionName: IamInstanceProfile
         Value: !Ref ApplicationInstanceProfile
 
@@ -232,6 +228,10 @@ Resources:
           Fn::Sub:
             - tcp, 22, 22, ${SourceCIDR}
             - { SourceCIDR: !Ref VPCCIDR }
+
+      - Namespace: aws:ec2:instances
+        OptionName: InstanceTypes
+        Value: !Ref InstanceTypes
 
       - Namespace: aws:autoscaling:updatepolicy:rollingupdate
         OptionName: RollingUpdateEnabled
