@@ -3,7 +3,7 @@ name: docker
 
 steps:
 - name: Locust smoke test
-  image: ubuntu:18.04
+  image: alpine:3.11.3
   commands:
-  - apt-get --yes install build-essential
+  - apk add --update build-base
   - make -C ./eb/ verify
