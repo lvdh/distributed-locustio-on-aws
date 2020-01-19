@@ -35,6 +35,10 @@ uninstall: configure ## Delete the CloudFormation Stacks and clean up
 	$(MAKE) -C ./eb/ uninstall
 	$(MAKE) -C ./cfn/ uninstall
 
+clean: configure ## Delete virtual environments and temporary files
+	$(MAKE) -C ./eb/ clean
+	$(MAKE) -C ./cfn/ clean
+
 help:
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-18s\033[0m %s\n", $$1, $$2}' \
 		$(MAKEFILE_LIST)
