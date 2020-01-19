@@ -17,7 +17,7 @@ uninstall: dependencies delete clean ## Terminate CloudFormation Stack(s) and cl
 
 dependencies: # Install local dependencies in a local virtual environment
 	$(call cyan, "make cfn/$@ ...")
-	pipenv --bare install
+	pipenv install
 
 validate: # Validate CloudFormation Template(s)
 	$(call cyan, "make cfn/$@ ...")

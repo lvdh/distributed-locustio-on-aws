@@ -17,7 +17,7 @@ uninstall: clean ## Delete the local virtual environment and temporary files
 
 dependencies: # Install local dependencies in a local virtual environment
 	$(call cyan, "make eb/$@ ...")
-	pipenv --bare install
+	pipenv install
 
 smoketest: # Run a smoke test on the local Locust test suite
 	$(call cyan, "make eb/$@ ...")
