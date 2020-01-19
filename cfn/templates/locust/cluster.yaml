@@ -2,8 +2,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
 Description: >
-  Deploy an Elastic Beanstalk Environment for an HTTP(S) load-testing stack
-  based on Locust (https://locust.io/).
+  Load Test Cluster, Elastic Beanstalk
 
 Metadata:
 
@@ -197,6 +196,12 @@ Resources:
         OptionName: ServiceRole
         Value: !Ref ElasticBeanstalkServiceRole
 
+      # Elastic Beanstalk Options, EC2 Instance Types
+
+      - Namespace: aws:ec2:instances
+        OptionName: InstanceTypes
+        Value: !Ref InstanceTypes
+
       # Elastic Beanstalk Options, Auto Scaling
 
       - Namespace: aws:autoscaling:asg
@@ -219,17 +224,12 @@ Resources:
         OptionName: EC2KeyName
         Value: !Ref EC2KeyName
 
-      # Allow SSH access from within the VPC
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: SSHSourceRestriction
         Value:
           Fn::Sub:
             - tcp, 22, 22, ${SourceCidr}
-            - { SourceCidr: !Ref VpcCidr }
-
-      - Namespace: aws:ec2:instances
-        OptionName: InstanceTypes
-        Value: !Ref InstanceTypes
+            - { SourceCidr: !Ref VpcCidr } # !Ref VpcCidr = Allow SSH access from within the VPC
 
       - Namespace: aws:autoscaling:updatepolicy:rollingupdate
         OptionName: RollingUpdateEnabled
@@ -247,10 +247,9 @@ Resources:
         OptionName: Unit
         Value: Percent
 
-      # Prevent Auto-Scaling
       - Namespace: aws:autoscaling:trigger
         OptionName: UpperThreshold
-        Value: "100"
+        Value: "100" # 100 = Prevent Auto-Scaling
 
       - Namespace: aws:autoscaling:trigger
         OptionName: LowerThreshold
@@ -274,11 +273,11 @@ Resources:
         OptionName: SystemType
         Value: "enhanced"
 
-        # Note:
-        #  * '60' = enable metric ("check every 60s")
-        #  * 'null' = disable metric
       - Namespace: aws:elasticbeanstalk:healthreporting:system
         OptionName: ConfigDocument
+        # Note on Value format:
+        #  * '60' = enable metric ("check every 60s")
+        #  * 'null' = disable metric
         Value:  '{
                   "Version": 1,
                   "CloudWatchMetrics": {
@@ -398,8 +397,9 @@ Resources:
         # Elastic Beanstalk Options, Environment Variables
 
       - Namespace: aws:elasticbeanstalk:application:environment
-        OptionName: AWS_REGION
-        Value: !Ref AWS::Region
+        # Example
+        OptionName: EXAMPLE
+        Value: 'example'
 
   # IAM
 

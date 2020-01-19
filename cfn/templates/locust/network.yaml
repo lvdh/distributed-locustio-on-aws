@@ -2,7 +2,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
 Description: >
-  Deploy a custom 2 tier, 3 AZ VPC.
+  Load Test Cluster, VPC (2 tier, 3 AZ)
 
 Metadata:
 
