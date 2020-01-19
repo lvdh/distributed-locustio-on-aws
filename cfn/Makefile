@@ -4,9 +4,6 @@
 
 export STACK_NAME
 
-sort:
-	env | sort
-
 install: dependencies launch ## Deploy CloudFormation Stack(s)
 
 apply: dependencies update ## Update CloudFormation Stack(s)
@@ -41,7 +38,7 @@ list-outputs: # List CloudFormation Outputs of the Stack(s)
 	$(call cyan, "make cfn/$@ ...")
 	pipenv run sceptre list outputs $(STACK_NAME)
 
-export-outputs: # List CloudFormation Outputs of the Stack(s)
+export-outputs: # Generate export commands for CloudFormation Stack Outputs
 	pipenv run sceptre --ignore-dependencies list outputs $(STACK_NAME) --export=envvar
 
 list-resources: # List CloudFormation Resources of the Stack(s)

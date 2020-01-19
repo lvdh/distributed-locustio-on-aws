@@ -8,6 +8,7 @@ export STACK_NAME := locust
 all: configure test install apply status uninstall ## Run integration test
 
 configure: ## Generate Sceptre's main configuration file
+	# This target is intentionally PHONY
 	$(call cyan, "make $@ ...")
 	@echo "region: $(AWS_REGION)" > ./cfn/config/config.yaml
 	@echo "profile: $(AWS_PROFILE)" >> ./cfn/config/config.yaml

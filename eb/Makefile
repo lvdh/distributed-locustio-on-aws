@@ -7,9 +7,6 @@ export STACK_NAME
 $(eval VARS := $(shell $(MAKE) -s -C ../cfn/ export-outputs))
 $(foreach v,$(VARS),$(eval $(shell echo export $(v))))
 
-sort:
-	env | sort
-
 test: dependencies smoketest ## Run a smoke test on the local Locust test suite
 
 install: dependencies smoketest init deploy status open ## Initialize Elastic Beanstalk and deploy the Locust test suite
