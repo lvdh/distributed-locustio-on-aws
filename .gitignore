@@ -1,2 +1,4 @@
 eb/__pycache__/
 eb/.elasticbeanstalk/
+cfn/outputs.cfg
+cfn/config/config.yaml
