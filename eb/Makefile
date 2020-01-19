@@ -1,6 +1,6 @@
 #!/usr/bin/env make
 
-.PHONY: test install uninstall dependencies smoketest init deploy status open clean help
+.PHONY: verify install uninstall dependencies smoketest init deploy status open clean help
 .DEFAULT_GOAL := help
 MAKEFLAGS=s
 
@@ -9,7 +9,7 @@ include ../cfn/outputs.cfg
 
 all: install uninstall ## Integration test
 
-test: dependencies smoketest ## Run a smoke test on the local Locust test suite
+verify: dependencies smoketest ## Run a smoke test on the local Locust test suite
 
 install: dependencies smoketest init deploy status open ## (Re)deploy the Locust test suite to Elastic Beanstalk
 

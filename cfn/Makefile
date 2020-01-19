@@ -1,7 +1,7 @@
 #!/usr/bin/env make
 
-.PHONY: install uninstall dependencies validate launch update delete status
-.PHONY: list-outputs export-outputs list-resources clean help
+.PHONY: all verify install uninstall dependencies validate launch delete status
+.PHONY: list-outputs list-resources export-outputs clean help
 .DEFAULT_GOAL := help
 MAKEFLAGS=s
 
@@ -9,7 +9,7 @@ include ../Makefile.cfg
 
 all: install uninstall ## Integration test
 
-test: dependencies validate ## Validate CloudFormation Template(s)
+verify: dependencies validate ## Validate CloudFormation Template(s)
 
 install: dependencies launch export-outputs status ## Deploy CloudFormation Stack(s)
 
@@ -26,10 +26,6 @@ validate: # Validate CloudFormation Template(s)
 launch: validate # Deploy CloudFormation Stack(s)
 	$(call cyan, "make cfn/$@ ...")
 	pipenv run sceptre launch --yes $(SCEPTRE_STACK_NAME)
-
-update: dependencies validate ## Update CloudFormation Stack(s)
-	$(call cyan, "make cfn/$@ ...")
-	pipenv run sceptre update --yes $(SCEPTRE_STACK_NAME)
 
 delete: # Terminate CloudFormation Stack(s)
 	$(call cyan, "make cfn/$@ ...")

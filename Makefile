@@ -1,39 +1,35 @@
 #!/usr/bin/env make
 
-.PHONY: all configure test install update show uninstall help
+.PHONY: all configure verify install show uninstall help
 .DEFAULT_GOAL := help
 MAKEFLAGS=s
 
 include Makefile.cfg
 
-all: configure test install update status uninstall ## Run integration test
+all: configure verify install update status uninstall ## Deploy and destroy (integration test)
 
-configure: ## Generate Sceptre's main configuration file
+configure: # Generate Sceptre's main configuration file
 	# This target is intentionally PHONY
 	$(call cyan, "make $@ ...")
 	echo "region: $(AWS_REGION)" > ./cfn/config/config.yaml
 	echo "profile: $(AWS_PROFILE)" >> ./cfn/config/config.yaml
 	echo "project_code: $(SCEPTRE_PROJECT_CODE)" >> ./cfn/config/config.yaml
 
-test: configure ## Verify the CloudFormation templates and Locust test suite
-	$(MAKE) -C ./cfn/ validate
-	$(MAKE) -C ./eb/ test
+verify: configure ## Verify the CloudFormation templates and Locust test suite
+	$(MAKE) -C ./cfn/ verify
+	$(MAKE) -C ./eb/ verify
 
-install: configure ## Create the CloudFormation templates and deploy the Locust test suite
+install: configure ## Deploy/update the CloudFormation templates and Locust test suite
 	$(MAKE) -C ./cfn/ install
 	$(MAKE) -C ./eb/ install
-
-update: configure ## Deploy modifications to the Locust test suite and/or CloudFormation templates
-	$(MAKE) -C ./cfn/ update
-	$(MAKE) -C ./eb/ install
-
-status: configure ## Show status of the CloudFormation Stacks and Locust deployment
-	$(MAKE) -C ./cfn/ status
-	$(MAKE) -C ./eb/ status
 
 uninstall: configure ## Delete the CloudFormation Stacks and clean up
 	$(MAKE) -C ./eb/ uninstall
 	$(MAKE) -C ./cfn/ uninstall
+
+status: configure ## Show status of the CloudFormation Stacks and Locust deployment
+	$(MAKE) -C ./cfn/ status
+	$(MAKE) -C ./eb/ status
 
 clean: configure ## Delete virtual environments and temporary files
 	$(MAKE) -C ./eb/ clean
