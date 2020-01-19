@@ -5,9 +5,9 @@ stack_tags:
   Documentation: "https://github.com/lvdh/distributed-locustio-on-aws/"
 
 parameters:
-  InstanceCount: "3"
-  InstanceType: "c5.large"
-  EC2KeyPair: "kp-laurens"
+  InstanceCount: !environment_variable CLUSTER_INSTANCE_COUNT
+  InstanceType: !environment_variable CLUSTER_INSTANCE_TYPE
+  EC2KeyName: !environment_variable CLUSTER_EC2_KEY_NAME
 
   SolutionStackName: "64bit Amazon Linux 2018.03 v2.14.1 running Go 1.13.2"
   VPCID: !stack_output locust/network.yaml::VPCID

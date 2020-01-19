@@ -29,38 +29,47 @@ Additional dependencies will be installed in [Python 3 Virtual Environments](htt
 
 ### Configuration
 
-1. Review and update [Makefile.cfg](Makefile.cfg):
+Review and update [Makefile.cfg](Makefile.cfg):
 
-    1. `SCEPTRE_PROJECT_CODE` (required)
+1. `SCEPTRE_PROJECT_CODE` (required)
 
-        Custom name/ID for your project. (Lower case, alpha-numeric.)
+    Custom name/ID for your project. (Lower case, alpha-numeric.)
 
-    2. `SCEPTRE_STACK_NAME` (required - recommended to keep as-is)
+    **Default:** `blazedemo`
 
-        The Sceptre Stack Name. Defaults to `locust`, as determined by [`cfn/config/locust`](cfn/config/locust).
-        See Sceptre's [Cascading Config](https://sceptre.cloudreach.com/2.2.1/docs/stack_group_config.html#cascading-config) documentation for more details.
+2. `SCEPTRE_STACK_NAME` (required)
 
-    3. `AWS_PROFILE` (set only when not using `aws-vault`)
+    The Sceptre Stack Name.
 
-        Provide the name of your [AWS CLI Named Profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html).
+    **Default:** `locust`
 
-    4. `AWS_REGION` (set only when not using `aws-vault`)
+    **Note:** The default is determined by [`cfn/config/locust`](cfn/config/locust). See Sceptre's [Cascading Config](https://sceptre.cloudreach.com/2.2.1/docs/stack_group_config.html#cascading-config) documentation for more details.
 
-        Configure your preferred AWS Region to deploy to.
+3. `CLUSTER_INSTANCE_COUNT` (required)
 
-2. Review and update [cfn/config/locust/cluster.yaml](cfn/config/locust/cluster.yaml):
+    Total count of EC2 instances to spin up.
 
-    1. `InstanceCount`
+    **Default:** `3`
 
-        Total count of EC2 instances to spin up.
+4. `CLUSTER_INSTANCE_TYPE` (required)
 
-    2. `InstanceType`
+    Type of EC2 instances to run Locust on.
 
-        Type of EC2 instances (default `c5.large`) to spin up.
+    **Default:** `c5.large`
 
-    3. `EC2KeyPair`
+5. `CLUSTER_EC2_KEY_NAME` (required)
 
-        Name of an existing [AWS EC2 SSH Key Pair](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html).
+    Name of an existing [AWS EC2 SSH Key Pair](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html).
+
+    **Default:** `<none>`
+
+6. `AWS_PROFILE` (set only when not using `aws-vault`)
+
+    Provide the name of your [AWS CLI Named Profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html).
+
+7. `AWS_REGION` (set only when not using `aws-vault`)
+
+    Configure your preferred AWS Region to deploy to.
 
 ### Deployment
 
