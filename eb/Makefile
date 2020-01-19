@@ -29,7 +29,7 @@ init: # (Re)initialize the EB CLI to target the Elastic Beanstalk environment
 	# (Re)initialize the EB CLI to target the Elastic Beanstalk environment
 	rm -rf ./.elasticbeanstalk/
 	pipenv run eb init --region $(AWS_REGION) \
-    --platform $(SCEPTRE_SolutionStackName) $(SCEPTRE_PROJECT_CODE)-$(SCEPTRE_STACK_NAME)-cluster
+    --platform $(SCEPTRE_ElasticBeanstalkPlatform) $(SCEPTRE_PROJECT_CODE)-$(SCEPTRE_STACK_NAME)-cluster
 
 deploy: init # (Re)deploy the Locust application
 	$(call cyan, "make eb/$@ ...")

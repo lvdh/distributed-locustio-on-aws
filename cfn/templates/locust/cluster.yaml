@@ -16,7 +16,7 @@ Metadata:
           - InstanceCount
           - InstanceTypes
           - EC2KeyName
-          - ElasticBeanstalkSolutionStackName
+          - ElasticBeanstalkPlatform
 
       - Label:
           default: Network Configuration
@@ -33,7 +33,7 @@ Metadata:
         default: Instance Type of the EC2 instances in the cluster
       EC2KeyName:
         default: Key Pair Name
-      ElasticBeanstalkSolutionStackName:
+      ElasticBeanstalkPlatform:
         default: Elastic Beanstalk Platform ("Solution Stack Name")
       VpcId:
         default: VPC ID
@@ -64,7 +64,7 @@ Parameters:
     Type: String # 'String' allows an empty key name, while 'AWS::EC2::KeyPair::KeyName' does not
     Default: ''
 
-  ElasticBeanstalkSolutionStackName:
+  ElasticBeanstalkPlatform:
     Description: Elastic Beanstalk Platform ("Solution Stack Name")
     Type: String
 
@@ -180,7 +180,7 @@ Resources:
     Type: AWS::ElasticBeanstalk::ConfigurationTemplate
     Properties:
       ApplicationName: !Ref ElasticBeanstalkApplication
-      SolutionStackName: !Ref ElasticBeanstalkSolutionStackName
+      SolutionStackName: !Ref ElasticBeanstalkPlatform
       OptionSettings:
 
       # Elastic Beanstalk Options, Environment
@@ -465,8 +465,8 @@ Outputs:
     Export:
       Name: !Sub "${AWS::StackName}:TargetSecurityGroupId"
 
-  ElasticBeanstalkSolutionStackName:
+  ElasticBeanstalkPlatform:
     Description: Elastic Beanstalk Platform ("Solution Stack Name")
-    Value: !Ref ElasticBeanstalkSolutionStackName
+    Value: !Ref ElasticBeanstalkPlatform
     Export:
-      Name: !Sub "${AWS::StackName}:ElasticBeanstalkSolutionStackName"
+      Name: !Sub "${AWS::StackName}:ElasticBeanstalkPlatform"
