@@ -63,7 +63,7 @@ Parameters:
 
   EC2KeyName:
     Description: Name of an existing EC2 Key Pair
-    Type: AWS::EC2::KeyPair::KeyName
+    Type: String # 'String' allows an empty key name, while 'AWS::EC2::KeyPair::KeyName' does not
     Default: ''
 
   SolutionStackName:
@@ -223,8 +223,7 @@ Resources:
 
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: EC2KeyName
-        # Value: !Ref EC2KeyName
-        Value: ''
+        Value: !Ref EC2KeyName
 
       # Allow SSH access from within the VPC
       - Namespace: aws:autoscaling:launchconfiguration
