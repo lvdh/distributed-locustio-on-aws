@@ -28,7 +28,6 @@ smoketest: # Run a smoke test on the local Locust test suite
 
 init: # (Re)initialize the EB CLI to target the Elastic Beanstalk environment
 	$(info INFO: make eb/$@ ...)
-	# (Re)initialize the EB CLI to target the Elastic Beanstalk environment
 	rm -rf ./.elasticbeanstalk/
 	pipenv run eb init --region $(SCEPTRE_Region) --platform $(SCEPTRE_ElasticBeanstalkPlatform) $(SCEPTRE_EbApplicationName)
 
