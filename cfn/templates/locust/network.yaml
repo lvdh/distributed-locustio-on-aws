@@ -18,18 +18,17 @@ Metadata:
           - VpcCidrBlock
     ParameterLabels:
       AzCount:
-        default: Number of Availability Zones to deploy the cluster across
+        default: Number of Availability Zones to deploy the cluster across (min. 2)
       VpcCidrBlock:
         default: CIDR block of the existing VPC to deploy to
 
 Parameters:
 
   AzCount:
-    Description: Number of Availability Zones to deploy the cluster across
+    Description: Number of Availability Zones to deploy the cluster across (min. 2)
     Type: Number
-    Default: 1
+    Default: 2
     AllowedValues:
-      - 1
       - 2
       - 3
 
