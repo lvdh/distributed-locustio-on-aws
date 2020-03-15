@@ -4,11 +4,8 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-cfn-lint = "==0.28.4"
-flake8 = "==3.7.9"
 
 [packages]
-sceptre = "==2.3.0"
 
 [requires]
 python_version = "3.7"
