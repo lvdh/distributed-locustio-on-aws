@@ -10,7 +10,7 @@ all: configure verify install install status uninstall ## Deploy, 'update' and d
 
 configure: # Generate Sceptre's main configuration file
 	# This target is intentionally PHONY
-	$(call cyan, "make $@ ...")
+	$(info "make $@ ...")
 	echo "region: $(AWS_REGION)" > ./cfn/config/config.yaml
 	echo "profile: $(AWS_PROFILE)" >> ./cfn/config/config.yaml
 	echo "project_code: $(SCEPTRE_PROJECT_CODE)" >> ./cfn/config/config.yaml
@@ -38,9 +38,3 @@ clean: configure ## Delete virtual environments and temporary files
 help:
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-18s\033[0m %s\n", $$1, $$2}' \
 		$(MAKEFILE_LIST)
-
-define cyan
-	@tput setaf 6
-	@echo $1
-	@tput sgr0
-endef
