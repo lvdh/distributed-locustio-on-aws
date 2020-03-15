@@ -6,6 +6,7 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
+cfn-lint = "==0.28.4"
 flake8 = "==3.7.9"
 sceptre = "==2.3.0"
 

@@ -8,9 +8,9 @@ include ../Makefile.cfg
 
 all: install uninstall ## Integration test
 
-verify: env validate ## Validate CloudFormation Template(s)
+verify: env lint validate ## Validate CloudFormation Template(s)
 
-install: env launch export-outputs status ## Deploy CloudFormation Stack(s)
+install: env lint validate launch export-outputs status ## Deploy CloudFormation Stack(s)
 
 uninstall: env delete clean ## Terminate CloudFormation Stack(s) and clean up local files
 
@@ -18,11 +18,14 @@ env: # Install local env in a local virtual environment
 	$(info make cfn/$@ ...)
 	pipenv install
 
+lint: ## Run linter on CloudFormation templates
+	pipenv run cfn-lint --info **/templates/**/**/*.yaml
+
 validate: # Validate CloudFormation Template(s)
 	$(info make cfn/$@ ...)
 	pipenv run sceptre validate $(SCEPTRE_STACK_NAME)
 
-launch: validate # Deploy CloudFormation Stack(s)
+launch: # Deploy CloudFormation Stack(s)
 	$(info make cfn/$@ ...)
 	pipenv run sceptre launch --yes $(SCEPTRE_STACK_NAME)
 
