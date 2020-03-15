@@ -48,9 +48,8 @@ Parameters:
   AzCount:
     Description: Number of AZs to deploy across.
     Type: Number
-    Default: 1
+    Default: 2
     AllowedValues:
-      - 1
       - 2
       - 3
 

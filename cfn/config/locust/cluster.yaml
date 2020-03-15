@@ -10,6 +10,8 @@ parameters:
   EC2KeyName: !environment_variable CLUSTER_EC2_KEY_NAME
 
   ElasticBeanstalkPlatform: "64bit Amazon Linux 2018.03 v2.14.1 running Go 1.13.2"
+
+  AzCount: !stack_output locust/network.yaml::AzCount
   VpcId: !stack_output locust/network.yaml::VpcId
   VpcCidrBlock: !stack_output locust/network.yaml::VpcCidrBlock
   PrivateSubnetIds: !stack_output locust/network.yaml::PrivateSubnetIds
