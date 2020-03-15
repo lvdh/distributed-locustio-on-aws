@@ -3,3 +3,6 @@ template_path: locust/network.yaml
 stack_tags:
   ProjectCode: {{ project_code }}
   Documentation: "https://github.com/lvdh/distributed-locustio-on-aws/"
+
+parameters:
+  VpcCidrBlock: '10.67.0.0/16'

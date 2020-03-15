@@ -11,6 +11,6 @@ parameters:
 
   ElasticBeanstalkPlatform: "64bit Amazon Linux 2018.03 v2.14.1 running Go 1.13.2"
   VpcId: !stack_output locust/network.yaml::VpcId
-  VpcCidr: !stack_output locust/network.yaml::VpcCidr
+  VpcCidrBlock: !stack_output locust/network.yaml::VpcCidrBlock
   PrivateSubnetIds: !stack_output locust/network.yaml::PrivateSubnetIds
   PublicSubnetIds: !stack_output locust/network.yaml::PublicSubnetIds

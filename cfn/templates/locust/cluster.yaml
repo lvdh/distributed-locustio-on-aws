@@ -7,7 +7,6 @@ Description: >
 Metadata:
 
   AWS::CloudFormation::Interface:
-
     ParameterGroups:
       - Label:
           default: Cluster Configuration
@@ -20,8 +19,9 @@ Metadata:
       - Label:
           default: Network Configuration
         Parameters:
+          - AzCount
           - VpcId
-          - VpcCidr
+          - VpcCidrBlock
           - PrivateSubnetIds
           - PublicSubnetIds
 
@@ -34,9 +34,11 @@ Metadata:
         default: Key Pair Name
       ElasticBeanstalkPlatform:
         default: Elastic Beanstalk Platform ("Solution Stack Name")
+      AzCount:
+        default: Number of AZs to deploy across.
       VpcId:
         default: VPC ID
-      VpcCidr:
+      VpcCidrBlock:
         default: VPC CIDR block
       PrivateSubnetIds:
         default: Private Subnet IDs
@@ -44,6 +46,15 @@ Metadata:
         default: Public Subnet IDs
 
 Parameters:
+
+  AzCount:
+    Description: Number of AZs to deploy across.
+    Type: Number
+    Default: 1
+    AllowedValues:
+      - 1
+      - 2
+      - 3
 
   InstanceCount:
     Description: Size of the Locust cluster (number of EC2 instances)
@@ -71,7 +82,7 @@ Parameters:
     Description: ID of the existing VPC
     Type: AWS::EC2::VPC::Id
 
-  VpcCidr:
+  VpcCidrBlock:
     Description: CIDR block for the VPC
     Type: String
     AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
@@ -84,6 +95,19 @@ Parameters:
   PublicSubnetIds:
     Description: IDs of Public Subnets
     Type: List<AWS::EC2::Subnet::Id>
+
+Conditions:
+
+  SingleAz: !Or
+    - !Equals [1, !Ref AzCount]
+    - !Equals [2, !Ref AzCount]
+    - !Equals [3, !Ref AzCount]
+
+  DoubleAz: !Or
+    - !Equals [2, !Ref AzCount]
+    - !Equals [3, !Ref AzCount]
+
+  TripleAz: !Equals [3, !Ref AzCount]
 
 Resources:
 
@@ -264,7 +288,7 @@ Resources:
         Value:
           Fn::Sub:
             - tcp, 22, 22, ${SourceCidr}
-            - { SourceCidr: !Ref VpcCidr } # !Ref VpcCidr = Allow SSH access from within the VPC
+            - { SourceCidr: !Ref VpcCidrBlock } # !Ref VpcCidrBlock = Allow SSH access from within the VPC
 
       - Namespace: aws:autoscaling:updatepolicy:rollingupdate
         OptionName: RollingUpdateEnabled
@@ -389,9 +413,9 @@ Resources:
         Value:
           "Fn::Join":
             - ','
-            - - !Select [0, !Ref PrivateSubnetIds]
-              - !Select [1, !Ref PrivateSubnetIds]
-              - !Select [2, !Ref PrivateSubnetIds]
+            - - !If [SingleAz, !Select [ 0, !Ref PrivateSubnetIds ], !Ref 'AWS::NoValue']
+              - !If [DoubleAz, !Select [ 1, !Ref PrivateSubnetIds ], !Ref 'AWS::NoValue']
+              - !If [TripleAz, !Select [ 2, !Ref PrivateSubnetIds ], !Ref 'AWS::NoValue']
 
       - Namespace: aws:ec2:vpc
         OptionName: ELBSubnets
@@ -399,9 +423,9 @@ Resources:
         Value:
           "Fn::Join":
             - ','
-            - - !Select [0, !Ref PublicSubnetIds]
-              - !Select [1, !Ref PublicSubnetIds]
-              - !Select [2, !Ref PublicSubnetIds]
+            - - !If [SingleAz, !Select [ 0, !Ref PublicSubnetIds ], !Ref 'AWS::NoValue']
+              - !If [DoubleAz, !Select [ 1, !Ref PublicSubnetIds ], !Ref 'AWS::NoValue']
+              - !If [TripleAz, !Select [ 2, !Ref PublicSubnetIds ], !Ref 'AWS::NoValue']
 
       - Namespace: aws:elbv2:listener:default
         OptionName: ListenerEnabled
