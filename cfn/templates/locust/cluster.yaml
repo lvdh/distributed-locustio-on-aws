@@ -444,17 +444,29 @@ Outputs:
     Export:
       Name: !Sub ${AWS::StackName}:Name
 
-  EnvironmentName:
-    Description: Environment URL
+  Region:
+    Description: Region Name
+    Value: !Ref AWS::Region
+    Export:
+      Name: !Sub ${AWS::StackName}:Region
+
+  EbApplicationName:
+    Description: Elastic Beanstalk Application URL
+    Value: !Ref ElasticBeanstalkApplication
+    Export:
+      Name: !Sub "${AWS::StackName}:EbApplicationName"
+
+  EbEnvironmentName:
+    Description: Elastic Beanstalk Environment URL
     Value: !Ref ElasticBeanstalkEnvironment
     Export:
-      Name: !Sub "${AWS::StackName}:EnvironmentName"
+      Name: !Sub "${AWS::StackName}:EbEnvironmentName"
 
-  EnvironmentUrl:
-    Description: Environment URL
+  EbEnvironmentUrl:
+    Description: Elastic Beanstalk Environment URL
     Value: !GetAtt ElasticBeanstalkEnvironment.EndpointURL
     Export:
-      Name: !Sub "${AWS::StackName}:EnvironmentUrl"
+      Name: !Sub "${AWS::StackName}:EbEnvironmentUrl"
 
   LoadBalancerSecurityGroupId:
     Description: Security Group ID applied to Internet-facing Load Balancer
