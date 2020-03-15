@@ -15,7 +15,6 @@ Metadata:
           - InstanceTypes
           - EC2KeyName
           - ElasticBeanstalkPlatform
-
       - Label:
           default: Network Configuration
         Parameters:
@@ -24,7 +23,6 @@ Metadata:
           - VpcCidrBlock
           - PrivateSubnetIds
           - PublicSubnetIds
-
     ParameterLabels:
       InstanceCount:
         default: Number of EC2 instances to provision for the cluster
