@@ -77,14 +77,14 @@ Review and update [Makefile.cfg](Makefile.cfg):
 
 **Note:** Execute the `make` commands without any prefix when not using `aws-vault`:
 
-```
-$ make test
+```bash
+make test
 ```
 
 **Note:** When using `aws-vault`, `make all` might fail due to the default AWS session duration of 15 minutes. Use the `--assume-role-ttl 1h` to increase the session duration to the [maximum session duration of 1h](https://docs.aws.amazon.com/STS/latest/APIReference/API_GetSessionToken.html).
 
-```
-$ aws-vault exec --assume-role-ttl 1h <profile> -- make all
+```bash
+aws-vault exec --assume-role-ttl 1h <profile> -- make all
 ```
 
 #### Verify the Templates and Test Suite
@@ -93,16 +93,16 @@ $ aws-vault exec --assume-role-ttl 1h <profile> -- make all
 
     **Note:** This runs a short Locust load test locally, which targets the Locust `host` (see below).
 
-    ```
-    $ aws-vault exec <profile> -- make test
+    ```bash
+    aws-vault exec <profile> -- make test
     ```
 
 #### Install Cluster
 
 1. Create the load testing infrastructure and deploy a [sample Locust test suite](eb/locustfile.py):
 
-    ```
-    $ aws-vault exec <profile> -- make install
+    ```bash
+    aws-vault exec <profile> -- make install
     ```
 
     **Note:** Initializing the environment takes roughly 15 minutes, usually.
@@ -119,8 +119,8 @@ Deploy a new test suite, or changes to CloudFormation templates.
 
 2. Deploy the updated [Locustfile](eb/locustfile.py):
 
-    ```
-    $ aws-vault exec <profile> -- make update
+    ```bash
+    aws-vault exec <profile> -- make update
     ```
 
 3. The Locust web UI opens in your browser automatically once the update is complete.
@@ -129,29 +129,29 @@ Deploy a new test suite, or changes to CloudFormation templates.
 
 1. View the status of the CloudFormation stacks and the Elastic Beanstalk deployment:
 
-    ```
-    $ aws-vault exec <profile> -- make status
+    ```bash
+    aws-vault exec <profile> -- make status
     ```
 
 #### Terminate Cluster
 
 1. Destroy all CloudFormation stacks and clean up temporary files:
 
-    ```
-    $ aws-vault exec <profile> -- make uninstall
+    ```bash
+    aws-vault exec <profile> -- make uninstall
     ```
 
 #### Run Integration Test
 
 1. Run a full cycle: test, install, deploy, status, uninstall:
 
-    ```
-    $ aws-vault exec <profile> -- make all
+    ```bash
+    aws-vault exec <profile> -- make all
     ```
 
 ## Overview of CLI Commands
 
-```
+```bash
 $ make
 all                Deploy and destroy (integration test)
 verify             Verify the CloudFormation templates and Locust test suite
@@ -169,7 +169,7 @@ See Makefiles below for a list of sub-targets which may be useful during develop
 
 [`cfn/Makefile`](cfn/Makefile)
 
-```
+```bash
 $ make -s -C cfn/
 all                Integration test
 verify             Validate CloudFormation Template(s)
@@ -182,7 +182,7 @@ status             Show deployment status of the CloudFormation Stack(s)
 
 [`eb/Makefile`](eb/Makefile)
 
-```
+```bash
 $ make -C eb/
 all                Integration test
 verify             Run a smoke test on the local Locust test suite
