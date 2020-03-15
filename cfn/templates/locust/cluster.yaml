@@ -165,14 +165,11 @@ Resources:
 
   ElasticBeanstalkApplication:
     Type: AWS::ElasticBeanstalk::Application
-    Properties:
-      ApplicationName: !Sub "${AWS::StackName}"
 
   ElasticBeanstalkEnvironment:
     Type: AWS::ElasticBeanstalk::Environment
     Properties:
       ApplicationName: !Ref ElasticBeanstalkApplication
-      EnvironmentName: !Ref ElasticBeanstalkApplication # Reuse Application name as Environment name
       TemplateName: !Ref ElasticBeanstalkConfigurationTemplate
 
   ElasticBeanstalkConfigurationTemplate:
