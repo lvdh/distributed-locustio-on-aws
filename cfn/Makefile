@@ -47,7 +47,7 @@ list-resources: # List CloudFormation Resources of the Stack(s)
 export-outputs: # Generate export commands for CloudFormation Stack Outputs
 	# This target is intentionally PHONY
 	$(info make cfn/$@ ...)
-	pipenv run sceptre --ignore-env list outputs $(SCEPTRE_STACK_NAME) --export=envvar > outputs.cfg
+	pipenv run sceptre list outputs $(SCEPTRE_STACK_NAME) --export=envvar > outputs.cfg
 
 clean: # Delete virtual environment
 	$(info make cfn/$@ ...)
