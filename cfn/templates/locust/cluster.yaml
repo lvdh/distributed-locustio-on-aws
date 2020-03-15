@@ -444,6 +444,12 @@ Outputs:
     Export:
       Name: !Sub ${AWS::StackName}:Name
 
+  EnvironmentName:
+    Description: Environment URL
+    Value: !Ref ElasticBeanstalkEnvironment
+    Export:
+      Name: !Sub "${AWS::StackName}:EnvironmentName"
+
   EnvironmentUrl:
     Description: Environment URL
     Value: !GetAtt ElasticBeanstalkEnvironment.EndpointURL
