@@ -18,6 +18,9 @@ env: # Install local env in a local virtual environment
 	$(info INFO: make eb/$@ ...)
 	pipenv sync
 
+lint: ## Run linter on the Locustfile
+	pipenv run flake8 --ignore=E501 locustfile.py
+
 smoketest: # Run a smoke test on the local Locust test suite
 	$(info INFO: make eb/$@ ...)
 	pipenv run locust --no-web --only-summary --locustfile=./locustfile.py \

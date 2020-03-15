@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 awsebcli = "==3.17.1"
+flake8 = "==3.7.9"
 
 [packages]
 locustio = "==0.14.5"
