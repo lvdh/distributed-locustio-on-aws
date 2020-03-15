@@ -78,7 +78,7 @@ Review and update [Makefile.cfg](Makefile.cfg):
 **Note:** Execute the `make` commands without any prefix when not using `aws-vault`:
 
 ```bash
-make test
+make verify
 ```
 
 **Note:** When using `aws-vault`, `make all` might fail due to the default AWS session duration of 15 minutes. Use the `--assume-role-ttl 1h` to increase the session duration to the [maximum session duration of 1h](https://docs.aws.amazon.com/STS/latest/APIReference/API_GetSessionToken.html).
@@ -94,7 +94,7 @@ aws-vault exec --assume-role-ttl 1h <profile> -- make all
     **Note:** This runs a short Locust load test locally, which targets the Locust `host` (see below).
 
     ```bash
-    aws-vault exec <profile> -- make test
+    aws-vault exec <profile> -- make verify
     ```
 
 #### Install Cluster
