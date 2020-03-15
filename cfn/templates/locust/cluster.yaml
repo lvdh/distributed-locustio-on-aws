@@ -2,7 +2,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
 Description: >
-  Load Test Cluster, Elastic Beanstalk
+  Locust Cluster, Elastic Beanstalk
 
 Metadata:
 

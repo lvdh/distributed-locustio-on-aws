@@ -2,7 +2,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
 Description: >
-  Load Test Cluster, VPC
+  Locust Cluster, VPC
 
 Metadata:
 
