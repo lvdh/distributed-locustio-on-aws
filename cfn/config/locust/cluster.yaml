@@ -9,7 +9,7 @@ parameters:
   InstanceTypes: !environment_variable CLUSTER_INSTANCE_TYPES
   EC2KeyName: !environment_variable CLUSTER_EC2_KEY_NAME
 
-  ElasticBeanstalkPlatform: "64bit Amazon Linux 2018.03 v2.14.1 running Go 1.13.2"
+  ElasticBeanstalkPlatform: " 64bit Amazon Linux 2018.03 v2.14.3 running Go 1.13.8"
 
   AzCount: !stack_output locust/network.yaml::AzCount
   VpcId: !stack_output locust/network.yaml::VpcId
