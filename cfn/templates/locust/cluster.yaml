@@ -89,12 +89,12 @@ Parameters:
     ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
 
   PrivateSubnetIds:
-    Description: IDs of Private Subnets
-    Type: List<AWS::EC2::Subnet::Id>
+    Description: Comma-delimited list of Private Subnet IDs
+    Type: CommaDelimitedList
 
   PublicSubnetIds:
-    Description: IDs of Public Subnets
-    Type: List<AWS::EC2::Subnet::Id>
+    Description: Comma-delimited list of Public Subnet IDs
+    Type: CommaDelimitedList
 
 Conditions:
 
