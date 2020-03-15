@@ -319,7 +319,7 @@ Resources:
         OptionName: Period
         Value: "1"
 
-        # Elastic Beanstalk Options, Health Reporting
+      # Elastic Beanstalk Options, Health Reporting
 
       - Namespace: aws:elasticbeanstalk:healthreporting:system
         OptionName: SystemType
@@ -398,7 +398,7 @@ Resources:
                   }
                 }'
 
-        # Elastic Beanstalk Options, VPC
+      # Elastic Beanstalk Options, VPC
 
       - Namespace: aws:ec2:vpc
         OptionName: VPCId
@@ -440,7 +440,7 @@ Resources:
         OptionName: PathPatterns
         Value: "/*"
 
-        # Elastic Beanstalk Options, CloudWatch Logs
+      # Elastic Beanstalk Options, CloudWatch Logs
 
       - Namespace: aws:elasticbeanstalk:cloudwatch:logs
         OptionName: StreamLogs
@@ -450,12 +450,11 @@ Resources:
         OptionName: DeleteOnTerminate
         Value: "true"
 
-        # Elastic Beanstalk Options, Environment Variables
+      # Elastic Beanstalk Options, Environment Variables
 
-      - Namespace: aws:elasticbeanstalk:application:environment
-        # Example
-        OptionName: EXAMPLE
-        Value: 'example'
+      # - Namespace: aws:elasticbeanstalk:application:environment
+      #   OptionName: EXAMPLE
+      #   Value: 'example'
 
 Outputs:
 
