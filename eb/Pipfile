@@ -8,6 +8,7 @@ awsebcli = "==3.17.1"
 flake8 = "==3.7.9"
 
 [packages]
+beautifulsoup4 = "==4.8.2"
 locustio = "==0.14.5"
 
 [requires]
