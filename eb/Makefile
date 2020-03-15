@@ -23,8 +23,7 @@ lint: ## Run linter on the Locustfile
 
 smoketest: # Run a smoke test on the local Locust test suite
 	$(info INFO: make eb/$@ ...)
-	pipenv run locust --no-web --only-summary --locustfile=./locustfile.py \
-		--clients=100 --hatch-rate=20 --run-time=10s
+	pipenv run locust --no-web --only-summary --locustfile=./locustfile.py --clients=100 --hatch-rate=20 --run-time=10s
 
 init: # (Re)initialize the EB CLI to target the Elastic Beanstalk environment
 	$(info INFO: make eb/$@ ...)

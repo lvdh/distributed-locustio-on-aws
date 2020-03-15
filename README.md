@@ -196,5 +196,7 @@ status             Show deployment status of the Locust application
 ### Python Package Dependencies
 
 * `awsebcli` depends on `PyYAML==3.13`, which has a known security vulnerability [CVE-2017-18342](https://nvd.nist.gov/vuln/detail/CVE-2017-18342).
-* `locustio` is pinned at `0.13.0` as `pipenv` fails to resolve dependencies for `0.13.[1..5]`.
+* `locustio` is pinned at `0.13.0`
+  * `pipenv` fails to resolve dependencies for `0.13.[1..5]`.
+  * Additionally, the EB Solution Stack provides Python <3.6.
 * `sceptre` has incompatible dependencies with `sceptre` and `locustio`.

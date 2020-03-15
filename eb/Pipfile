@@ -9,7 +9,7 @@ flake8 = "==3.7.9"
 
 [packages]
 beautifulsoup4 = "==4.8.2"
-locustio = "==0.14.2"
+locustio = "==0.13.0"
 
 [requires]
 python_version = "3.7"
