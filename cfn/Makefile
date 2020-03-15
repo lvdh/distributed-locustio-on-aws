@@ -16,7 +16,7 @@ uninstall: env delete clean ## Terminate CloudFormation Stack(s) and clean up lo
 
 env: # Install local env in a local virtual environment
 	$(info make cfn/$@ ...)
-	pipenv install
+	pipenv sync
 
 lint: ## Run linter on CloudFormation templates
 	pipenv run cfn-lint --info **/templates/**/**/*.yaml
