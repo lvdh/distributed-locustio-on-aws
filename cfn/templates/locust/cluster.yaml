@@ -145,7 +145,7 @@ Resources:
 
   # Elastic Beanstalk
 
-  ElasticBeanstalkServiceRole:
+  EbServiceRole:
     Type: AWS::IAM::Role
     Properties:
       Path: /
@@ -163,19 +163,19 @@ Resources:
         - arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth
         - arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkService
 
-  ElasticBeanstalkApplication:
+  EbApplication:
     Type: AWS::ElasticBeanstalk::Application
 
-  ElasticBeanstalkEnvironment:
+  EbEnvironment:
     Type: AWS::ElasticBeanstalk::Environment
     Properties:
-      ApplicationName: !Ref ElasticBeanstalkApplication
-      TemplateName: !Ref ElasticBeanstalkConfigurationTemplate
+      ApplicationName: !Ref EbApplication
+      TemplateName: !Ref EbConfigurationTemplate
 
-  ElasticBeanstalkConfigurationTemplate:
+  EbConfigurationTemplate:
     Type: AWS::ElasticBeanstalk::ConfigurationTemplate
     Properties:
-      ApplicationName: !Ref ElasticBeanstalkApplication
+      ApplicationName: !Ref EbApplication
       SolutionStackName: !Ref ElasticBeanstalkPlatform
       OptionSettings:
 
@@ -191,7 +191,7 @@ Resources:
 
       - Namespace: aws:elasticbeanstalk:environment
         OptionName: ServiceRole
-        Value: !Ref ElasticBeanstalkServiceRole
+        Value: !Ref EbServiceRole
 
       # Elastic Beanstalk Options, EC2 Instance Types
 
@@ -215,7 +215,7 @@ Resources:
 
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: IamInstanceProfile
-        Value: !Ref ApplicationInstanceProfile
+        Value: !Ref InstanceProfile
 
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: EC2KeyName
@@ -400,7 +400,7 @@ Resources:
 
   # IAM
 
-  ApplicationRole:
+  InstanceProfileRole:
     Type: AWS::IAM::Role
     Properties:
       Path: /
@@ -415,12 +415,12 @@ Resources:
             Action:
               - sts:AssumeRole
 
-  ApplicationPolicy:
+  InstanceProfilePolicy:
     Type: AWS::IAM::Policy
     Properties:
       PolicyName: App
       Roles:
-      - !Ref ApplicationRole
+      - !Ref InstanceProfileRole
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -429,12 +429,12 @@ Resources:
             Action: "*"
             Resource: "*"
 
-  ApplicationInstanceProfile:
+  InstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
       Path: /
       Roles:
-      - !Ref ApplicationRole
+      - !Ref InstanceProfileRole
 
 Outputs:
 
@@ -452,19 +452,19 @@ Outputs:
 
   EbApplicationName:
     Description: Elastic Beanstalk Application URL
-    Value: !Ref ElasticBeanstalkApplication
+    Value: !Ref EbApplication
     Export:
       Name: !Sub "${AWS::StackName}:EbApplicationName"
 
   EbEnvironmentName:
     Description: Elastic Beanstalk Environment URL
-    Value: !Ref ElasticBeanstalkEnvironment
+    Value: !Ref EbEnvironment
     Export:
       Name: !Sub "${AWS::StackName}:EbEnvironmentName"
 
   EbEnvironmentUrl:
     Description: Elastic Beanstalk Environment URL
-    Value: !GetAtt ElasticBeanstalkEnvironment.EndpointURL
+    Value: !GetAtt EbEnvironment.EndpointURL
     Export:
       Name: !Sub "${AWS::StackName}:EbEnvironmentUrl"
 
