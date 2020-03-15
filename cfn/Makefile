@@ -1,6 +1,6 @@
 #!/usr/bin/env make
 
-.PHONY: all verify install uninstall dependencies validate launch delete status
+.PHONY: all verify install uninstall env validate launch delete status
 .PHONY: list-outputs list-resources export-outputs clean help
 .DEFAULT_GOAL := help
 
@@ -8,13 +8,13 @@ include ../Makefile.cfg
 
 all: install uninstall ## Integration test
 
-verify: dependencies validate ## Validate CloudFormation Template(s)
+verify: env validate ## Validate CloudFormation Template(s)
 
-install: dependencies launch export-outputs status ## Deploy CloudFormation Stack(s)
+install: env launch export-outputs status ## Deploy CloudFormation Stack(s)
 
-uninstall: dependencies delete clean ## Terminate CloudFormation Stack(s) and clean up local files
+uninstall: env delete clean ## Terminate CloudFormation Stack(s) and clean up local files
 
-dependencies: # Install local dependencies in a local virtual environment
+env: # Install local env in a local virtual environment
 	$(info make cfn/$@ ...)
 	pipenv install
 
@@ -30,7 +30,7 @@ delete: # Terminate CloudFormation Stack(s)
 	$(info make cfn/$@ ...)
 	pipenv run sceptre delete --yes $(SCEPTRE_STACK_NAME)
 
-status: dependencies ## Show deployment status of the CloudFormation Stack(s)
+status: env ## Show deployment status of the CloudFormation Stack(s)
 	$(info make cfn/$@ ...)
 	pipenv run sceptre status $(SCEPTRE_STACK_NAME)
 
@@ -44,7 +44,7 @@ list-resources: # List CloudFormation Resources of the Stack(s)
 export-outputs: # Generate export commands for CloudFormation Stack Outputs
 	# This target is intentionally PHONY
 	$(info make cfn/$@ ...)
-	pipenv run sceptre --ignore-dependencies list outputs $(SCEPTRE_STACK_NAME) --export=envvar > outputs.cfg
+	pipenv run sceptre --ignore-env list outputs $(SCEPTRE_STACK_NAME) --export=envvar > outputs.cfg
 
 clean: # Delete virtual environment
 	$(info make cfn/$@ ...)

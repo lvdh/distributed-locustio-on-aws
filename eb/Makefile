@@ -1,6 +1,6 @@
 #!/usr/bin/env make
 
-.PHONY: verify install uninstall dependencies smoketest init deploy status open clean help
+.PHONY: verify install uninstall env smoketest init deploy status open clean help
 .DEFAULT_GOAL := help
 
 include ../Makefile.cfg
@@ -8,13 +8,13 @@ include ../cfn/outputs.cfg
 
 all: install uninstall ## Integration test
 
-verify: dependencies smoketest ## Run a smoke test on the local Locust test suite
+verify: env smoketest ## Run a smoke test on the local Locust test suite
 
-install: dependencies smoketest init deploy status open ## (Re)deploy the Locust test suite to Elastic Beanstalk
+install: env smoketest init deploy status open ## (Re)deploy the Locust test suite to Elastic Beanstalk
 
 uninstall: clean ## Delete the local virtual environment and temporary files
 
-dependencies: # Install local dependencies in a local virtual environment
+env: # Install local env in a local virtual environment
 	$(info make eb/$@ ...)
 	pipenv install
 
