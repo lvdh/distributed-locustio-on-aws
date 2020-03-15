@@ -792,4 +792,4 @@ class LoadTest(HttpLocust):
     # Speed up things during development
     wait_time = between(0.500, 1.500)
     # More realistic values for load testing
-    #wait_time = between(5000, 15000)
+    # wait_time = between(5000, 15000)
