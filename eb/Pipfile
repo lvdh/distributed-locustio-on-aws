@@ -6,9 +6,9 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-awsebcli = "==3.17.0"
+awsebcli = "==3.17.1"
 beautifulsoup4 = "==4.8.2"
-locustio = "==0.13.0"
+locustio = "==0.14.5"
 
 [requires]
 python_version = "3.7"

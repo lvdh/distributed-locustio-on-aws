@@ -7,7 +7,7 @@ verify_ssl = true
 
 [packages]
 flake8 = "==3.7.9"
-sceptre = "==2.2.1"
+sceptre = "==2.3.0"
 
 [requires]
 python_version = "3.7"
