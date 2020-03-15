@@ -15,34 +15,34 @@ install: env smoketest init deploy status open ## (Re)deploy the Locust test sui
 uninstall: clean ## Delete the local virtual environment and temporary files
 
 env: # Install local env in a local virtual environment
-	$(info make eb/$@ ...)
+	$(info INFO: make eb/$@ ...)
 	pipenv sync
 
 smoketest: # Run a smoke test on the local Locust test suite
-	$(info make eb/$@ ...)
+	$(info INFO: make eb/$@ ...)
 	pipenv run locust --no-web --only-summary --locustfile=./locustfile.py \
 		--clients=100 --hatch-rate=20 --run-time=10s
 
 init: # (Re)initialize the EB CLI to target the Elastic Beanstalk environment
-	$(info make eb/$@ ...)
+	$(info INFO: make eb/$@ ...)
 	# (Re)initialize the EB CLI to target the Elastic Beanstalk environment
 	rm -rf ./.elasticbeanstalk/
 	pipenv run eb init --region $(SCEPTRE_Region) --platform $(SCEPTRE_ElasticBeanstalkPlatform) $(SCEPTRE_EbApplicationName)
 
 deploy: init # (Re)deploy the Locust application
-	$(info make eb/$@ ...)
+	$(info INFO: make eb/$@ ...)
 	pipenv run eb deploy --region $(SCEPTRE_Region) --staged $(SCEPTRE_EbEnvironmentName)
 
 status: init ## Show deployment status of the Locust application
-	$(info make eb/$@ ...)
+	$(info INFO: make eb/$@ ...)
 	pipenv run eb status --region $(SCEPTRE_Region) $(SCEPTRE_EbEnvironmentName)
 
 open: init # Open the Locust web GUI in a web browser
-	$(info make eb/$@ ...)
+	$(info INFO: make eb/$@ ...)
 	pipenv run eb open --region $(SCEPTRE_Region) $(SCEPTRE_EbEnvironmentName)
 
 clean: # Delete virtual environment and temporary files
-	$(info make eb/$@ ...)
+	$(info INFO: make eb/$@ ...)
 	pipenv --rm || true
 	rm -vrf __pycache__/
 	rm -vrf .elasticbeanstalk/

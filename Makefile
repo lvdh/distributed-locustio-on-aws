@@ -10,7 +10,7 @@ all: config verify install install status uninstall ## Deploy, 'update' and dest
 
 config: # Generate Sceptre's main configuration file
 	# This target is intentionally PHONY
-	$(info make $@ ...)
+	$(info INFO: make $@ ...)
 	echo "region: $(AWS_REGION)" > ./cfn/config/config.yaml
 	echo "profile: $(AWS_PROFILE)" >> ./cfn/config/config.yaml
 	echo "project_code: $(SCEPTRE_PROJECT_CODE)" >> ./cfn/config/config.yaml
