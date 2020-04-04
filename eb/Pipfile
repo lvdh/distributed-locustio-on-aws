@@ -8,7 +8,7 @@ awsebcli = "==3.17.1"
 flake8 = "==3.7.9"
 
 [packages]
-locustio = "==0.13.0"
+locustio = "==0.13.5"
 
 [requires]
 python_version = "3.7"
