@@ -399,7 +399,7 @@ Resources:
 
       - Namespace: aws:ec2:vpc
         OptionName: Subnets
-        # Workaround: List<> is not supported, generate a comma-separated String instead
+        # Workaround: List and CommaSeparatedList are not supported, generate a String instead
         Value:
           "Fn::Join":
             - ','
@@ -409,7 +409,7 @@ Resources:
 
       - Namespace: aws:ec2:vpc
         OptionName: ELBSubnets
-        # Workaround: List<> is not supported, generate a comma-separated String instead
+        # Workaround: List and CommaSeparatedList are not supported, generate a String instead
         Value:
           "Fn::Join":
             - ','

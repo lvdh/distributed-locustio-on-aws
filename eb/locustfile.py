@@ -3,7 +3,7 @@
 # Locustfile for http://blazedemo.com/
 
 from locust import HttpLocust, TaskSet, TaskSequence, seq_task, task, between
-from bs4 import BeautifulSoup
+# from bs4 import BeautifulSoup  # With CSRF
 import logging
 import sys
 
@@ -30,31 +30,31 @@ class CustomTaskSequence(TaskSequence):
         # UserLogin.login()
         # self.login()
 
-    def get_csrf(self, url):
-        """ Retrieve a CSRF token for use with POST requests """
+    # def get_csrf(self, url):
+    #     """ Retrieve a CSRF token for use with POST requests """
 
-        # Get page HTML
-        response = self.client.get(
-            name="(Locust) Get CSRF token",
-            url=url
-        )
+    #     # Get page HTML
+    #     response = self.client.get(
+    #         name="(Locust) Get CSRF token",
+    #         url=url
+    #     )
 
-        soup = BeautifulSoup(response.content, 'html.parser')
+    #     soup = BeautifulSoup(response.content, 'html.parser')
 
-        # Parse CSRF token from page HTML
-        csrf_param = soup.find(
-            'meta',
-            attrs={'name': 'csrf-param'}
-        ).get("content")
-        csrf_token = soup.find(
-            'meta',
-            attrs={'name': 'csrf-token'}
-        ).get("content")
+    #     # Parse CSRF token from page HTML
+    #     csrf_param = soup.find(
+    #         'meta',
+    #         attrs={'name': 'csrf-param'}
+    #     ).get("content")
+    #     csrf_token = soup.find(
+    #         'meta',
+    #         attrs={'name': 'csrf-token'}
+    #     ).get("content")
 
-        return {
-            "param": csrf_param,
-            "token": csrf_token
-        }
+    #     return {
+    #         "param": csrf_param,
+    #         "token": csrf_token
+    #     }
 
     def get(self, task_url, task_id, task_description):
         """ Send a GET request to the web application """
