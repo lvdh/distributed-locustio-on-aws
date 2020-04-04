@@ -151,7 +151,7 @@ Resources:
   LoadBalancerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Load Balancer Security Group
+      GroupDescription: Load Balancer Security Group (managed by CloudFormation)
       VpcId: !Ref VpcId
       Tags:
       - Key: Name
@@ -160,6 +160,7 @@ Resources:
   LoadBalancerSecurityGroupIngress:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
+      Description: HTTP all (managed by CloudFormation)
       GroupId: !Ref LoadBalancerSecurityGroup
       IpProtocol: tcp
       FromPort: 80
@@ -169,6 +170,7 @@ Resources:
   LoadBalancerSecurityGroupEgress:
     Type: AWS::EC2::SecurityGroupEgress
     Properties:
+      Description: HTTP TargetSecurityGroup (managed by CloudFormation)
       GroupId: !Ref LoadBalancerSecurityGroup
       IpProtocol: tcp
       FromPort: 80
@@ -178,7 +180,7 @@ Resources:
   TargetSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Application Security Group
+      GroupDescription: Application Security Group (managed by CloudFormation)
       VpcId: !Ref VpcId
       Tags:
       - Key: Name
@@ -187,6 +189,7 @@ Resources:
   TargetSecurityGroupIngress:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
+      Description: HTTP LoadBalancerSecurityGroup (managed by CloudFormation)
       GroupId: !Ref TargetSecurityGroup
       IpProtocol: tcp
       FromPort: 80
@@ -196,6 +199,7 @@ Resources:
   TargetSecurityGroupEgress:
     Type: AWS::EC2::SecurityGroupEgress
     Properties:
+      Description: HTTP LoadBalancerSecurityGroup (managed by CloudFormation)
       GroupId: !Ref TargetSecurityGroup
       IpProtocol: tcp
       FromPort: 80
