@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 cfn-lint = "==0.28.4"
+checkov = "==1.0.235"
 
 [packages]
 sceptre = "==2.3.0"
