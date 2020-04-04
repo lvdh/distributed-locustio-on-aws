@@ -9,8 +9,9 @@ parameters:
   InstanceTypes: !environment_variable CLUSTER_INSTANCE_TYPES
   EC2KeyName: !environment_variable CLUSTER_EC2_KEY_NAME
 
-  ElasticBeanstalkPlatform: "64bit Amazon Linux 2018.03 v2.14.1 running Go 1.13.2"
-  # ElasticBeanstalkPlatform: " 64bit Amazon Linux 2018.03 v2.14.3 running Go 1.13.8"
+  # ElasticBeanstalkPlatform: "64bit Amazon Linux 2 v0.1.0 running Python 3.7 (BETA)"  # Python + nginx, based on Amazon Linux 2
+  # ElasticBeanstalkPlatform: "64bit Amazon Linux 2018.03 v2.15.1 running Go 1.14.1"  # Newer version of Go + nginx, fails deploy
+  ElasticBeanstalkPlatform: "64bit Amazon Linux 2018.03 v2.14.1 running Go 1.13.2"  # Working version of Go + nginx
 
   AzCount: !stack_output locust/network.yaml::AzCount
   VpcId: !stack_output locust/network.yaml::VpcId
