@@ -124,20 +124,8 @@ Resources:
                 - ec2.amazonaws.com
             Action:
               - sts:AssumeRole
-
-  InstanceProfilePolicy:
-    Type: AWS::IAM::Policy
-    Properties:
-      PolicyName: App
-      Roles:
-      - !Ref InstanceProfileRole
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          -
-            Effect: Allow
-            Action: "*"
-            Resource: "*"
+      ManagedPolicyArns:
+        - AmazonSSMManagedInstanceCore
 
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
