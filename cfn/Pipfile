@@ -4,7 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-cfn-lint = "==0.28.4"
+cfn-lint = "==0.29.4"
 checkov = "==1.0.235"
 
 [packages]
