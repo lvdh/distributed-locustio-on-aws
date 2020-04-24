@@ -29,7 +29,7 @@ Additional dependencies will be installed in [Python 3 Virtual Environments](htt
 
 ### Configuration
 
-Review and update [Makefile.cfg](Makefile.cfg):
+Review and update [config.mk](config.mk):
 
 1. `SCEPTRE_PROJECT_CODE` (required)
 

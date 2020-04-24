@@ -3,7 +3,7 @@
 .PHONY: verify install uninstall env smoketest init deploy status open clean help
 .DEFAULT_GOAL := help
 
-include ../Makefile.cfg
+include ../config.mk
 include ../cfn/outputs.cfg
 
 all: install uninstall ## Integration test

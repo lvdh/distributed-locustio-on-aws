@@ -4,7 +4,7 @@
 .PHONY: list-outputs list-resources export-outputs clean help
 .DEFAULT_GOAL := help
 
-include ../Makefile.cfg
+include ../config.mk
 
 all: install uninstall ## Integration test
 

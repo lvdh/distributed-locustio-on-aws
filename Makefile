@@ -1,6 +1,6 @@
 #!/usr/bin/env make -s
 
-include Makefile.cfg
+include config.mk
 
 all: config verify install install status uninstall ## Deploy, 'update' and destroy (integration test)
 
