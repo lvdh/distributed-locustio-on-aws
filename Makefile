@@ -1,8 +1,4 @@
-#!/usr/bin/env make
-
-.PHONY: all config verify install uninstall status clean help
-.DEFAULT_GOAL := help
-MAKEFLAGS=s
+#!/usr/bin/env make -s
 
 include Makefile.cfg
 
@@ -38,3 +34,6 @@ clean: config ## Delete virtual environments and temporary files
 help:
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-18s\033[0m %s\n", $$1, $$2}' \
 		$(MAKEFILE_LIST)
+
+.DEFAULT_GOAL := help
+.PHONY: all config verify install uninstall status clean help
