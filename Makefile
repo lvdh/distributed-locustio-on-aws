@@ -1,6 +1,6 @@
 #!/usr/bin/env make
 
-.PHONY: all config verify install show uninstall help
+.PHONY: all config verify install uninstall status clean help
 .DEFAULT_GOAL := help
 MAKEFLAGS=s
 
