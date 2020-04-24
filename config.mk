@@ -1,9 +1,18 @@
+# Naming
 export SCEPTRE_PROJECT_CODE=blazedemo
 export SCEPTRE_STACK_NAME=locust
-export CLUSTER_INSTANCE_COUNT=3
-export CLUSTER_INSTANCE_TYPES=c5.large,c4.large
+
+# Cluster Size, recommendation for demo/test plan development
+export CLUSTER_INSTANCE_COUNT=1
+export CLUSTER_INSTANCE_TYPES=t3a.large
+
+# Cluster Size, minimal recommendation for load testing
+# export CLUSTER_INSTANCE_COUNT=3
+# export CLUSTER_INSTANCE_TYPES=c5.large,c4.large
+
+# SSH Access, leave blank to disable key-based SSH access
 export CLUSTER_EC2_KEY_NAME=
 
-## Enable these when using AWS Named Profiles instead of aws-vault
+# AWS Configuration, for use with AWS Named Profiles
 # export AWS_REGION=eu-west-1
 # export AWS_PROFILE=default
