@@ -4,8 +4,9 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-cfn-lint = "==0.29.4"
+cfn-lint = "==0.29.6"
 checkov = "==1.0.235"
+pydot = "==1.4.1"
 
 [packages]
 sceptre = "==2.3.0"

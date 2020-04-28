@@ -19,7 +19,7 @@ env: # Install local env in a local virtual environment
 	pipenv sync
 
 lint: ## Run linters on CloudFormation templates
-	pipenv run cfn-lint --info templates/**/**/*.yaml
+	pipenv run cfn-lint --build-graph --info templates/**/**/*.yaml
 	pipenv run checkov --directory templates/
 
 validate: # Validate CloudFormation Template(s)
