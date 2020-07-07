@@ -1,0 +1,847 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Continuous Integration Example"
+
+
+Resources:
+
+  #-----------------------------------------------------------------------------#
+  # CodeCommit
+  #-----------------------------------------------------------------------------#
+  Repository:
+    Type: AWS::CodeCommit::Repository
+    Properties:
+      RepositoryName: MyRepo
+      RepositoryDescription: 'My repository'
+
+
+  #-----------------------------------------------------------------------------#
+  # CodePipeline
+  #-----------------------------------------------------------------------------#
+  Pipeline:
+    Type: "AWS::CodePipeline::Pipeline"
+    Properties:
+      Name: MyPipeline
+      RoleArn: !GetAtt CodePipelineRole.Arn
+      ArtifactStore:
+        Type: S3
+        Location: !Ref BucketArtifact
+      Stages:
+
+        #-----------------------------------------------------------------------------#
+        # Source
+        #-----------------------------------------------------------------------------#
+        - Name: Source
+          Actions:
+            - Name: App
+              ActionTypeId:
+                Category: Source
+                Owner: AWS
+                Version: "1"
+                Provider: CodeCommit
+              Configuration:
+                RepositoryName: MyRepo
+                BranchName: master
+              OutputArtifacts:
+                - Name: App
+              RunOrder: 1
+
+        #-----------------------------------------------------------------------------#
+        # Continuous Integration
+        #-----------------------------------------------------------------------------#
+        - Name: Continuous-Integration
+          Actions:
+
+            - Name: GitSecret
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: "1"
+                Provider: CodeBuild
+              OutputArtifacts:
+                - Name: GitSecret
+              InputArtifacts:
+                - Name: App
+              Configuration:
+                ProjectName: GitSecret
+              RunOrder: 1
+
+            - Name: CfnLint
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: "1"
+                Provider: CodeBuild
+              OutputArtifacts:
+                - Name: cfn-lint
+              InputArtifacts:
+                - Name: App
+              Configuration:
+                ProjectName: CfnLint
+              RunOrder: 1
+
+            - Name: CfnNag
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: "1"
+                Provider: CodeBuild
+              OutputArtifacts:
+                - Name: cfn-nag
+              InputArtifacts:
+                - Name: App
+              Configuration:
+                ProjectName: CfnNag
+              RunOrder: 1
+
+            - Name: UnitTests
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: "1"
+                Provider: CodeBuild
+              OutputArtifacts:
+                - Name: UnitTests
+              InputArtifacts:
+                - Name: App
+              Configuration:
+                ProjectName: UnitTests
+              RunOrder: 1
+
+            - Name: SAST
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: "1"
+                Provider: CodeBuild
+              OutputArtifacts:
+                - Name: SAST
+              InputArtifacts:
+                - Name: App
+              Configuration:
+                ProjectName: SAST
+              RunOrder: 1
+
+            - Name: QualityTest
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: "1"
+                Provider: CodeBuild
+              OutputArtifacts:
+                - Name: QualityTest
+              InputArtifacts:
+                - Name: App
+              Configuration:
+                ProjectName: QualityTest
+              RunOrder: 1
+
+            - Name: Build
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: "1"
+                Provider: CodeBuild
+              OutputArtifacts:
+                - Name: Build
+              InputArtifacts:
+                - Name: App
+              Configuration:
+                ProjectName: Build
+              RunOrder: 2
+
+
+  #-----------------------------------------------------------------------------#
+  # CodeBuild Project
+  #-----------------------------------------------------------------------------#
+  GitSecret:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: GitSecret
+      Description: 'Execute build'
+      Artifacts:
+        Type: CODEPIPELINE
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:2.0
+        PrivilegedMode: true
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: |
+          version: 0.2
+          phases:
+            install:
+              runtime-versions:
+                python: 3.7
+            pre_build:
+              commands:
+                - echo GitSecret started on `date`
+            build:
+              commands:
+                - git clone https://github.com/awslabs/git-secrets.git
+                - cd git-secrets/
+                - make install
+                - cd ..
+                - git init
+                - git secrets --install
+                - git secrets --register-aws
+                - git secrets --scan -r .
+            post_build:
+              commands:
+                - echo GitSecret completed on `date`
+      TimeoutInMinutes: 10
+
+
+  CfnLint:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: CfnLint
+      Description: 'Execute CFN-LINT'
+      Artifacts:
+        Type: CODEPIPELINE
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:2.0
+        PrivilegedMode: true
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: |
+          version: 0.2
+          phases:
+            install:
+              runtime-versions:
+                python: 3.7
+              commands:
+                - pip install cfn-lint
+            pre_build:
+              commands:
+                - echo CFN-Lint started on `date`
+            build:
+              commands:
+                - cfn-lint -t templates/*.yaml
+            post_build:
+              commands:
+                - echo CFN-Lint completed on `date`
+      TimeoutInMinutes: 10
+
+  CfnNag:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: CfnNag
+      Description: 'Execute CFN_NAG'
+      Artifacts:
+        Type: CODEPIPELINE
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:2.0
+        PrivilegedMode: true
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: |
+          version: 0.2
+          phases:
+            install:
+              runtime-versions:
+                ruby: 2.6
+              commands:
+                - gem install cfn-nag
+            pre_build:
+              commands:
+                - echo CFN-Lint started on `date`
+            build:
+              commands:
+                - cfn_nag_scan -i templates/*.yaml
+            post_build:
+              commands:
+                - echo Build completed on `date`
+      TimeoutInMinutes: 10
+
+
+  UnitTests:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: UnitTests
+      Description: 'Execute UnitTests'
+      Artifacts:
+        Type: CODEPIPELINE
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:2.0
+        PrivilegedMode: true
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: |
+          version: 0.2
+          phases:
+            install:
+              runtime-versions:
+                python: 3.7
+            pre_build:
+              commands:
+                - echo UnitTests started on `date`
+            build:
+              commands:
+                - echo "put here your commnad to tun UnitTests..."
+            post_build:
+              commands:
+                - echo UnitTests completed on `date`
+      TimeoutInMinutes: 10
+
+  SAST:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: SAST
+      Description: 'Execute Static Analisys'
+      Artifacts:
+        Type: CODEPIPELINE
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:2.0
+        PrivilegedMode: true
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: |
+          version: 0.2
+          phases:
+            install:
+              runtime-versions:
+                python: 3.7
+            pre_build:
+              commands:
+                - echo SAST started on `date`
+            build:
+              commands:
+                - echo "put here your commnad to tun UnitTests..."
+            post_build:
+              commands:
+                - echo SAST completed on `date`
+      TimeoutInMinutes: 10
+
+  QualityTest:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: QualityTest
+      Description: 'Execute Static Analisys'
+      Artifacts:
+        Type: CODEPIPELINE
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:2.0
+        PrivilegedMode: true
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: |
+          version: 0.2
+          phases:
+            install:
+              runtime-versions:
+                python: 3.7
+            pre_build:
+              commands:
+                - echo QualityTest started on `date`
+            build:
+              commands:
+                - echo "put here your commnad to tun QualityTests..."
+            post_build:
+              commands:
+                - echo QualityTest completed on `date`
+      TimeoutInMinutes: 10
+
+  Build:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: Build
+      Description: 'Execute build'
+      Artifacts:
+        Type: CODEPIPELINE
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:2.0
+        PrivilegedMode: true
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: |
+          version: 0.2
+          phases:
+            install:
+              runtime-versions:
+                python: 3.7
+            pre_build:
+              commands:
+                - echo Build started on `date`
+            build:
+              commands:
+                - tar -cvf myapp.tar *
+            post_build:
+              commands:
+                - echo Build completed on `date`
+          artifacts:
+              files:
+                - myapp.tar
+      TimeoutInMinutes: 10
+
+
+  #-----------------------------------------------------------------------------#
+  # S3
+  #-----------------------------------------------------------------------------#
+  BucketArtifact:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Sub ${AWS::AccountId}-artifacts
+
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref BucketArtifact
+      PolicyDocument:
+        Statement:
+          -
+            Action:
+              - s3:PutObject
+              - s3:GetBucketPolicy
+              - s3:GetObject
+              - s3:ListBucket
+            Effect: Allow
+            Resource:
+              - !Sub arn:aws:s3:::${BucketArtifact}
+              - !Sub arn:aws:s3:::${BucketArtifact}/*
+            Principal:
+              AWS:
+                - !Sub arn:aws:iam::${AWS::AccountId}:root
+
+
+  #-----------------------------------------------------------------------------#
+  # Role for CodePipeline service
+  #-----------------------------------------------------------------------------#
+  CodePipelineRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action: ['sts:AssumeRole']
+          Effect: Allow
+          Principal:
+            Service: [codepipeline.amazonaws.com]
+        Version: '2012-10-17'
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/job-function/SystemAdministrator
+        - arn:aws:iam::aws:policy/AdministratorAccess
+
+  #-----------------------------------------------------------------------------#
+  # Role for CodeBuild service
+  #-----------------------------------------------------------------------------#
+  CodeBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action: ['sts:AssumeRole']
+          Effect: Allow
+          Principal:
+            Service: [codebuild.amazonaws.com]
+        Version: '2012-10-17'
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/job-function/SystemAdministrator
+        - arn:aws:iam::aws:policy/AdministratorAccess
+
+# # Delete the stack:
+# #
+# # aws cloudformation delete-stack --stack-name sagemaker-safe-deployment
+# #
+# # Create the stack:
+# #
+# # aws cloudformation create-stack --stack-name sagemaker-safe-deployment \
+# #   --template-body file://pipeline.yml \
+# #   --capabilities CAPABILITY_IAM \
+# #   --parameters \
+# #       ParameterKey=GitHubUser,ParameterValue=<GitHub Username> \
+# #       ParameterKey=GitHubToken,ParameterValue=<GitHub Token> \
+# #       ParameterKey=WorkloadName,ParameterValue=<Workload Name>
+
+# Description: CI Pipeline
+
+# Metadata:
+
+#   AWS::CloudFormation::Interface:
+#     ParameterGroups:
+#       - Label:
+#           default: Required Parameters
+#         Parameters:
+#           - WorkloadName
+#       - Label:
+#           default: Optional GitHub Parameters
+#         Parameters:
+#           - GitHubRepo
+#           - GitHubBranch
+#           - GitHubUser
+#           - GitHubToken
+#     ParameterLabels:
+#       WorkloadName:
+#         default: Model Name
+#       GitHubRepo:
+#         default: GitHub Repository
+#       GitHubBranch:
+#         default: GitHub Branch
+#       GitHubUser:
+#         default: GitHub Username
+#       GitHubToken:
+#         default: GitHub Access Token
+
+# Parameters:
+
+#   WorkloadName:
+#     Description: Name of the workload
+#     Default: locust
+#     Type: String
+#   GitHubUser:
+#     Description: Your GitHub username
+#     Default: lvdh
+#     Type: String
+#   GitHubRepo:
+#     Description: Name of the GitHub repository
+#     Default: distributed-locustio-on-aws
+#     Type: String
+#   GitHubBranch:
+#     Description: Name of the branch the code is located
+#     Default: refactor/ecs
+#     Type: String
+#   GitHubToken:
+#     Description: Github OAuthToken with access to 'repo' (private repo) or 'public_repo' (public repo). Go to https://github.com/settings/tokens
+#     NoEcho: true
+#     Type: String
+
+# Conditions:
+
+#   GitHubTokenEmpty: !Equals [!Ref GitHubToken, ""]
+
+# Resources:
+
+#   KMSKey:
+#     Type: AWS::KMS::Key
+#     Properties:
+#       Description: !Sub KMS Key for pipeline '${WorkloadName}'
+#       EnableKeyRotation: true
+#       KeyPolicy:
+#         Version: '2012-10-17'
+#         Id: !Ref AWS::StackName
+#         Statement:
+#           - Sid: Allows admin of the key
+#             Effect: Allow
+#             Principal:
+#               AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+#             Action:
+#               - 'kms:*'
+#             Resource: '*'
+
+#   KMSAlias:
+#     Type: AWS::KMS::Alias
+#     Properties:
+#       AliasName: !Sub alias/workload-${WorkloadName}
+#       TargetKeyId: !Ref KMSKey
+
+#   ArtifactBucket:
+#     Type: AWS::S3::Bucket
+#     Properties:
+#       AccessControl: Private
+#       VersioningConfiguration:
+#         Status: Enabled
+
+#   GitHubSecret:
+#     Type: AWS::SecretsManager::Secret
+#     Properties:
+#       Description: !Sub GitHub Secret for ${GitHubRepo}
+#       KmsKeyId: !Ref KMSKey
+#       SecretString: !Sub '{"username":"${GitHubUser}","password":"${GitHubToken}"}'
+
+#   CodeCommitRepository:
+#     Type: AWS::CodeCommit::Repository
+#     Condition: GitHubTokenEmpty
+#     Properties:
+#       RepositoryName: !Ref GitHubRepo
+#       RepositoryDescription: !Sub Pipeline-enabled repository for '${WorkloadName}'
+
+#   DeployPipeline:
+#     Type: "AWS::CodePipeline::Pipeline"
+#     Properties:
+#       RoleArn: !GetAtt PipelineServiceRole.Arn
+#       ArtifactStore:
+#         Type: S3
+#         EncryptionKey:
+#           Id: !Ref KMSKey
+#           Type: KMS
+#         Location:
+#           Ref: ArtifactBucket
+#       Stages:
+#         - Name: Source
+#           Actions:
+#             - Fn::If:
+#                 - GitHubTokenEmpty
+#                 - Name: GitSource
+#                   ActionTypeId:
+#                     Category: Source
+#                     Owner: AWS
+#                     Version: "1"
+#                     Provider: CodeCommit
+#                   Configuration:
+#                     RepositoryName: !Ref GitHubRepo
+#                     BranchName: !Ref GitHubBranch
+#                   OutputArtifacts:
+#                     - Name: ModelSourceOutput
+#                 - Name: GitSource
+#                   ActionTypeId:
+#                     Category: Source
+#                     Owner: ThirdParty
+#                     Version: "1"
+#                     Provider: GitHub
+#                   OutputArtifacts:
+#                     - Name: ModelSourceOutput
+#                   Configuration:
+#                     Owner: !Ref GitHubUser
+#                     Repo: !Ref GitHubRepo
+#                     Branch: !Ref GitHubBranch
+#                     OAuthToken: !Ref GitHubToken
+#             - Name: DataSource
+#               ActionTypeId:
+#                 Category: Source
+#                 Owner: AWS
+#                 Version: "1"
+#                 Provider: S3
+#               OutputArtifacts:
+#                 - Name: DataSourceOutput
+#               Configuration:
+#                 S3Bucket: !Ref ArtifactBucket
+#                 S3ObjectKey: !Sub ${WorkloadName}/data-source.zip
+#               RunOrder: 1
+#         - Name: Build
+#           Actions:
+#             - Name: PackageModel
+#               InputArtifacts:
+#                 - Name: ModelSourceOutput
+#                 - Name: DataSourceOutput
+#               OutputArtifacts:
+#                 - Name: BuildOutput
+#               ActionTypeId:
+#                 Category: Build
+#                 Owner: AWS
+#                 Version: "1"
+#                 Provider: CodeBuild
+#               Configuration:
+#                 ProjectName: !Ref BuildProject
+#                 PrimarySource: ModelSourceOutput
+#                 EnvironmentVariables: !Sub '[{"name":"ARTIFACT_BUCKET","value":"${ArtifactBucket}","type":"PLAINTEXT"},{"name":"KMS_KEY_ID","value":"${KMSKey}","type":"PLAINTEXT"}]'
+#               RunOrder: 1
+#             - Name: SetupTraining
+#               InputArtifacts:
+#                 - Name: BuildOutput
+#               ActionTypeId:
+#                 Category: Deploy
+#                 Owner: AWS
+#                 Version: "1"
+#                 Provider: CloudFormation
+#               Configuration:
+#                 ActionMode: REPLACE_ON_FAILURE
+#                 RoleArn: !GetAtt PipelineServiceRole.Arn
+#                 Capabilities: CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND
+#                 StackName: sagemaker-custom-resource # Use global name to re-use across templates
+#                 TemplatePath: BuildOutput::template-custom-resource.yml
+#               RunOrder: 2
+#         - Name: Train
+#           Actions:
+#             - Name: CreateExperiment
+#               InputArtifacts:
+#                 - Name: BuildOutput
+#               ActionTypeId:
+#                 Category: Invoke
+#                 Owner: AWS
+#                 Version: "1"
+#                 Provider: Lambda
+#               Configuration:
+#                 FunctionName: !Ref CreateExperiment
+#                 UserParameters: !Sub mlops-pipeline-${WorkloadName}
+#               RunOrder: 1
+#             - Name: TrainModel
+#               InputArtifacts:
+#                 - Name: BuildOutput
+#               ActionTypeId:
+#                 Category: Deploy
+#                 Owner: AWS
+#                 Version: "1"
+#                 Provider: CloudFormation
+#               Configuration:
+#                 ActionMode: REPLACE_ON_FAILURE
+#                 RoleArn: !GetAtt PipelineServiceRole.Arn
+#                 StackName: !Sub ${WorkloadName}-training-job
+#                 TemplateConfiguration: BuildOutput::training-job.json
+#                 TemplatePath: BuildOutput::training-job.yml
+#               RunOrder: 2
+#             - Name: SuggestBaseline
+#               InputArtifacts:
+#                 - Name: BuildOutput
+#               ActionTypeId:
+#                 Category: Deploy
+#                 Owner: AWS
+#                 Version: "1"
+#                 Provider: CloudFormation
+#               Configuration:
+#                 ActionMode: REPLACE_ON_FAILURE
+#                 RoleArn: !GetAtt PipelineServiceRole.Arn
+#                 StackName: !Sub ${WorkloadName}-suggest-baseline
+#                 TemplateConfiguration: BuildOutput::suggest-baseline.json
+#                 TemplatePath: BuildOutput::suggest-baseline.yml
+#               RunOrder: 2
+#         - Name: DeployDev
+#           Actions:
+#             - Name: DeployModelDev
+#               InputArtifacts:
+#                 - Name: BuildOutput
+#               ActionTypeId:
+#                 Category: Deploy
+#                 Owner: AWS
+#                 Version: "1"
+#                 Provider: CloudFormation
+#               Configuration:
+#                 ActionMode: REPLACE_ON_FAILURE
+#                 RoleArn: !GetAtt PipelineServiceRole.Arn
+#                 StackName: !Sub ${WorkloadName}-deploy-dev
+#                 TemplateConfiguration: BuildOutput::deploy-model-dev.json
+#                 TemplatePath: BuildOutput::deploy-model-dev.yml
+#               RunOrder: 1
+#             - Name: ApproveDeploy
+#               ActionTypeId:
+#                 Category: Approval
+#                 Owner: AWS
+#                 Version: "1"
+#                 Provider: Manual
+#               Configuration:
+#                 ExternalEntityLink: !Sub https://${WorkloadName}-notebook.notebook.${AWS::Region}.sagemaker.aws/notebooks/sagemaker-safe-deployment-pipeline/notebook/mlops.ipynb
+#                 CustomData: "Shall this model be put into production?"
+#               RunOrder: 2
+#         - Name: DeployPrd
+#           Actions:
+#             - Name: DeployModelPrd
+#               InputArtifacts:
+#                 - Name: BuildOutput
+#               OutputArtifacts:
+#                 - Name: ModelDeployPrdOutput
+#               ActionTypeId:
+#                 Category: Deploy
+#                 Owner: AWS
+#                 Version: "1"
+#                 Provider: CloudFormation
+#               Configuration:
+#                 ActionMode: CREATE_UPDATE
+#                 RoleArn: !GetAtt PipelineServiceRole.Arn
+#                 Capabilities: CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND
+#                 StackName: !Sub ${WorkloadName}-deploy-prd
+#                 TemplateConfiguration: BuildOutput::template-model-prd.json
+#                 TemplatePath: BuildOutput::template-model-prd.yml
+#               RunOrder: 1
+
+#   SageMakerRole:
+#     Type: AWS::IAM::Role
+#     Properties:
+#       AssumeRolePolicyDocument:
+#         Version: "2012-10-17"
+#         Statement
+#           - Effect: "Allow"
+#             Principal:
+#               Service:
+#                 - "codebuild.amazonaws.com"
+#             Action:
+#               - "sts:AssumeRole"
+#       ManagedPolicyArns:
+#         - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+#         - "arn:aws:iam::aws:policy/IAMReadOnlyAccess"
+#       Policies:
+#         - PolicyName: "CodePipelinePolicies"
+#           PolicyDocument:
+#             Version: "2012-10-17"
+#             Statement:
+#               - Sid: AllowSageMaker
+#                 Effect: Allow
+#                 Action:
+#                   - cloudformation:DescribeStacks
+#                   - cloudformation:DescribeStackEvents
+#                 Resource: "*"
+#               - Sid: AllowKms
+#                 Effect: Allow
+#                 Action:
+#                   - kms:DescribeKey
+#                   - kms:Decrypt
+#                   - kms:Encrypt
+#                   - kms:GenerateDataKey*
+#                   - kms:ReEncrypt*
+#                 Resource: "*"
+#               - Sid: AllowCodePipeline
+#                 Effect: Allow
+#                 Action:
+#                   - codepipeline:GetPipeline
+#                   - codepipeline:GetPipelineState
+#                   - codepipeline:GetPipelineExecution
+#                   - codepipeline:PutApprovalResult
+#                   - codepipeline:PutJobFailureResult
+#                   - codepipeline:PutJobSuccessResult
+#                 Resource: "*"
+#               - Sid: AllowCloudWatch
+#                 Effect: Allow
+#                 Action:
+#                   - synthetics:*
+#                   - lambda:PublishLayerVersion
+#                   - lambda:PublishVersion
+#                   - lambda:CreateFunction
+#                   - lambda:GetLayerVersion
+#                   - lambda:AddPermission
+#                   - cloudwatch:PutDashboard
+#                   - cloudwatch:DeleteDashboards
+#                 Resource: "*"
+#               - Sid: AllowPassRoleLambda
+#                 Effect: Allow
+#                 Action:
+#                   - iam:PassRole
+#                 Resource: "*"
+#                 Condition:
+#                   StringEquals:
+#                     iam:PassedToService: lambda.amazonaws.com
+
+#   PipelineServiceRole:
+#     Type: "AWS::IAM::Role"
+#     Properties:
+#       AssumeRolePolicyDocument:
+#         Version: "2012-10-17"
+#         Statement:
+#           - Effect: "Allow"
+#             Principal:
+#               Service:
+#                 - "cloudformation.amazonaws.com"
+#             Action:
+#               - "sts:AssumeRole"
+#           - Effect: "Allow"
+#             Principal:
+#               Service:
+#                 - "codepipeline.amazonaws.com"
+#             Action:
+#               - "sts:AssumeRole"
+#       Path: "/"
+#       Policies:
+#         - PolicyName: "Admin"
+#           PolicyDocument:
+#             Version: "2012-10-17"
+#             Statement:
+#               - Effect: "Allow"
+#                 Action: "*"
+#                 Resource: "*"
