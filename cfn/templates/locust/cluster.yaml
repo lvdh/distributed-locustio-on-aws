@@ -2,12 +2,11 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
 Description: >
-  Load Test Cluster, Elastic Beanstalk
+  Locust Cluster, Elastic Beanstalk
 
 Metadata:
 
   AWS::CloudFormation::Interface:
-
     ParameterGroups:
       - Label:
           default: Cluster Configuration
@@ -16,37 +15,46 @@ Metadata:
           - InstanceTypes
           - EC2KeyName
           - ElasticBeanstalkPlatform
-
       - Label:
           default: Network Configuration
         Parameters:
+          - AzCount
           - VpcId
-          - VpcCidr
+          - VpcCidrBlock
           - PrivateSubnetIds
           - PublicSubnetIds
-
     ParameterLabels:
       InstanceCount:
-        default: Number of EC2 instances in the cluster
+        default: Number of EC2 instances to provision for the cluster
       InstanceTypes:
-        default: Instance Type of the EC2 instances in the cluster
+        default: Instance Type of the EC2 instances provisioned for the cluster
       EC2KeyName:
-        default: Key Pair Name
+        default: Name of an existing EC2 Key Pair
       ElasticBeanstalkPlatform:
-        default: Elastic Beanstalk Platform ("Solution Stack Name")
+        default: Name of a specific Elastic Beanstalk Platform/Solution Stack
+      AzCount:
+        default: Number of AZs to deploy across
       VpcId:
-        default: VPC ID
-      VpcCidr:
-        default: VPC CIDR block
+        default: ID of the existing VPC to deploy to
+      VpcCidrBlock:
+        default: CIDR block of the existing VPC to deploy to
       PrivateSubnetIds:
-        default: Private Subnet IDs
+        default: Comma-delimited list of Private Subnet IDs
       PublicSubnetIds:
-        default: Public Subnet IDs
+        default: Comma-delimited list of Public Subnet IDs
 
 Parameters:
 
+  AzCount:
+    Description: Number of AZs to deploy across.
+    Type: Number
+    Default: 2
+    AllowedValues:
+      - 2
+      - 3
+
   InstanceCount:
-    Description: Size of the Locust cluster (number of EC2 instances)
+    Description: Number of EC2 instances to provision for the cluster.
     Type: Number
     MinValue: 1
     MaxValue: 20
@@ -54,7 +62,7 @@ Parameters:
     ConstraintDescription: Specify a number between 1 - 20
 
   InstanceTypes:
-    Description: Cluster Instance Types for Elastic Beanstalk to choose from
+    Description: Instance Type of the EC2 instances provisioned for the cluster
     Type: String
     Default: 'c5.large,c4.large'
 
@@ -64,35 +72,75 @@ Parameters:
     Default: ''
 
   ElasticBeanstalkPlatform:
-    Description: Elastic Beanstalk Platform ("Solution Stack Name")
+    Description: Name of a specific Elastic Beanstalk Platform/Solution Stack
     Type: String
 
   VpcId:
-    Description: ID of the existing VPC
+    Description: ID of the existing VPC to deploy to
     Type: AWS::EC2::VPC::Id
 
-  VpcCidr:
-    Description: CIDR block for the VPC
+  VpcCidrBlock:
+    Description: CIDR block of the existing VPC to deploy to
     Type: String
     AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
     ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
 
   PrivateSubnetIds:
-    Description: IDs of Private Subnets
-    Type: List<AWS::EC2::Subnet::Id>
+    Description: Comma-delimited list of Private Subnet IDs
+    Type: CommaDelimitedList
 
   PublicSubnetIds:
-    Description: IDs of Public Subnets
-    Type: List<AWS::EC2::Subnet::Id>
+    Description: Comma-delimited list of Public Subnet IDs
+    Type: CommaDelimitedList
+
+Conditions:
+
+  SingleAz: !Or
+    - !Equals [1, !Ref AzCount]
+    - !Equals [2, !Ref AzCount]
+    - !Equals [3, !Ref AzCount]
+
+  DoubleAz: !Or
+    - !Equals [2, !Ref AzCount]
+    - !Equals [3, !Ref AzCount]
+
+  TripleAz: !Equals [3, !Ref AzCount]
 
 Resources:
+
+  # IAM
+
+  InstanceProfileRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+      - !Ref InstanceProfileRole
 
 # Security Groups
 
   LoadBalancerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Load Balancer Security Group
+      GroupDescription: Load Balancer Security Group (managed by CloudFormation)
       VpcId: !Ref VpcId
       Tags:
       - Key: Name
@@ -101,6 +149,7 @@ Resources:
   LoadBalancerSecurityGroupIngress:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
+      Description: HTTP all (managed by CloudFormation)
       GroupId: !Ref LoadBalancerSecurityGroup
       IpProtocol: tcp
       FromPort: 80
@@ -110,6 +159,7 @@ Resources:
   LoadBalancerSecurityGroupEgress:
     Type: AWS::EC2::SecurityGroupEgress
     Properties:
+      Description: HTTP TargetSecurityGroup (managed by CloudFormation)
       GroupId: !Ref LoadBalancerSecurityGroup
       IpProtocol: tcp
       FromPort: 80
@@ -119,7 +169,7 @@ Resources:
   TargetSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Application Security Group
+      GroupDescription: Application Security Group (managed by CloudFormation)
       VpcId: !Ref VpcId
       Tags:
       - Key: Name
@@ -128,6 +178,7 @@ Resources:
   TargetSecurityGroupIngress:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
+      Description: HTTP LoadBalancerSecurityGroup (managed by CloudFormation)
       GroupId: !Ref TargetSecurityGroup
       IpProtocol: tcp
       FromPort: 80
@@ -137,6 +188,7 @@ Resources:
   TargetSecurityGroupEgress:
     Type: AWS::EC2::SecurityGroupEgress
     Properties:
+      Description: HTTP LoadBalancerSecurityGroup (managed by CloudFormation)
       GroupId: !Ref TargetSecurityGroup
       IpProtocol: tcp
       FromPort: 80
@@ -145,7 +197,7 @@ Resources:
 
   # Elastic Beanstalk
 
-  ElasticBeanstalkServiceRole:
+  EbServiceRole:
     Type: AWS::IAM::Role
     Properties:
       Path: /
@@ -163,22 +215,19 @@ Resources:
         - arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth
         - arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkService
 
-  ElasticBeanstalkApplication:
+  EbApplication:
     Type: AWS::ElasticBeanstalk::Application
-    Properties:
-      ApplicationName: !Sub "${AWS::StackName}"
 
-  ElasticBeanstalkEnvironment:
+  EbEnvironment:
     Type: AWS::ElasticBeanstalk::Environment
     Properties:
-      ApplicationName: !Ref ElasticBeanstalkApplication
-      EnvironmentName: !Ref ElasticBeanstalkApplication # Reuse Application name as Environment name
-      TemplateName: !Ref ElasticBeanstalkConfigurationTemplate
+      ApplicationName: !Ref EbApplication
+      TemplateName: !Ref EbConfigurationTemplate
 
-  ElasticBeanstalkConfigurationTemplate:
+  EbConfigurationTemplate:
     Type: AWS::ElasticBeanstalk::ConfigurationTemplate
     Properties:
-      ApplicationName: !Ref ElasticBeanstalkApplication
+      ApplicationName: !Ref EbApplication
       SolutionStackName: !Ref ElasticBeanstalkPlatform
       OptionSettings:
 
@@ -194,7 +243,7 @@ Resources:
 
       - Namespace: aws:elasticbeanstalk:environment
         OptionName: ServiceRole
-        Value: !Ref ElasticBeanstalkServiceRole
+        Value: !Ref EbServiceRole
 
       # Elastic Beanstalk Options, EC2 Instance Types
 
@@ -218,7 +267,7 @@ Resources:
 
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: IamInstanceProfile
-        Value: !Ref ApplicationInstanceProfile
+        Value: !Ref InstanceProfile
 
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: EC2KeyName
@@ -229,7 +278,7 @@ Resources:
         Value:
           Fn::Sub:
             - tcp, 22, 22, ${SourceCidr}
-            - { SourceCidr: !Ref VpcCidr } # !Ref VpcCidr = Allow SSH access from within the VPC
+            - { SourceCidr: !Ref VpcCidrBlock } # !Ref VpcCidrBlock = Allow SSH access from within the VPC
 
       - Namespace: aws:autoscaling:updatepolicy:rollingupdate
         OptionName: RollingUpdateEnabled
@@ -263,7 +312,7 @@ Resources:
         OptionName: Period
         Value: "1"
 
-        # Elastic Beanstalk Options, Health Reporting
+      # Elastic Beanstalk Options, Health Reporting
 
       - Namespace: aws:elasticbeanstalk:healthreporting:system
         OptionName: SystemType
@@ -342,7 +391,7 @@ Resources:
                   }
                 }'
 
-        # Elastic Beanstalk Options, VPC
+      # Elastic Beanstalk Options, VPC
 
       - Namespace: aws:ec2:vpc
         OptionName: VPCId
@@ -350,23 +399,23 @@ Resources:
 
       - Namespace: aws:ec2:vpc
         OptionName: Subnets
-        # Workaround: List<> is not supported, generate a comma-separated String instead
+        # Workaround: List and CommaSeparatedList are not supported, generate a String instead
         Value:
           "Fn::Join":
             - ','
-            - - !Select [0, !Ref PrivateSubnetIds]
-              - !Select [1, !Ref PrivateSubnetIds]
-              - !Select [2, !Ref PrivateSubnetIds]
+            - - !If [SingleAz, !Select [ 0, !Ref PrivateSubnetIds ], !Ref 'AWS::NoValue']
+              - !If [DoubleAz, !Select [ 1, !Ref PrivateSubnetIds ], !Ref 'AWS::NoValue']
+              - !If [TripleAz, !Select [ 2, !Ref PrivateSubnetIds ], !Ref 'AWS::NoValue']
 
       - Namespace: aws:ec2:vpc
         OptionName: ELBSubnets
-        # Workaround: List<> is not supported, generate a comma-separated String instead
+        # Workaround: List and CommaSeparatedList are not supported, generate a String instead
         Value:
           "Fn::Join":
             - ','
-            - - !Select [0, !Ref PublicSubnetIds]
-              - !Select [1, !Ref PublicSubnetIds]
-              - !Select [2, !Ref PublicSubnetIds]
+            - - !If [SingleAz, !Select [ 0, !Ref PublicSubnetIds ], !Ref 'AWS::NoValue']
+              - !If [DoubleAz, !Select [ 1, !Ref PublicSubnetIds ], !Ref 'AWS::NoValue']
+              - !If [TripleAz, !Select [ 2, !Ref PublicSubnetIds ], !Ref 'AWS::NoValue']
 
       - Namespace: aws:elbv2:listener:default
         OptionName: ListenerEnabled
@@ -384,7 +433,7 @@ Resources:
         OptionName: PathPatterns
         Value: "/*"
 
-        # Elastic Beanstalk Options, CloudWatch Logs
+      # Elastic Beanstalk Options, CloudWatch Logs
 
       - Namespace: aws:elasticbeanstalk:cloudwatch:logs
         OptionName: StreamLogs
@@ -394,50 +443,11 @@ Resources:
         OptionName: DeleteOnTerminate
         Value: "true"
 
-        # Elastic Beanstalk Options, Environment Variables
+      # Elastic Beanstalk Options, Environment Variables
 
-      - Namespace: aws:elasticbeanstalk:application:environment
-        # Example
-        OptionName: EXAMPLE
-        Value: 'example'
-
-  # IAM
-
-  ApplicationRole:
-    Type: AWS::IAM::Role
-    Properties:
-      Path: /
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          -
-            Effect: Allow
-            Principal:
-              Service:
-                - ec2.amazonaws.com
-            Action:
-              - sts:AssumeRole
-
-  ApplicationPolicy:
-    Type: AWS::IAM::Policy
-    Properties:
-      PolicyName: App
-      Roles:
-      - !Ref ApplicationRole
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          -
-            Effect: Allow
-            Action: "*"
-            Resource: "*"
-
-  ApplicationInstanceProfile:
-    Type: AWS::IAM::InstanceProfile
-    Properties:
-      Path: /
-      Roles:
-      - !Ref ApplicationRole
+      # - Namespace: aws:elasticbeanstalk:application:environment
+      #   OptionName: EXAMPLE
+      #   Value: 'example'
 
 Outputs:
 
@@ -447,11 +457,29 @@ Outputs:
     Export:
       Name: !Sub ${AWS::StackName}:Name
 
-  EnvironmentUrl:
-    Description: Environment URL
-    Value: !GetAtt ElasticBeanstalkEnvironment.EndpointURL
+  Region:
+    Description: Region Name
+    Value: !Ref AWS::Region
     Export:
-      Name: !Sub "${AWS::StackName}:EnvironmentUrl"
+      Name: !Sub ${AWS::StackName}:Region
+
+  EbApplicationName:
+    Description: Elastic Beanstalk Application URL
+    Value: !Ref EbApplication
+    Export:
+      Name: !Sub "${AWS::StackName}:EbApplicationName"
+
+  EbEnvironmentName:
+    Description: Elastic Beanstalk Environment URL
+    Value: !Ref EbEnvironment
+    Export:
+      Name: !Sub "${AWS::StackName}:EbEnvironmentName"
+
+  EbEnvironmentUrl:
+    Description: Elastic Beanstalk Environment URL
+    Value: !GetAtt EbEnvironment.EndpointURL
+    Export:
+      Name: !Sub "${AWS::StackName}:EbEnvironmentUrl"
 
   LoadBalancerSecurityGroupId:
     Description: Security Group ID applied to Internet-facing Load Balancer
